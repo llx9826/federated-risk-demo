@@ -1,0 +1,40 @@
+{
+  "generation_time": "2025-09-08T19:11:36.311050",
+  "bank_records": 4200,
+  "ecom_records": 3800,
+  "intersection_size": 2600,
+  "default_rate": 0.37285714285714283,
+  "bank_features": [
+    "credit_score",
+    "annual_income",
+    "debt_to_income_ratio",
+    "credit_history_months",
+    "num_credit_cards",
+    "mortgage_balance",
+    "savings_balance",
+    "num_late_payments_12m",
+    "credit_utilization",
+    "age",
+    "avg_monthly_balance",
+    "num_transactions_3m",
+    "overdraft_count_12m",
+    "loan_approval_rate"
+  ],
+  "ecom_features": [
+    "total_orders_12m",
+    "avg_order_value",
+    "total_spent_12m",
+    "days_since_last_order",
+    "favorite_category",
+    "return_rate",
+    "review_score_avg",
+    "num_reviews_given",
+    "cart_abandonment_rate",
+    "mobile_usage_ratio",
+    "coupon_usage_rate",
+    "peak_shopping_hour",
+    "num_wishlist_items",
+    "social_shares",
+    "customer_service_contacts"
+  ]
+}

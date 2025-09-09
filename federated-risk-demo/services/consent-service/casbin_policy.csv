@@ -1,0 +1,39 @@
+p, user, data, read, credit_scoring, credit_score, bank_partner, allow
+p, user, data, read, credit_scoring, annual_income, bank_partner, allow
+p, user, data, read, credit_scoring, debt_to_income_ratio, bank_partner, allow
+p, user, data, read, credit_scoring, credit_history_months, bank_partner, allow
+p, user, data, read, credit_scoring, num_credit_cards, bank_partner, allow
+p, user, data, read, credit_scoring, mortgage_balance, bank_partner, allow
+p, user, data, read, credit_scoring, savings_balance, bank_partner, allow
+p, user, data, read, credit_scoring, num_late_payments_12m, bank_partner, allow
+p, user, data, read, credit_scoring, credit_utilization, bank_partner, allow
+p, user, data, read, credit_scoring, age, bank_partner, allow
+p, user, data, read, credit_scoring, avg_monthly_balance, bank_partner, allow
+p, user, data, read, credit_scoring, num_transactions_3m, bank_partner, allow
+p, user, data, read, credit_scoring, overdraft_count_12m, bank_partner, allow
+p, user, data, read, credit_scoring, loan_approval_rate, bank_partner, allow
+p, user, data, read, credit_scoring, total_orders_12m, ecom_partner, allow
+p, user, data, read, credit_scoring, avg_order_value, ecom_partner, allow
+p, user, data, read, credit_scoring, total_spent_12m, ecom_partner, allow
+p, user, data, read, credit_scoring, days_since_last_order, ecom_partner, allow
+p, user, data, read, credit_scoring, favorite_category, ecom_partner, allow
+p, user, data, read, credit_scoring, return_rate, ecom_partner, allow
+p, user, data, read, credit_scoring, review_score_avg, ecom_partner, allow
+p, user, data, read, credit_scoring, num_reviews_given, ecom_partner, allow
+p, user, data, read, credit_scoring, cart_abandonment_rate, ecom_partner, allow
+p, user, data, read, credit_scoring, mobile_usage_ratio, ecom_partner, allow
+p, user, data, read, credit_scoring, coupon_usage_rate, ecom_partner, allow
+p, user, data, read, credit_scoring, peak_shopping_hour, ecom_partner, allow
+p, user, data, read, credit_scoring, num_wishlist_items, ecom_partner, allow
+p, user, data, read, credit_scoring, social_shares, ecom_partner, allow
+p, user, data, read, credit_scoring, customer_service_contacts, ecom_partner, allow
+p, admin, data, *, *, *, *, allow
+p, system, data, *, *, *, *, allow
+g, bank_user, user
+g, ecom_user, user
+g, admin_user, admin
+g, system_user, system
+g2, bank_partner, bank_partner
+g2, ecom_partner, ecom_partner
+g2, trusted_partner, bank_partner
+g2, trusted_partner, ecom_partner
