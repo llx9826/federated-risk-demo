@@ -14,9 +14,8 @@ import {
   Typography,
   Modal,
   Descriptions,
-  Timeline,
+
   Alert,
-  Tooltip,
   Badge,
   Divider,
   Form,
@@ -36,7 +35,7 @@ import {
   FileTextOutlined,
   WarningOutlined,
 } from '@ant-design/icons'
-import { Line, Column } from '@ant-design/plots'
+
 import { useAppStore } from '@store/app'
 import dayjs from 'dayjs'
 
@@ -473,7 +472,7 @@ const AuditPage: React.FC = () => {
       render: (action: string, record: AuditLog) => (
         <div>
           <div style={{ fontWeight: 500 }}>{action}</div>
-          <Tag size="small" color="blue">{getCategoryText(record.category)}</Tag>
+          <Tag color="blue">{getCategoryText(record.category)}</Tag>
         </div>
       ),
     },
@@ -495,7 +494,7 @@ const AuditPage: React.FC = () => {
       render: (record: AuditLog) => (
         <div>
           <div style={{ fontWeight: 500 }}>{record.resource}</div>
-          <Tag size="small">{record.resourceType}</Tag>
+          <Tag>{record.resourceType}</Tag>
         </div>
       ),
     },
@@ -672,7 +671,7 @@ const AuditPage: React.FC = () => {
           <Form.Item label="时间范围">
             <RangePicker
               value={filters.dateRange}
-              onChange={(dates) => setFilters(prev => ({ ...prev, dateRange: dates }))}
+              onChange={(dates) => setFilters(prev => ({ ...prev, dateRange: dates as [dayjs.Dayjs, dayjs.Dayjs] | null }))}
               showTime
               format="YYYY-MM-DD HH:mm"
             />
@@ -776,7 +775,7 @@ const AuditPage: React.FC = () => {
                 <Space>
                   <UserOutlined />
                   {selectedLog.user}
-                  <Tag size="small">{selectedLog.userRole}</Tag>
+                  <Tag>{selectedLog.userRole}</Tag>
                 </Space>
               </Descriptions.Item>
               
@@ -787,7 +786,7 @@ const AuditPage: React.FC = () => {
               <Descriptions.Item label="资源">
                 <Space>
                   {selectedLog.resource}
-                  <Tag size="small">{selectedLog.resourceType}</Tag>
+                  <Tag>{selectedLog.resourceType}</Tag>
                 </Space>
               </Descriptions.Item>
               

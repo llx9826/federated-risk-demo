@@ -7,7 +7,7 @@ import {
   Button,
   Select,
   InputNumber,
-  Divider,
+
   Space,
   Typography,
   Row,
@@ -16,7 +16,7 @@ import {
   Modal,
   Tabs,
   Upload,
-  message,
+
   Tag,
   Tooltip,
   Slider,
@@ -31,25 +31,17 @@ import {
   ReloadOutlined,
   ExportOutlined,
   ImportOutlined,
-  SecurityScanOutlined,
-  DatabaseOutlined,
-  CloudOutlined,
-  BellOutlined,
-  UserOutlined,
-  LockOutlined,
+
   EyeOutlined,
   EyeInvisibleOutlined,
   QuestionCircleOutlined,
-  WarningOutlined,
-  CheckCircleOutlined,
-  UploadOutlined,
   DeleteOutlined,
   PlusOutlined,
 } from '@ant-design/icons'
 import { useAppStore } from '@store/app'
 import type { UploadProps } from 'antd'
 
-const { Title, Text, Paragraph } = Typography
+const { Title, Text } = Typography
 const { Option } = Select
 // const { TabPane } = Tabs // 已弃用，使用items属性替代
 const { Panel } = Collapse
@@ -136,7 +128,7 @@ const SettingsPage: React.FC = () => {
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([])
   const [createApiKeyVisible, setCreateApiKeyVisible] = useState(false)
   const [newApiKeyForm] = Form.useForm()
-  const { addNotification, theme, setTheme } = useAppStore()
+  const { addNotification, setTheme } = useAppStore()
 
   // 默认设置
   const defaultSettings: SystemSettings = {

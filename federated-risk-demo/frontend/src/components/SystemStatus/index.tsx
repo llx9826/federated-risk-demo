@@ -1,5 +1,5 @@
 import React from 'react'
-import { Space, Tag, Tooltip, Popover, Button, Divider } from 'antd'
+import { Space, Tag, Popover, Button, Divider } from 'antd'
 import {
   CheckCircleOutlined,
   ExclamationCircleOutlined,

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react'
+import * as React from 'react'
+import { useState, useEffect } from 'react'
 import {
   Card,
   Form,
@@ -15,15 +16,11 @@ import {
   Col,
   Statistic,
   Progress,
-  Alert,
   Tabs,
   Upload,
   InputNumber,
   Switch,
-  Tooltip,
-  Badge,
   Timeline,
-  Divider,
 } from 'antd'
 import {
   RocketOutlined,
@@ -34,21 +31,14 @@ import {
   DownloadOutlined,
   DeleteOutlined,
   UploadOutlined,
-  SettingOutlined,
-  LineChartOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
   ExclamationCircleOutlined,
   PlusOutlined,
-  ApiOutlined,
-  SafetyCertificateOutlined,
-  BarChartOutlined,
-  FileTextOutlined,
-  CloudServerOutlined,
 } from '@ant-design/icons'
-import { Line, Column, Pie } from '@ant-design/plots'
+import { Pie } from '@ant-design/plots'
 import { useAppStore } from '@store/app'
-import dayjs from 'dayjs'
+import * as dayjs from 'dayjs'
 
 const { Title, Text } = Typography
 const { Option } = Select
@@ -137,7 +127,7 @@ const InferencePage: React.FC = () => {
     },
     {
       id: '2',
-      name: '反欺诈检测模型',
+      name: '实时欺诈检测',
       version: 'v2.1.0',
       algorithm: 'FedProx',
       accuracy: 0.934,
@@ -194,8 +184,8 @@ const InferencePage: React.FC = () => {
         averageConfidence: 0.856,
         riskDistribution: [
           { level: '低风险', count: 6800, percentage: 68.0 },
-          { level: '中风险', count: 2340, percentage: 23.4 },
-          { level: '高风险', count: 860, percentage: 8.6 },
+        { level: '中风险', count: 2340, percentage: 23.4 },
+        { level: '高风险', count: 860, percentage: 8.6 },
         ],
       },
       auditLog: [
@@ -215,7 +205,7 @@ const InferencePage: React.FC = () => {
           timestamp: dayjs().subtract(1, 'hour').toISOString(),
           action: '推理完成',
           user: '系统',
-          details: '推理任务完成，处理 10000 条记录',
+          details: '推理任务完成，处理10000条记录',
         },
       ],
     },
@@ -355,7 +345,7 @@ const InferencePage: React.FC = () => {
     }
   }
 
-  // 开始推理
+  // 开始推�?
   const handleStartInference = (jobId: string) => {
     setJobs(prev => prev.map(job => {
       if (job.id === jobId) {
@@ -510,7 +500,7 @@ const InferencePage: React.FC = () => {
     })
   }
 
-  // 状态配置
+  // 状态配�?
   const getStatusConfig = (status: string) => {
     switch (status) {
       case 'pending':
@@ -528,7 +518,7 @@ const InferencePage: React.FC = () => {
     }
   }
 
-  // 模型状态配置
+  // 模型状态配�?
   const getModelStatusConfig = (status: string) => {
     switch (status) {
       case 'active':
@@ -542,7 +532,7 @@ const InferencePage: React.FC = () => {
     }
   }
 
-  // 表格列配置
+  // 表格列配�?
   const columns = [
     {
       title: '任务名称',
@@ -564,7 +554,7 @@ const InferencePage: React.FC = () => {
       render: (record: InferenceJob) => (
         <div>
           <div style={{ fontWeight: 500 }}>{record.modelName}</div>
-          <Tag size="small" color="blue">{record.modelVersion}</Tag>
+          <Tag color="blue">{record.modelVersion}</Tag>
         </div>
       ),
     },
@@ -576,10 +566,10 @@ const InferencePage: React.FC = () => {
       render: (participants: string[]) => (
         <div>
           {participants.slice(0, 2).map(p => (
-            <Tag key={p} size="small" style={{ marginBottom: 2 }}>{p}</Tag>
+            <Tag key={p} style={{ marginBottom: 2 }}>{p}</Tag>
           ))}
           {participants.length > 2 && (
-            <Tag size="small">+{participants.length - 2}</Tag>
+            <Tag>+{participants.length - 2}</Tag>
           )}
         </div>
       ),
@@ -618,7 +608,7 @@ const InferencePage: React.FC = () => {
           </Text>
           {record.status === 'completed' && record.accuracy && (
             <div style={{ fontSize: 12, color: '#52c41a', marginTop: 2 }}>
-              准确率: {(record.accuracy * 100).toFixed(1)}%
+              准确率 {(record.accuracy * 100).toFixed(1)}%
             </div>
           )}
         </div>
@@ -673,8 +663,8 @@ const InferencePage: React.FC = () => {
               <Button
                 type="text"
                 size="small"
-                danger
                 icon={<StopOutlined />}
+                danger
                 onClick={() => handleStopInference(record.id)}
               >
                 停止
@@ -707,8 +697,8 @@ const InferencePage: React.FC = () => {
           <Button
             type="text"
             size="small"
-            danger
             icon={<DeleteOutlined />}
+            danger
             onClick={() => handleDeleteJob(record.id)}
           >
             删除
@@ -845,10 +835,10 @@ const InferencePage: React.FC = () => {
                       <div>
                         <div>{model.name} {model.version}</div>
                         <div style={{ fontSize: 12, color: '#666' }}>
-                          {model.algorithm} | 准确率: {(model.accuracy * 100).toFixed(1)}%
+                          {model.algorithm} | 准确率 {(model.accuracy * 100).toFixed(1)}%
                         </div>
                       </div>
-                      <Tag color={statusConfig.color} size="small">
+                      <Tag color={statusConfig.color}>
                         {statusConfig.text}
                       </Tag>
                     </div>
@@ -891,7 +881,7 @@ const InferencePage: React.FC = () => {
                   min={1}
                   max={1000000}
                   formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                  parser={value => value!.replace(/\$\s?|(,*)/g, '')}
+                  parser={value => parseInt(value!.replace(/\$\s?|(,*)/g, '')) as 1 | 1000000}
                 />
               </Form.Item>
             </Col>
@@ -927,7 +917,7 @@ const InferencePage: React.FC = () => {
                   max={1.0}
                   step={0.1}
                   formatter={value => `${(Number(value) * 100).toFixed(0)}%`}
-                  parser={value => Number(value!.replace('%', '')) / 100}
+                  parser={value => (Number(value!.replace('%', '')) / 100) as 1 | 0.1}
                 />
               </Form.Item>
             </Col>

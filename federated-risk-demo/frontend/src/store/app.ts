@@ -82,7 +82,7 @@ const initialState = {
 
 export const useAppStore = create<AppState>()(
   persist(
-    (set, get) => ({
+    (set, _get) => ({
       ...initialState,
       
       setTheme: (theme) => set({ theme }),

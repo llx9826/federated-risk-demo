@@ -1,8 +1,24 @@
 // Jest DOM matchers
 import '@testing-library/jest-dom';
+import { vi, beforeAll, afterAll, afterEach } from 'vitest';
+
+// Extend global types
+declare global {
+  var testUtils: {
+    createMockResponse: (data: any, status?: number) => any;
+    createMockUser: (overrides?: any) => any;
+    createMockTrainingJob: (overrides?: any) => any;
+    createMockModel: (overrides?: any) => any;
+    waitForAsync: () => Promise<void>;
+    simulateUserInput: (element: HTMLElement, value: string) => Promise<void>;
+  };
+}
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
+  root = null;
+  rootMargin = '';
+  thresholds = [];
   constructor() {}
   observe() {
     return null;
@@ -13,28 +29,31 @@ global.IntersectionObserver = class IntersectionObserver {
   unobserve() {
     return null;
   }
-};
+  takeRecords() {
+    return [];
+  }
+} as any;
 
 // Mock ResizeObserver
 global.ResizeObserver = class ResizeObserver {
-  constructor(callback: ResizeObserverCallback) {}
-  observe(target: Element, options?: ResizeObserverOptions) {}
-  unobserve(target: Element) {}
+  constructor(_callback: ResizeObserverCallback) {}
+  observe(_target: Element, _options?: ResizeObserverOptions) {}
+  unobserve(_target: Element) {}
   disconnect() {}
-};
+} as any;
 
 // Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: jest.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation(query => ({
     matches: false,
     media: query,
     onchange: null,
-    addListener: jest.fn(), // deprecated
-    removeListener: jest.fn(), // deprecated
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
+    addListener: vi.fn(), // deprecated
+    removeListener: vi.fn(), // deprecated
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
   })),
 });
 
@@ -47,16 +66,16 @@ Object.defineProperty(window, 'getComputedStyle', {
 
 // Mock scrollTo
 Object.defineProperty(window, 'scrollTo', {
-  value: jest.fn(),
+  value: vi.fn(),
   writable: true
 });
 
 // Mock localStorage
 const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
 };
 Object.defineProperty(window, 'localStorage', {
   value: localStorageMock
@@ -64,10 +83,10 @@ Object.defineProperty(window, 'localStorage', {
 
 // Mock sessionStorage
 const sessionStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
 };
 Object.defineProperty(window, 'sessionStorage', {
   value: sessionStorageMock
@@ -76,17 +95,17 @@ Object.defineProperty(window, 'sessionStorage', {
 // Mock URL.createObjectURL
 Object.defineProperty(URL, 'createObjectURL', {
   writable: true,
-  value: jest.fn(() => 'mocked-url')
+  value: vi.fn(() => 'mocked-url')
 });
 
 // Mock URL.revokeObjectURL
 Object.defineProperty(URL, 'revokeObjectURL', {
   writable: true,
-  value: jest.fn()
+  value: vi.fn()
 });
 
 // Mock fetch
-global.fetch = jest.fn(() =>
+global.fetch = vi.fn(() =>
   Promise.resolve({
     ok: true,
     status: 200,
@@ -94,7 +113,7 @@ global.fetch = jest.fn(() =>
     text: () => Promise.resolve(''),
     blob: () => Promise.resolve(new Blob()),
   })
-) as jest.Mock;
+) as any;
 
 // Mock console methods to reduce noise in tests
 const originalError = console.error;
@@ -129,56 +148,62 @@ afterAll(() => {
 });
 
 // Mock antd components that might cause issues
-jest.mock('antd/lib/message', () => ({
-  success: jest.fn(),
-  error: jest.fn(),
-  warning: jest.fn(),
-  info: jest.fn(),
-  loading: jest.fn(),
+vi.mock('antd/lib/message', () => ({
+  success: vi.fn(),
+  error: vi.fn(),
+  warning: vi.fn(),
+  info: vi.fn(),
+  loading: vi.fn(),
 }));
 
-jest.mock('antd/lib/notification', () => ({
-  success: jest.fn(),
-  error: jest.fn(),
-  warning: jest.fn(),
-  info: jest.fn(),
-  open: jest.fn(),
+vi.mock('antd/lib/notification', () => ({
+  success: vi.fn(),
+  error: vi.fn(),
+  warning: vi.fn(),
+  info: vi.fn(),
+  open: vi.fn(),
 }));
 
 // Mock ECharts
-jest.mock('echarts', () => ({
-  init: jest.fn(() => ({
-    setOption: jest.fn(),
-    resize: jest.fn(),
-    dispose: jest.fn(),
-    on: jest.fn(),
-    off: jest.fn(),
+vi.mock('echarts', () => ({
+  init: vi.fn(() => ({
+    setOption: vi.fn(),
+    resize: vi.fn(),
+    dispose: vi.fn(),
+    on: vi.fn(),
+    off: vi.fn(),
   })),
-  dispose: jest.fn(),
-  registerTheme: jest.fn(),
+  dispose: vi.fn(),
+  registerTheme: vi.fn(),
 }));
 
 // Mock @ant-design/plots
-jest.mock('@ant-design/plots', () => ({
-  Line: jest.fn(() => null),
-  Column: jest.fn(() => null),
-  Pie: jest.fn(() => null),
-  Area: jest.fn(() => null),
-  Bar: jest.fn(() => null),
-  Scatter: jest.fn(() => null),
+vi.mock('@ant-design/plots', () => ({
+  Line: vi.fn(() => null),
+  Column: vi.fn(() => null),
+  Pie: vi.fn(() => null),
+  Area: vi.fn(() => null),
+  Bar: vi.fn(() => null),
+  Scatter: vi.fn(() => null),
 }));
 
 // Mock dayjs
-jest.mock('dayjs', () => {
-  const originalDayjs = jest.requireActual('dayjs');
+vi.mock('dayjs', async () => {
+  const originalDayjs = await vi.importActual('dayjs') as any;
+  const mockDayjs = vi.fn((date?: any) => {
+    if (date) {
+      return originalDayjs.default(date);
+    }
+    return originalDayjs.default('2023-01-01T00:00:00.000Z');
+  });
+  
+  // Add extend method and other dayjs methods
+  mockDayjs.extend = vi.fn();
+  mockDayjs.locale = vi.fn();
+  
   return {
     __esModule: true,
-    default: jest.fn((date?: any) => {
-      if (date) {
-        return originalDayjs(date);
-      }
-      return originalDayjs('2023-01-01T00:00:00.000Z');
-    }),
+    default: mockDayjs,
   };
 });
 
@@ -234,38 +259,17 @@ global.testUtils = {
   },
 };
 
-// Extend Jest matchers
-declare global {
-  namespace jest {
-    interface Matchers<R> {
-      toBeInTheDocument(): R;
-      toHaveClass(className: string): R;
-      toHaveStyle(style: Record<string, any>): R;
-      toBeVisible(): R;
-      toBeDisabled(): R;
-      toHaveValue(value: string | number): R;
-    }
-  }
-  
-  var testUtils: {
-    createMockResponse: (data: any, status?: number) => any;
-    createMockUser: (overrides?: any) => any;
-    createMockTrainingJob: (overrides?: any) => any;
-    createMockModel: (overrides?: any) => any;
-    waitForAsync: () => Promise<void>;
-    simulateUserInput: (element: HTMLElement, value: string) => Promise<void>;
-  };
-}
+// Global test utilities and Jest matchers are declared above
 
 // Setup cleanup after each test
 afterEach(() => {
   // Clear all mocks
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   
   // Clear localStorage and sessionStorage
   localStorageMock.clear();
   sessionStorageMock.clear();
   
   // Reset fetch mock
-  (global.fetch as jest.Mock).mockClear();
+  (global.fetch as any).mockClear();
 });

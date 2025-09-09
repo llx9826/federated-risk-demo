@@ -4,13 +4,11 @@ import {
   Form,
   Input,
   Button,
-  Select,
   Upload,
   Table,
   Tag,
   Space,
   Progress,
-  Alert,
   Modal,
   Descriptions,
   Typography,
@@ -18,7 +16,6 @@ import {
   Col,
   Statistic,
   message,
-  Divider,
 } from 'antd'
 import {
   UploadOutlined,
@@ -27,18 +24,14 @@ import {
   DownloadOutlined,
   DeleteOutlined,
   ShareAltOutlined,
-  FileTextOutlined,
   ClockCircleOutlined,
   CheckCircleOutlined,
   ExclamationCircleOutlined,
 } from '@ant-design/icons'
 import { useAppStore } from '@store/app'
-import { ApiService } from '@services/api'
 import dayjs from 'dayjs'
 
 const { Title, Text } = Typography
-const { Option } = Select
-const { TextArea } = Input
 
 interface PSIJob {
   id: string
@@ -430,6 +423,7 @@ const PSIPage: React.FC = () => {
                   accept=".csv,.txt"
                   beforeUpload={() => false}
                   maxCount={1}
+                  fileList={[]}
                 >
                   <Button icon={<UploadOutlined />}>选择文件</Button>
                 </Upload>
@@ -445,6 +439,7 @@ const PSIPage: React.FC = () => {
                   accept=".csv,.txt"
                   beforeUpload={() => false}
                   maxCount={1}
+                  fileList={[]}
                 >
                   <Button icon={<UploadOutlined />}>选择文件</Button>
                 </Upload>

@@ -1,75 +1,92 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import * as React from 'react';
+import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 import App from '../App';
 import { ConfigProvider } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 
 // Mock the components to avoid complex dependencies
-jest.mock('../components/Layout/AppLayout', () => {
-  return function MockAppLayout({ children }: { children: React.ReactNode }) {
-    return (
-      <div data-testid="app-layout">
-        <div data-testid="sidebar">侧边栏</div>
-        <div data-testid="content">{children}</div>
-      </div>
-    );
+vi.mock('../components/Layout/AppLayout', () => {
+  return {
+    default: function MockAppLayout({ children }: { children: React.ReactNode }) {
+      return (
+        <div data-testid="app-layout">
+          <div data-testid="sidebar">侧边栏</div>
+          <div data-testid="content">{children}</div>
+        </div>
+      );
+    }
   };
 });
 
-jest.mock('../pages/Dashboard', () => {
-  return function MockDashboard() {
-    return <div data-testid="dashboard-page">仪表板页面</div>;
+vi.mock('../pages/Dashboard', () => {
+  return {
+    default: function MockDashboard() {
+      return <div data-testid="dashboard-page">仪表板页面</div>;
+    }
   };
 });
 
-jest.mock('../pages/PSI', () => {
-  return function MockPSI() {
-    return <div data-testid="psi-page">PSI页面</div>;
+vi.mock('../pages/PSI', () => {
+  return {
+    default: function MockPSI() {
+      return <div data-testid="psi-page">PSI页面</div>;
+    }
   };
 });
 
-jest.mock('../pages/Consent', () => {
-  return function MockConsent() {
-    return <div data-testid="consent-page">同意管理页面</div>;
+vi.mock('../pages/Consent', () => {
+  return {
+    default: function MockConsent() {
+      return <div data-testid="consent-page">同意页面</div>;
+    }
   };
 });
 
-jest.mock('../pages/Training', () => {
-  return function MockTraining() {
-    return <div data-testid="training-page">训练服务页面</div>;
+vi.mock('../pages/Training', () => {
+  return {
+    default: function MockTraining() {
+      return <div data-testid="training-page">训练页面</div>;
+    }
   };
 });
 
-jest.mock('../pages/Inference', () => {
-  return function MockInference() {
-    return <div data-testid="inference-page">推理服务页面</div>;
+vi.mock('../pages/Inference', () => {
+  return {
+    default: function MockInference() {
+      return <div data-testid="inference-page">推理页面</div>;
+    }
   };
 });
 
-jest.mock('../pages/Audit', () => {
-  return function MockAudit() {
-    return <div data-testid="audit-page">审计日志页面</div>;
+vi.mock('../pages/Audit', () => {
+  return {
+    default: function MockAudit() {
+      return <div data-testid="audit-page">审计页面</div>;
+    }
   };
 });
 
-jest.mock('../pages/Settings', () => {
-  return function MockSettings() {
-    return <div data-testid="settings-page">系统设置页面</div>;
+vi.mock('../pages/Settings', () => {
+  return {
+    default: function MockSettings() {
+      return <div data-testid="settings-page">设置页面</div>;
+    }
   };
 });
 
 // Mock antd message
-jest.mock('antd', () => {
-  const antd = jest.requireActual('antd');
+vi.mock('antd', async () => {
+  const antd = await vi.importActual('antd') as any;
   return {
     ...antd,
     message: {
-      success: jest.fn(),
-      error: jest.fn(),
-      warning: jest.fn(),
-      info: jest.fn(),
+      success: vi.fn(),
+      error: vi.fn(),
+      warning: vi.fn(),
+      info: vi.fn(),
     },
   };
 });

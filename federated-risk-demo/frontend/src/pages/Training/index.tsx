@@ -15,11 +15,9 @@ import {
   Col,
   Statistic,
   Progress,
-  Alert,
   Tabs,
   Steps,
   InputNumber,
-  Switch,
   Slider,
   Upload,
 } from 'antd'
@@ -32,14 +30,12 @@ import {
   DownloadOutlined,
   DeleteOutlined,
   UploadOutlined,
-  SettingOutlined,
-  LineChartOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
   ExclamationCircleOutlined,
   PlusOutlined,
 } from '@ant-design/icons'
-import { Line, Column } from '@ant-design/plots'
+import { Line } from '@ant-design/plots'
 import { useAppStore } from '@store/app'
 import dayjs from 'dayjs'
 
@@ -396,10 +392,10 @@ const TrainingPage: React.FC = () => {
       render: (participants: string[]) => (
         <div>
           {participants.slice(0, 2).map(p => (
-            <Tag key={p} size="small" style={{ marginBottom: 2 }}>{p}</Tag>
+            <Tag key={p} style={{ marginBottom: 2 }}>{p}</Tag>
           ))}
           {participants.length > 2 && (
-            <Tag size="small">+{participants.length - 2}</Tag>
+            <Tag>+{participants.length - 2}</Tag>
           )}
         </div>
       ),
@@ -618,7 +614,7 @@ const TrainingPage: React.FC = () => {
               min={1000}
               max={10000000}
               formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-              parser={value => value!.replace(/\$\s?|(,*)/g, '')}
+              parser={value => parseInt(value!.replace(/\$\s?|(,*)/g, '')) as 1000 | 10000000}
             />
           </Form.Item>
           
@@ -627,6 +623,7 @@ const TrainingPage: React.FC = () => {
               accept=".csv,.json,.parquet"
               beforeUpload={() => false}
               multiple
+              fileList={[]}
             >
               <Button icon={<UploadOutlined />}>选择数据文件</Button>
             </Upload>
@@ -1010,7 +1007,7 @@ const TrainingPage: React.FC = () => {
                           min: Math.min(...selectedJob.metrics.map(m => m.accuracy)) * 0.95,
                         }}
                         tooltip={{
-                          formatter: (datum) => {
+                          formatter: (datum: any) => {
                             return { name: '准确率', value: `${(datum.accuracy * 100).toFixed(2)}%` }
                           },
                         }}
@@ -1027,7 +1024,7 @@ const TrainingPage: React.FC = () => {
                         color="#ff4d4f"
                         height={200}
                         tooltip={{
-                          formatter: (datum) => {
+                          formatter: (datum: any) => {
                             return { name: '损失', value: datum.loss.toFixed(4) }
                           },
                         }}

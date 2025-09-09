@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Card, Table, Button, Space, Tag, Modal, Form, Input, Select, App } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
 
@@ -13,8 +13,8 @@ interface ConsentRecord {
 }
 
 const ConsentPage: React.FC = () => {
-  const [consents, setConsents] = useState<ConsentRecord[]>([])
-  const [loading, setLoading] = useState(false)
+  const [consents] = useState<ConsentRecord[]>([])
+  const [loading] = useState(false)
   const [modalVisible, setModalVisible] = useState(false)
   const [form] = Form.useForm()
 
@@ -56,7 +56,7 @@ const ConsentPage: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      render: (_: any, record: ConsentRecord) => (
+      render: (_: any) => (
         <Space size="middle">
           <Button type="link" icon={<EditOutlined />} size="small">
             编辑
@@ -73,7 +73,7 @@ const ConsentPage: React.FC = () => {
     setModalVisible(true)
   }
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async () => {
     const { message } = App.useApp()
     try {
       // 这里应该调用API

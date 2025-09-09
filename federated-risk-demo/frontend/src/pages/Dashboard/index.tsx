@@ -9,26 +9,22 @@ import {
   Tag,
   Space,
   Button,
-  Alert,
   Spin,
   Typography,
-  Divider,
+  Alert,
 } from 'antd'
 import {
   ShareAltOutlined,
   SafetyCertificateOutlined,
   ExperimentOutlined,
   CloudServerOutlined,
-  TrophyOutlined,
   UserOutlined,
   FileTextOutlined,
   ReloadOutlined,
   ArrowUpOutlined,
-  ArrowDownOutlined,
 } from '@ant-design/icons'
-import { Line, Column, Pie } from '@ant-design/plots'
+import { Line } from '@ant-design/plots'
 import { useAppStore } from '@store/app'
-import { ApiService } from '@services/api'
 import dayjs from 'dayjs'
 
 const { Title, Text } = Typography
@@ -379,7 +375,7 @@ const Dashboard: React.FC = () => {
                 shape: 'circle',
               }}
               tooltip={{
-                formatter: (datum) => {
+                formatter: (datum: any) => {
                   return { name: '吞吐量', value: `${datum.value} 次/小时` }
                 },
               }}
@@ -416,7 +412,7 @@ const Dashboard: React.FC = () => {
                 max: 1.0,
               }}
               tooltip={{
-                formatter: (datum) => {
+                formatter: (datum: any) => {
                   return { name: '准确率', value: `${(datum.accuracy * 100).toFixed(2)}%` }
                 },
               }}
@@ -433,7 +429,7 @@ const Dashboard: React.FC = () => {
               color="#ff4d4f"
               height={250}
               tooltip={{
-                formatter: (datum) => {
+                formatter: (datum: any) => {
                   return { name: '损失', value: datum.loss.toFixed(4) }
                 },
               }}

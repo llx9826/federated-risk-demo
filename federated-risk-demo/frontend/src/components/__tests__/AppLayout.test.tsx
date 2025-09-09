@@ -1,50 +1,55 @@
-import React from 'react';
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 import AppLayout from '../Layout/AppLayout';
 import { ConfigProvider } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 
 // Mock antd components that might cause issues in tests
-jest.mock('antd', () => {
-  const antd = jest.requireActual('antd');
+vi.mock('antd', async () => {
+  const antd = await vi.importActual('antd') as any;
   return {
     ...antd,
     message: {
-      success: jest.fn(),
-      error: jest.fn(),
-      warning: jest.fn(),
-      info: jest.fn(),
+      success: vi.fn(),
+      error: vi.fn(),
+      warning: vi.fn(),
+      info: vi.fn(),
     },
     notification: {
-      success: jest.fn(),
-      error: jest.fn(),
-      warning: jest.fn(),
-      info: jest.fn(),
+      success: vi.fn(),
+      error: vi.fn(),
+      warning: vi.fn(),
+      info: vi.fn(),
     },
   };
 });
 
 // Mock the system status and notification components
-jest.mock('../SystemStatus', () => {
-  return function MockSystemStatus() {
-    return <div data-testid="system-status">系统状态组件</div>;
+vi.mock('../SystemStatus', () => {
+  return {
+    default: function MockSystemStatus() {
+      return <div data-testid="system-status">系统状态组件</div>;
+    }
   };
 });
 
-jest.mock('../NotificationPanel', () => {
-  return function MockNotificationPanel() {
-    return <div data-testid="notification-panel">通知面板组件</div>;
+vi.mock('../NotificationPanel', () => {
+  return {
+    default: function MockNotificationPanel() {
+      return <div data-testid="notification-panel">通知面板组件</div>;
+    }
   };
 });
 
 // Mock react-router-dom hooks
-const mockNavigate = jest.fn();
+const mockNavigate = vi.fn();
 const mockLocation = { pathname: '/dashboard' };
 
-jest.mock('react-router-dom', () => {
-  const actual = jest.requireActual('react-router-dom');
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom') as any;
   return {
     ...actual,
     useNavigate: () => mockNavigate,
@@ -66,7 +71,7 @@ const renderAppLayout = (children?: React.ReactNode) => {
 
 describe('AppLayout Component', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test('renders without crashing', () => {
@@ -249,7 +254,7 @@ describe('AppLayout Component', () => {
 
   test('handles error states gracefully', () => {
     // Test error boundary behavior
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     
     try {
       renderAppLayout();

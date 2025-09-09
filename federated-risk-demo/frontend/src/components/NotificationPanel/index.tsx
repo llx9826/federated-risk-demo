@@ -7,7 +7,6 @@ import {
   Space,
   Typography,
   Empty,
-  Divider,
   Tag,
   Tooltip,
 } from 'antd'
@@ -28,7 +27,7 @@ import 'dayjs/locale/zh-cn'
 dayjs.extend(relativeTime)
 dayjs.locale('zh-cn')
 
-const { Text, Title } = Typography
+const { Text } = Typography
 
 interface NotificationPanelProps {
   children: React.ReactNode
@@ -39,7 +38,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ children }) => {
   
   const notifications = useAppStore(selectNotifications)
   const unreadNotifications = useAppStore(selectUnreadNotifications)
-  const { markNotificationAsRead, markAllNotificationsAsRead, removeNotification, clearAllNotifications } = useAppStore()
+  const { markNotificationRead, clearNotifications } = useAppStore()
 
   // 通知类型配置
   const getNotificationConfig = (type: string) => {
@@ -74,19 +73,19 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ children }) => {
 
   // 处理通知点击
   const handleNotificationClick = (id: string) => {
-    markNotificationAsRead(id)
+    markNotificationRead(id)
   }
 
   // 删除通知
-  const handleDeleteNotification = (id: string, e: React.MouseEvent) => {
+  const handleDeleteNotification = (_id: string, e: React.MouseEvent) => {
     e.stopPropagation()
-    removeNotification(id)
+    clearNotifications()
   }
 
   // 标记为已读
   const handleMarkAsRead = (id: string, e: React.MouseEvent) => {
     e.stopPropagation()
-    markNotificationAsRead(id)
+    markNotificationRead(id)
   }
 
   return (
@@ -113,7 +112,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ children }) => {
               <Button
                 type="text"
                 size="small"
-                onClick={markAllNotificationsAsRead}
+                onClick={() => clearNotifications()}
               >
                 全部已读
               </Button>
@@ -123,7 +122,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ children }) => {
                 type="text"
                 size="small"
                 danger
-                onClick={clearAllNotifications}
+                onClick={() => clearNotifications()}
               >
                 清空全部
               </Button>
@@ -176,9 +175,9 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ children }) => {
                           <Text type="secondary" style={{ fontSize: 11 }}>
                             {dayjs(notification.timestamp).fromNow()}
                           </Text>
-                          {notification.category && (
-                            <Tag size="small" color={config.color}>
-                              {notification.category}
+                          {notification.type && (
+                            <Tag color={config.color}>
+                              {notification.type}
                             </Tag>
                           )}
                         </Space>
