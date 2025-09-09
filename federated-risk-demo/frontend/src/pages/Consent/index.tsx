@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Card, Table, Button, Space, Tag, Modal, Form, Input, Select, message } from 'antd'
+import { Card, Table, Button, Space, Tag, Modal, Form, Input, Select, App } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
 
 interface ConsentRecord {
@@ -74,6 +74,7 @@ const ConsentPage: React.FC = () => {
   }
 
   const handleSubmit = async (values: any) => {
+    const { message } = App.useApp()
     try {
       // 这里应该调用API
       message.success('同意记录创建成功')

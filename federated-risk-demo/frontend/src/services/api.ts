@@ -1,5 +1,4 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
-import { message } from 'antd'
 import { useAppStore } from '@store/app'
 
 // API基础配置
@@ -71,37 +70,8 @@ const createApiInstance = (baseURL: string): AxiosInstance => {
         requestId: config?.headers['X-Request-ID'],
       })
       
-      // 根据错误状态码显示不同消息
-      if (response) {
-        switch (response.status) {
-          case 400:
-            message.error('请求参数错误')
-            break
-          case 401:
-            message.error('未授权访问')
-            break
-          case 403:
-            message.error('访问被拒绝')
-            break
-          case 404:
-            message.error('请求的资源不存在')
-            break
-          case 500:
-            message.error('服务器内部错误')
-            break
-          case 502:
-          case 503:
-          case 504:
-            message.error('服务暂时不可用')
-            break
-          default:
-            message.error(`请求失败: ${response.status}`)
-        }
-      } else if (error.code === 'ECONNABORTED') {
-        message.error('请求超时，请稍后重试')
-      } else {
-        message.error('网络错误，请检查网络连接')
-      }
+      // 错误信息将由调用方处理，这里只记录日志
+      // 避免在axios拦截器中直接使用antd的静态message方法
       
       return Promise.reject(error)
     }
