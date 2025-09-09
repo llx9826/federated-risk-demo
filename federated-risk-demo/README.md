@@ -131,9 +131,21 @@ npm install
 # 启动开发服务器
 npm run dev
 
+# 运行测试
+npm test
+
 # 构建生产版本
 npm run build
 ```
+
+#### 技术栈
+
+- **框架**: React 18 + TypeScript
+- **构建工具**: Vite
+- **测试框架**: Vitest + React Testing Library
+- **UI组件**: Ant Design
+- **状态管理**: Zustand
+- **路由**: React Router
 
 ### 数据准备
 
@@ -254,6 +266,12 @@ pytest tests/ -v
 cd frontend
 npm test
 ```
+
+### 测试框架
+
+- **后端**: pytest + FastAPI TestClient
+- **前端**: Vitest + React Testing Library
+- **E2E**: Playwright (可选)
 
 ### 集成测试
 
