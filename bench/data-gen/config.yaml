@@ -1,0 +1,189 @@
+# 数据生成配置文件
+
+# 随机种子，确保结果可重现
+random_seed: 42
+
+# 输出配置
+output:
+  directory: "../results/generated_data"
+  format: "csv"  # csv, parquet, json
+
+# 用户特征配置
+user_features:
+  # 年龄分布
+  age:
+    min: 18
+    max: 80
+    distribution: "normal"
+    mean: 35
+    std: 12
+  
+  # 收入分布（对数正态分布）
+  income:
+    log_mean: 10
+    log_std: 1
+    min: 20000
+    max: 1000000
+  
+  # 信用评分
+  credit_score:
+    min: 300
+    max: 850
+    distribution: "normal"
+    mean: 650
+    std: 100
+  
+  # 城市等级分布
+  city_tier:
+    weights: [0.3, 0.35, 0.25, 0.1]  # 一线、二线、三线、四线城市比例
+  
+  # 教育水平分布
+  education:
+    levels: ["高中", "本科", "硕士", "博士"]
+    weights: [0.3, 0.5, 0.15, 0.05]
+  
+  # 就业状态分布
+  employment_status:
+    statuses: ["employed", "unemployed", "student", "retired"]
+    weights: [0.7, 0.1, 0.15, 0.05]
+
+# 交易记录配置
+transactions:
+  # 每用户交易数量范围
+  per_user:
+    min: 10
+    max: 100
+    distribution: "exponential"
+    lambda: 0.02
+  
+  # 交易金额分布
+  amount:
+    distribution: "lognormal"
+    log_mean: 5
+    log_std: 1.5
+    min: 1
+    max: 100000
+  
+  # 交易类型分布
+  transaction_types:
+    types: ["transfer", "payment", "withdrawal", "deposit"]
+    weights: [0.4, 0.35, 0.15, 0.1]
+  
+  # 商户类别分布
+  merchant_categories:
+    categories: ["grocery", "restaurant", "gas_station", "retail", "online", 
+                "entertainment", "healthcare", "education", "travel", "other"]
+    weights: [0.2, 0.15, 0.1, 0.15, 0.2, 0.05, 0.05, 0.03, 0.04, 0.03]
+  
+  # 渠道分布
+  channels:
+    types: ["mobile", "web", "atm", "branch"]
+    weights: [0.6, 0.25, 0.1, 0.05]
+  
+  # 时间分布
+  time_patterns:
+    # 小时分布（0-23）
+    hourly_weights: [0.01, 0.01, 0.01, 0.01, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06,
+                    0.07, 0.08, 0.08, 0.07, 0.06, 0.05, 0.04, 0.04, 0.05, 0.06,
+                    0.07, 0.06, 0.04, 0.02]
+    
+    # 周末交易比例
+    weekend_ratio: 0.3
+
+# 风险标签配置
+risk_labels:
+  # 基础欺诈率
+  base_fraud_rate: 0.02
+  
+  # 风险因子权重
+  risk_factors:
+    high_amount: 0.3      # 大额交易
+    unusual_time: 0.2     # 异常时间
+    high_velocity: 0.25   # 高频交易
+    foreign_location: 0.15 # 境外交易
+    device_anomaly: 0.1   # 设备异常
+  
+  # 风险等级阈值
+  risk_thresholds:
+    low: 0.1
+    medium: 0.3
+    high: 0.6
+    critical: 0.8
+
+# PSI测试数据配置
+psi_test:
+  # 参与方配置
+  parties:
+    - name: "bank_a"
+      id_prefix: "ba_"
+      overlap_ratio: 0.4  # 与其他方的重叠比例
+    
+    - name: "bank_b"
+      id_prefix: "bb_"
+      overlap_ratio: 0.4
+  
+  # 特征配置
+  features:
+    - name: "feature_1"
+      type: "continuous"
+      distribution: "normal"
+      mean: 50
+      std: 15
+    
+    - name: "feature_2"
+      type: "discrete"
+      distribution: "uniform"
+      min: 1
+      max: 1000
+    
+    - name: "feature_3"
+      type: "categorical"
+      categories: ["A", "B", "C", "D"]
+      weights: [0.4, 0.3, 0.2, 0.1]
+
+# 模型训练数据配置
+model_training:
+  # 特征选择
+  features:
+    user_features: ["age", "income", "credit_score", "city_tier", "account_age_days",
+                   "total_assets", "debt_ratio", "num_dependents", "education",
+                   "employment_status", "marital_status", "home_ownership"]
+    
+    transaction_features: ["amount", "transaction_type", "merchant_category", "channel",
+                          "hour_of_day", "is_weekend", "days_since_last_transaction",
+                          "velocity_1h", "velocity_24h", "velocity_7d"]
+    
+    derived_features: ["amount_log", "income_log", "assets_log"]
+  
+  # 数据分割
+  train_test_split:
+    train_ratio: 0.7
+    validation_ratio: 0.15
+    test_ratio: 0.15
+    stratify: true  # 按标签分层采样
+  
+  # 特征工程
+  feature_engineering:
+    log_transform: ["amount", "income", "total_assets"]
+    categorical_encoding: "label"  # label, onehot, target
+    scaling: "standard"  # standard, minmax, robust
+    handle_missing: "fill_zero"  # fill_zero, fill_mean, drop
+
+# 性能配置
+performance:
+  # 批处理大小
+  batch_size: 10000
+  
+  # 并行处理
+  n_jobs: -1  # -1表示使用所有CPU核心
+  
+  # 内存优化
+  chunk_size: 50000
+  low_memory: true
+
+# 日志配置
+logging:
+  level: "INFO"
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}"
+  file: "data_generation.log"
+  rotation: "10 MB"

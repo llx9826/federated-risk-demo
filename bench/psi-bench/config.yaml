@@ -1,0 +1,253 @@
+# PSI性能基准测试配置文件
+
+# 服务配置
+service:
+  psi_service_url: "http://localhost:8003"
+  timeout: 300  # 超时时间（秒）
+  retry_attempts: 3
+  retry_delay: 1  # 重试延迟（秒）
+
+# 测试配置
+test:
+  # 数据规模配置
+  data_sizes:
+    small: [100, 500, 1000]
+    medium: [5000, 10000, 20000]
+    large: [50000, 100000, 200000]
+    xlarge: [500000, 1000000]
+  
+  # 算法配置
+  algorithms:
+    - "ecdh"          # ECDH-PSI
+    - "token_join"    # Token-join PSI
+    - "bloom_filter"  # Bloom Filter PSI
+  
+  # 重叠率配置
+  overlap_ratios:
+    - 0.1   # 10%重叠
+    - 0.3   # 30%重叠
+    - 0.5   # 50%重叠
+    - 0.7   # 70%重叠
+  
+  # 迭代次数
+  iterations: 3
+  
+  # 测试间隔（秒）
+  test_interval: 2
+  
+  # 预热轮数
+  warmup_rounds: 1
+
+# 数据生成配置
+data_generation:
+  # 数据类型
+  data_type: "string"  # string, integer, uuid
+  
+  # 字符串配置
+  string_config:
+    prefix: "id_"
+    length: 8
+    charset: "0123456789"
+  
+  # 整数配置
+  integer_config:
+    min_value: 1
+    max_value: 10000000
+  
+  # UUID配置
+  uuid_config:
+    version: 4
+  
+  # 随机种子
+  random_seed: 42
+
+# 性能监控配置
+monitoring:
+  # 资源监控
+  resource_monitoring:
+    enabled: true
+    sample_interval: 0.1  # 采样间隔（秒）
+    metrics:
+      - "cpu_percent"
+      - "memory_usage"
+      - "disk_io"
+      - "network_io"
+  
+  # 网络监控
+  network_monitoring:
+    enabled: true
+    capture_packets: false
+    bandwidth_limit: null  # MB/s，null表示无限制
+  
+  # 延迟监控
+  latency_monitoring:
+    enabled: true
+    percentiles: [50, 90, 95, 99]
+
+# 输出配置
+output:
+  # 结果目录
+  results_dir: "../results/psi"
+  
+  # 文件格式
+  formats:
+    - "json"
+    - "csv"
+    - "xlsx"
+  
+  # 报告配置
+  report:
+    generate_charts: true
+    chart_formats: ["png", "svg"]
+    include_raw_data: false
+    compress_results: true
+  
+  # 实时输出
+  realtime:
+    enabled: true
+    update_interval: 5  # 秒
+    show_progress: true
+
+# 基准测试场景
+scenarios:
+  # 快速测试
+  quick:
+    data_sizes: [1000, 5000]
+    algorithms: ["ecdh"]
+    overlap_ratios: [0.3]
+    iterations: 1
+  
+  # 标准测试
+  standard:
+    data_sizes: [1000, 5000, 10000, 50000]
+    algorithms: ["ecdh", "token_join"]
+    overlap_ratios: [0.1, 0.3, 0.5]
+    iterations: 3
+  
+  # 压力测试
+  stress:
+    data_sizes: [100000, 500000, 1000000]
+    algorithms: ["ecdh", "token_join"]
+    overlap_ratios: [0.3]
+    iterations: 5
+  
+  # 算法对比
+  algorithm_comparison:
+    data_sizes: [10000]
+    algorithms: ["ecdh", "token_join", "bloom_filter"]
+    overlap_ratios: [0.3]
+    iterations: 10
+  
+  # 规模测试
+  scalability:
+    data_sizes: [1000, 2000, 5000, 10000, 20000, 50000, 100000]
+    algorithms: ["ecdh"]
+    overlap_ratios: [0.3]
+    iterations: 3
+
+# 性能阈值配置
+thresholds:
+  # 延迟阈值（秒）
+  latency:
+    excellent: 1.0
+    good: 5.0
+    acceptable: 30.0
+    poor: 60.0
+  
+  # 吞吐量阈值（记录/秒）
+  throughput:
+    excellent: 10000
+    good: 5000
+    acceptable: 1000
+    poor: 500
+  
+  # 内存使用阈值（MB）
+  memory:
+    excellent: 100
+    good: 500
+    acceptable: 1000
+    poor: 2000
+  
+  # CPU使用阈值（%）
+  cpu:
+    excellent: 20
+    good: 50
+    acceptable: 80
+    poor: 95
+
+# 错误处理配置
+error_handling:
+  # 失败重试
+  retry_on_failure: true
+  max_retries: 3
+  retry_backoff: 2.0  # 指数退避因子
+  
+  # 错误分类
+  error_categories:
+    network: ["ConnectionError", "TimeoutError"]
+    service: ["ServiceUnavailable", "InternalServerError"]
+    data: ["ValidationError", "DataFormatError"]
+  
+  # 容错策略
+  fault_tolerance:
+    continue_on_error: true
+    max_consecutive_failures: 5
+    failure_threshold: 0.2  # 20%失败率阈值
+
+# 日志配置
+logging:
+  level: "INFO"
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} | {message}"
+  
+  # 文件日志
+  file:
+    enabled: true
+    path: "psi_benchmark.log"
+    rotation: "10 MB"
+    retention: "7 days"
+  
+  # 控制台日志
+  console:
+    enabled: true
+    colorize: true
+  
+  # 详细日志
+  verbose:
+    enabled: false
+    include_request_response: false
+    include_timing_details: true
+
+# 环境配置
+environment:
+  # 并发配置
+  concurrency:
+    max_concurrent_tests: 1
+    max_concurrent_uploads: 2
+  
+  # 资源限制
+  resource_limits:
+    max_memory_mb: 4096
+    max_cpu_percent: 80
+  
+  # 网络配置
+  network:
+    connection_pool_size: 10
+    request_timeout: 30
+    keep_alive: true
+
+# 验证配置
+validation:
+  # 结果验证
+  verify_results: true
+  accuracy_threshold: 0.99
+  
+  # 性能验证
+  performance_regression:
+    enabled: false
+    baseline_file: null
+    tolerance: 0.1  # 10%容忍度
+  
+  # 数据完整性
+  data_integrity:
+    check_data_consistency: true
+    verify_intersection_correctness: true

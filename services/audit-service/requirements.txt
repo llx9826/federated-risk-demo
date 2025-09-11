@@ -1,0 +1,61 @@
+# 审计服务依赖项
+
+# Web框架
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+
+# 数据验证
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# 异步HTTP客户端
+httpx==0.25.2
+aiohttp==3.9.1
+
+# 数据库
+asyncpg==0.29.0
+psycopg2-binary==2.9.9
+sqlalchemy[asyncio]==2.0.23
+alembic==1.13.1
+
+# 缓存
+redis[hiredis]==5.0.1
+
+# 密码学
+cryptography==41.0.8
+
+# 数据处理
+pandas==2.1.4
+numpy==1.25.2
+
+# 报告生成
+reportlab==4.0.7
+jinja2==3.1.2
+openpyxl==3.1.2
+
+# 监控和指标
+prometheus-client==0.19.0
+
+# 日志
+loguru==0.7.2
+
+# 配置管理
+python-dotenv==1.0.0
+
+# 工具库
+python-multipart==0.0.6
+click==8.1.7
+rich==13.7.0
+
+# 开发工具
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+black==23.11.0
+isort==5.12.0
+flake8==6.1.0
+mypy==1.7.1
+
+# 类型注解
+types-redis==4.6.0.11
+types-requests==2.31.0.10

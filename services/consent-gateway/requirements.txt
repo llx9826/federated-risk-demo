@@ -1,0 +1,35 @@
+# 同意网关服务依赖
+
+# Web框架
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+
+# 数据验证
+pydantic==2.5.0
+
+# JWT处理
+PyJWT==2.8.0
+cryptography==41.0.7
+
+# 数据库
+asyncpg==0.29.0
+redis==5.0.1
+
+# HTTP客户端
+httpx==0.25.2
+
+# 日志和监控
+structlog==23.2.0
+prometheus-client==0.19.0
+
+# 工具库
+python-multipart==0.0.6
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# 开发工具
+pytest==7.4.3
+pytest-asyncio==0.21.1
+black==23.11.0
+flake8==6.1.0
+mypy==1.7.1

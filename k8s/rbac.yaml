@@ -1,0 +1,549 @@
+# 联邦风控系统 - RBAC权限配置
+# 提供细粒度的权限控制和安全访问管理
+
+---
+# 联邦编排器服务账户
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: federated-orchestrator
+  namespace: federated-risk
+  labels:
+    app: federated-orchestrator
+
+---
+# 联邦编排器集群角色
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: federated-orchestrator
+rules:
+  # Pod管理权限
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  
+  # Service管理权限
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  
+  # ConfigMap和Secret管理权限
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  
+  # Deployment管理权限
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  
+  # Job和CronJob管理权限
+  - apiGroups: ["batch"]
+    resources: ["jobs", "cronjobs"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  
+  # PVC管理权限
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  
+  # 事件查看权限
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["get", "list", "watch"]
+  
+  # 节点信息查看权限
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list", "watch"]
+
+---
+# 联邦编排器集群角色绑定
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: federated-orchestrator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: federated-orchestrator
+subjects:
+  - kind: ServiceAccount
+    name: federated-orchestrator
+    namespace: federated-risk
+
+---
+# 模型部署服务账户
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: model-deployment
+  namespace: federated-risk
+  labels:
+    app: model-deployment
+
+---
+# 模型部署角色
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: federated-risk
+  name: model-deployment
+rules:
+  # Pod管理权限
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  
+  # Service管理权限
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  
+  # ConfigMap管理权限
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  
+  # Deployment管理权限
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  
+  # HPA管理权限
+  - apiGroups: ["autoscaling"]
+    resources: ["horizontalpodautoscalers"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  
+  # Ingress管理权限
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+---
+# 模型部署角色绑定
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: model-deployment
+  namespace: federated-risk
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: model-deployment
+subjects:
+  - kind: ServiceAccount
+    name: model-deployment
+    namespace: federated-risk
+
+---
+# 审计服务账户
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: audit-service
+  namespace: federated-risk
+  labels:
+    app: audit-service
+
+---
+# 审计服务角色
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: federated-risk
+  name: audit-service
+rules:
+  # 事件查看权限
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["get", "list", "watch"]
+  
+  # Pod日志查看权限
+  - apiGroups: [""]
+    resources: ["pods", "pods/log"]
+    verbs: ["get", "list", "watch"]
+  
+  # ConfigMap读取权限
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch"]
+  
+  # Service查看权限
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "list", "watch"]
+  
+  # Deployment查看权限
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets"]
+    verbs: ["get", "list", "watch"]
+
+---
+# 审计服务角色绑定
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: audit-service
+  namespace: federated-risk
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: audit-service
+subjects:
+  - kind: ServiceAccount
+    name: audit-service
+    namespace: federated-risk
+
+---
+# 监控服务账户（已在monitoring.yaml中定义，这里仅作引用）
+# Prometheus ServiceAccount已在monitoring.yaml中定义
+
+---
+# 应用服务默认账户
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: app-service
+  namespace: federated-risk
+  labels:
+    tier: backend
+
+---
+# 应用服务角色
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: federated-risk
+  name: app-service
+rules:
+  # ConfigMap读取权限
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch"]
+  
+  # Secret读取权限
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch"]
+  
+  # Service查看权限
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "list", "watch"]
+  
+  # Pod自身信息查看权限
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+    resourceNames: []
+  
+  # 事件创建权限（用于应用日志）
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create"]
+
+---
+# 应用服务角色绑定
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: app-service
+  namespace: federated-risk
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: app-service
+subjects:
+  - kind: ServiceAccount
+    name: app-service
+    namespace: federated-risk
+
+---
+# 数据库服务账户
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: database-service
+  namespace: federated-risk
+  labels:
+    tier: database
+
+---
+# 数据库服务角色
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: federated-risk
+  name: database-service
+rules:
+  # Secret读取权限（数据库密码）
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch"]
+  
+  # ConfigMap读取权限（数据库配置）
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch"]
+  
+  # PVC管理权限
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "watch"]
+  
+  # 事件创建权限
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create"]
+
+---
+# 数据库服务角色绑定
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: database-service
+  namespace: federated-risk
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: database-service
+subjects:
+  - kind: ServiceAccount
+    name: database-service
+    namespace: federated-risk
+
+---
+# 开发者角色（用于开发和调试）
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: federated-risk
+  name: developer
+rules:
+  # Pod管理权限
+  - apiGroups: [""]
+    resources: ["pods", "pods/log", "pods/exec"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  
+  # Service管理权限
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  
+  # ConfigMap和Secret管理权限
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  
+  # Secret读取权限（不允许创建和修改）
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch"]
+  
+  # Deployment管理权限
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  
+  # Job管理权限
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  
+  # HPA查看权限
+  - apiGroups: ["autoscaling"]
+    resources: ["horizontalpodautoscalers"]
+    verbs: ["get", "list", "watch"]
+  
+  # Ingress查看权限
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses"]
+    verbs: ["get", "list", "watch"]
+  
+  # 事件查看权限
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["get", "list", "watch"]
+  
+  # PVC查看权限
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "watch"]
+
+---
+# 运维角色（用于生产环境运维）
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: federated-risk
+  name: operator
+rules:
+  # 所有资源的完全管理权限
+  - apiGroups: [""]
+    resources: ["*"]
+    verbs: ["*"]
+  
+  - apiGroups: ["apps"]
+    resources: ["*"]
+    verbs: ["*"]
+  
+  - apiGroups: ["batch"]
+    resources: ["*"]
+    verbs: ["*"]
+  
+  - apiGroups: ["autoscaling"]
+    resources: ["*"]
+    verbs: ["*"]
+  
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["*"]
+    verbs: ["*"]
+  
+  - apiGroups: ["policy"]
+    resources: ["*"]
+    verbs: ["*"]
+
+---
+# 只读角色（用于监控和审计）
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: federated-risk
+  name: readonly
+rules:
+  # 所有资源的只读权限
+  - apiGroups: [""]
+    resources: ["*"]
+    verbs: ["get", "list", "watch"]
+  
+  - apiGroups: ["apps"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch"]
+  
+  - apiGroups: ["batch"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch"]
+  
+  - apiGroups: ["autoscaling"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch"]
+  
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch"]
+  
+  - apiGroups: ["policy"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch"]
+
+---
+# Pod安全策略（如果集群支持）
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: federated-risk-psp
+spec:
+  privileged: false
+  allowPrivilegeEscalation: false
+  requiredDropCapabilities:
+    - ALL
+  volumes:
+    - 'configMap'
+    - 'emptyDir'
+    - 'projected'
+    - 'secret'
+    - 'downwardAPI'
+    - 'persistentVolumeClaim'
+  hostNetwork: false
+  hostIPC: false
+  hostPID: false
+  runAsUser:
+    rule: 'MustRunAsNonRoot'
+  supplementalGroups:
+    rule: 'MustRunAs'
+    ranges:
+      - min: 1
+        max: 65535
+  fsGroup:
+    rule: 'MustRunAs'
+    ranges:
+      - min: 1
+        max: 65535
+  readOnlyRootFilesystem: false
+  seLinux:
+    rule: RunAsAny
+
+---
+# Pod安全策略角色
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: federated-risk
+  name: psp-user
+rules:
+  - apiGroups: ['policy']
+    resources: ['podsecuritypolicies']
+    verbs: ['use']
+    resourceNames:
+      - federated-risk-psp
+
+---
+# 为所有服务账户绑定Pod安全策略
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: psp-all-serviceaccounts
+  namespace: federated-risk
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: psp-user
+subjects:
+  - kind: ServiceAccount
+    name: federated-orchestrator
+    namespace: federated-risk
+  - kind: ServiceAccount
+    name: model-deployment
+    namespace: federated-risk
+  - kind: ServiceAccount
+    name: audit-service
+    namespace: federated-risk
+  - kind: ServiceAccount
+    name: app-service
+    namespace: federated-risk
+  - kind: ServiceAccount
+    name: database-service
+    namespace: federated-risk
+  - kind: ServiceAccount
+    name: prometheus
+    namespace: federated-risk
+
+---
+# 网络策略管理角色
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: federated-risk
+  name: network-policy-manager
+rules:
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["networkpolicies"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+---
+# 为联邦编排器绑定网络策略管理权限
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: network-policy-manager
+  namespace: federated-risk
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: network-policy-manager
+subjects:
+  - kind: ServiceAccount
+    name: federated-orchestrator
+    namespace: federated-risk

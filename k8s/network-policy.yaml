@@ -1,0 +1,885 @@
+# 联邦风控系统 - 网络策略配置
+# 提供微服务间的网络安全隔离和访问控制
+
+---
+# 默认拒绝所有入站流量
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: federated-risk
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+
+---
+# 默认拒绝所有出站流量
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-egress
+  namespace: federated-risk
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+
+---
+# API网关网络策略
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: api-gateway-policy
+  namespace: federated-risk
+spec:
+  podSelector:
+    matchLabels:
+      app: api-gateway
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # 允许来自Ingress Controller的流量
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 8000
+    # 允许来自监控系统的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              app: prometheus
+      ports:
+        - protocol: TCP
+          port: 8000
+  egress:
+    # 允许访问后端服务
+    - to:
+        - podSelector:
+            matchLabels:
+              tier: backend
+      ports:
+        - protocol: TCP
+          port: 8000
+    # 允许DNS解析
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+        - podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # 允许访问外部API
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 80
+
+---
+# 同意服务网络策略
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: consent-service-policy
+  namespace: federated-risk
+spec:
+  podSelector:
+    matchLabels:
+      app: consent-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # 允许来自API网关的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              app: api-gateway
+      ports:
+        - protocol: TCP
+          port: 8000
+    # 允许来自同意网关的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              app: consent-gateway
+      ports:
+        - protocol: TCP
+          port: 8000
+    # 允许来自监控系统的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              app: prometheus
+      ports:
+        - protocol: TCP
+          port: 8000
+  egress:
+    # 允许访问数据库
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres
+      ports:
+        - protocol: TCP
+          port: 5432
+    # 允许访问Redis
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # 允许DNS解析
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+        - podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+---
+# PSI服务网络策略
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: psi-service-policy
+  namespace: federated-risk
+spec:
+  podSelector:
+    matchLabels:
+      app: psi-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # 允许来自API网关的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              app: api-gateway
+      ports:
+        - protocol: TCP
+          port: 8000
+    # 允许来自联邦编排器的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              app: federated-orchestrator
+      ports:
+        - protocol: TCP
+          port: 8000
+    # 允许来自监控系统的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              app: prometheus
+      ports:
+        - protocol: TCP
+          port: 8000
+  egress:
+    # 允许访问数据库
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres
+      ports:
+        - protocol: TCP
+          port: 5432
+    # 允许访问Redis
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # 允许访问特征存储
+    - to:
+        - podSelector:
+            matchLabels:
+              app: feature-store
+      ports:
+        - protocol: TCP
+          port: 8000
+    # 允许DNS解析
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+        - podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # 允许访问外部PSI节点
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 8443
+
+---
+# 训练服务网络策略
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: train-service-policy
+  namespace: federated-risk
+spec:
+  podSelector:
+    matchLabels:
+      app: train-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # 允许来自API网关的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              app: api-gateway
+      ports:
+        - protocol: TCP
+          port: 8000
+    # 允许来自联邦编排器的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              app: federated-orchestrator
+      ports:
+        - protocol: TCP
+          port: 8000
+    # 允许来自模型训练器的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              app: model-trainer
+      ports:
+        - protocol: TCP
+          port: 8000
+    # 允许来自监控系统的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              app: prometheus
+      ports:
+        - protocol: TCP
+          port: 8000
+  egress:
+    # 允许访问数据库
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres
+      ports:
+        - protocol: TCP
+          port: 5432
+    # 允许访问Redis
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # 允许访问特征存储
+    - to:
+        - podSelector:
+            matchLabels:
+              app: feature-store
+      ports:
+        - protocol: TCP
+          port: 8000
+    # 允许DNS解析
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+        - podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # 允许访问外部联邦学习节点
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 8443
+        - protocol: TCP
+          port: 9999  # Flower server port
+
+---
+# 推理服务网络策略
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: serving-service-policy
+  namespace: federated-risk
+spec:
+  podSelector:
+    matchLabels:
+      app: serving-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # 允许来自API网关的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              app: api-gateway
+      ports:
+        - protocol: TCP
+          port: 8000
+    # 允许来自模型服务的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              app: model-serving
+      ports:
+        - protocol: TCP
+          port: 8000
+    # 允许来自监控系统的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              app: prometheus
+      ports:
+        - protocol: TCP
+          port: 8000
+  egress:
+    # 允许访问数据库
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres
+      ports:
+        - protocol: TCP
+          port: 5432
+    # 允许访问Redis
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # 允许访问特征存储
+    - to:
+        - podSelector:
+            matchLabels:
+              app: feature-store
+      ports:
+        - protocol: TCP
+          port: 8000
+    # 允许访问模型解释器
+    - to:
+        - podSelector:
+            matchLabels:
+              app: model-explainer
+      ports:
+        - protocol: TCP
+          port: 8000
+    # 允许DNS解析
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+        - podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+---
+# 审计服务网络策略
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: audit-service-policy
+  namespace: federated-risk
+spec:
+  podSelector:
+    matchLabels:
+      app: audit-service
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # 允许来自API网关的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              app: api-gateway
+      ports:
+        - protocol: TCP
+          port: 8000
+    # 允许来自所有后端服务的审计流量
+    - from:
+        - podSelector:
+            matchLabels:
+              tier: backend
+      ports:
+        - protocol: TCP
+          port: 8000
+    # 允许来自监控系统的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              app: prometheus
+      ports:
+        - protocol: TCP
+          port: 8000
+  egress:
+    # 允许访问数据库
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres
+      ports:
+        - protocol: TCP
+          port: 5432
+    # 允许访问Redis
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # 允许DNS解析
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+        - podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # 允许访问外部审计系统
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 80
+
+---
+# 数据库网络策略
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: postgres-policy
+  namespace: federated-risk
+spec:
+  podSelector:
+    matchLabels:
+      app: postgres
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # 只允许来自后端服务的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              tier: backend
+      ports:
+        - protocol: TCP
+          port: 5432
+    # 允许来自监控系统的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              app: postgres-exporter
+      ports:
+        - protocol: TCP
+          port: 5432
+  egress:
+    # 允许DNS解析
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+        - podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+---
+# Redis网络策略
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: redis-policy
+  namespace: federated-risk
+spec:
+  podSelector:
+    matchLabels:
+      app: redis
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # 只允许来自后端服务的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              tier: backend
+      ports:
+        - protocol: TCP
+          port: 6379
+    # 允许来自监控系统的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              app: redis-exporter
+      ports:
+        - protocol: TCP
+          port: 6379
+  egress:
+    # 允许DNS解析
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+        - podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+---
+# 前端应用网络策略
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: frontend-policy
+  namespace: federated-risk
+spec:
+  podSelector:
+    matchLabels:
+      app: frontend
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # 允许来自Ingress Controller的流量
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 80
+    # 允许来自监控系统的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              app: prometheus
+      ports:
+        - protocol: TCP
+          port: 80
+  egress:
+    # 允许访问API网关
+    - to:
+        - podSelector:
+            matchLabels:
+              app: api-gateway
+      ports:
+        - protocol: TCP
+          port: 8000
+    # 允许DNS解析
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+        - podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+---
+# 监控系统网络策略
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: monitoring-policy
+  namespace: federated-risk
+spec:
+  podSelector:
+    matchLabels:
+      component: monitoring
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # 允许来自Ingress Controller的流量
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 9090  # Prometheus
+        - protocol: TCP
+          port: 3000  # Grafana
+        - protocol: TCP
+          port: 9093  # AlertManager
+    # 允许监控组件间的通信
+    - from:
+        - podSelector:
+            matchLabels:
+              component: monitoring
+      ports:
+        - protocol: TCP
+          port: 9090
+        - protocol: TCP
+          port: 3000
+        - protocol: TCP
+          port: 9093
+  egress:
+    # 允许访问所有Pod进行监控
+    - to:
+        - podSelector: {}
+      ports:
+        - protocol: TCP
+          port: 8000  # 应用指标端口
+        - protocol: TCP
+          port: 9100  # Node Exporter
+        - protocol: TCP
+          port: 9187  # Postgres Exporter
+        - protocol: TCP
+          port: 9121  # Redis Exporter
+    # 允许访问Kubernetes API
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+      ports:
+        - protocol: TCP
+          port: 443
+    # 允许DNS解析
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+        - podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # 允许发送告警邮件
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 587  # SMTP
+        - protocol: TCP
+          port: 25   # SMTP
+        - protocol: TCP
+          port: 465  # SMTPS
+
+---
+# 特征存储网络策略
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: feature-store-policy
+  namespace: federated-risk
+spec:
+  podSelector:
+    matchLabels:
+      app: feature-store
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # 允许来自后端服务的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              tier: backend
+      ports:
+        - protocol: TCP
+          port: 8000
+    # 允许来自监控系统的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              app: prometheus
+      ports:
+        - protocol: TCP
+          port: 8000
+  egress:
+    # 允许访问数据库
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres
+      ports:
+        - protocol: TCP
+          port: 5432
+    # 允许访问Redis
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # 允许DNS解析
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+        - podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # 允许访问外部数据源
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 80
+
+---
+# 联邦编排器网络策略
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: federated-orchestrator-policy
+  namespace: federated-risk
+spec:
+  podSelector:
+    matchLabels:
+      app: federated-orchestrator
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # 允许来自API网关的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              app: api-gateway
+      ports:
+        - protocol: TCP
+          port: 8000
+    # 允许来自监控系统的流量
+    - from:
+        - podSelector:
+            matchLabels:
+              app: prometheus
+      ports:
+        - protocol: TCP
+          port: 8000
+  egress:
+    # 允许访问所有后端服务进行编排
+    - to:
+        - podSelector:
+            matchLabels:
+              tier: backend
+      ports:
+        - protocol: TCP
+          port: 8000
+    # 允许访问数据库
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres
+      ports:
+        - protocol: TCP
+          port: 5432
+    # 允许访问Redis
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # 允许访问Kubernetes API
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+      ports:
+        - protocol: TCP
+          port: 443
+    # 允许DNS解析
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+        - podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # 允许访问外部联邦节点
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 8443
+        - protocol: TCP
+          port: 9999  # Flower server port

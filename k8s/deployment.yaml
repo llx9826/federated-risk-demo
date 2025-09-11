@@ -1,0 +1,561 @@
+# 联邦风控系统 - Kubernetes Deployment配置
+# 包含所有核心服务的部署配置
+
+---
+# PostgreSQL数据库
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: federated-risk
+  labels:
+    app: postgres
+    component: database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+        component: database
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15-alpine
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: federated-risk-config
+              key: postgres_db
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              name: federated-risk-config
+              key: postgres_user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres_password
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+        - name: postgres-init
+          mountPath: /docker-entrypoint-initdb.d
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        livenessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - $(POSTGRES_USER)
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - $(POSTGRES_USER)
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: postgres-pvc
+      - name: postgres-init
+        configMap:
+          name: federated-risk-config
+          items:
+          - key: postgres_init_sql
+            path: init.sql
+
+---
+# Redis缓存
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: federated-risk
+  labels:
+    app: redis
+    component: cache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+        component: cache
+    spec:
+      containers:
+      - name: redis
+        image: redis:7-alpine
+        ports:
+        - containerPort: 6379
+        command:
+        - redis-server
+        - --requirepass
+        - $(REDIS_PASSWORD)
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: federated-risk-secrets
+              key: redis_password
+        volumeMounts:
+        - name: redis-storage
+          mountPath: /data
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: redis-storage
+        persistentVolumeClaim:
+          claimName: redis-pvc
+
+---
+# API网关
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  namespace: federated-risk
+  labels:
+    app: api-gateway
+    component: gateway
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+        component: gateway
+    spec:
+      containers:
+      - name: api-gateway
+        image: federated-risk/api-gateway:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: federated-risk-config
+              key: database_url
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: federated-risk-config
+              key: redis_url
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: federated-risk-secrets
+              key: jwt_secret
+        envFrom:
+        - configMapRef:
+            name: federated-risk-config
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+---
+# 同意服务
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consent-service
+  namespace: federated-risk
+  labels:
+    app: consent-service
+    component: consent
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: consent-service
+  template:
+    metadata:
+      labels:
+        app: consent-service
+        component: consent
+    spec:
+      containers:
+      - name: consent-service
+        image: federated-risk/consent-service:latest
+        ports:
+        - containerPort: 7002
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: federated-risk-config
+              key: database_url
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: federated-risk-config
+              key: redis_url
+        envFrom:
+        - configMapRef:
+            name: federated-risk-config
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 7002
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 7002
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+---
+# PSI服务
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psi-service
+  namespace: federated-risk
+  labels:
+    app: psi-service
+    component: psi
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: psi-service
+  template:
+    metadata:
+      labels:
+        app: psi-service
+        component: psi
+    spec:
+      containers:
+      - name: psi-service
+        image: federated-risk/psi-service:latest
+        ports:
+        - containerPort: 7001
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: federated-risk-config
+              key: database_url
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: federated-risk-config
+              key: redis_url
+        envFrom:
+        - configMapRef:
+            name: federated-risk-config
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "2000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 7001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 7001
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+---
+# 联邦训练服务
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: train-service
+  namespace: federated-risk
+  labels:
+    app: train-service
+    component: training
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: train-service
+  template:
+    metadata:
+      labels:
+        app: train-service
+        component: training
+    spec:
+      containers:
+      - name: train-service
+        image: federated-risk/train-service:latest
+        ports:
+        - containerPort: 7004
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: federated-risk-config
+              key: database_url
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: federated-risk-config
+              key: redis_url
+        envFrom:
+        - configMapRef:
+            name: federated-risk-config
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1000m"
+          limits:
+            memory: "4Gi"
+            cpu: "4000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 7004
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 7004
+          initialDelaySeconds: 10
+          periodSeconds: 10
+
+---
+# 模型服务
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: model-serving
+  namespace: federated-risk
+  labels:
+    app: model-serving
+    component: serving
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: model-serving
+  template:
+    metadata:
+      labels:
+        app: model-serving
+        component: serving
+    spec:
+      containers:
+      - name: model-serving
+        image: federated-risk/model-serving:latest
+        ports:
+        - containerPort: 7003
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: federated-risk-config
+              key: database_url
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: federated-risk-config
+              key: redis_url
+        envFrom:
+        - configMapRef:
+            name: federated-risk-config
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "2000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 7003
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 7003
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+---
+# 审计服务
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: audit-service
+  namespace: federated-risk
+  labels:
+    app: audit-service
+    component: audit
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: audit-service
+  template:
+    metadata:
+      labels:
+        app: audit-service
+        component: audit
+    spec:
+      containers:
+      - name: audit-service
+        image: federated-risk/audit-service:latest
+        ports:
+        - containerPort: 7005
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: federated-risk-config
+              key: database_url
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: federated-risk-config
+              key: redis_url
+        envFrom:
+        - configMapRef:
+            name: federated-risk-config
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 7005
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 7005
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+---
+# 前端应用
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: federated-risk
+  labels:
+    app: frontend
+    component: ui
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+        component: ui
+    spec:
+      containers:
+      - name: frontend
+        image: federated-risk/frontend:latest
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5

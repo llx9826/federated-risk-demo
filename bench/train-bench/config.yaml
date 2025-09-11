@@ -1,0 +1,373 @@
+# 联邦训练性能基准测试配置文件
+
+# 服务配置
+service:
+  orchestrator_url: "http://localhost:8002"
+  participant_base_url: "http://localhost"
+  participant_port_start: 8010
+  timeout: 1800  # 超时时间（秒）
+  retry_attempts: 3
+  retry_delay: 2  # 重试延迟（秒）
+
+# 测试配置
+test:
+  # 参与方数量配置
+  participant_counts:
+    small: [2, 3]
+    medium: [5, 8, 10]
+    large: [15, 20, 30]
+    xlarge: [50, 100]
+  
+  # 数据规模配置（每个参与方）
+  data_sizes:
+    tiny: [100, 500]
+    small: [1000, 2000, 5000]
+    medium: [10000, 20000, 50000]
+    large: [100000, 200000]
+    xlarge: [500000, 1000000]
+  
+  # 模型复杂度配置
+  model_complexities:
+    simple:
+      model_type: "logistic_regression"
+      feature_dim: 10
+      hidden_layers: []
+      parameters: ~1000
+    
+    medium:
+      model_type: "neural_network"
+      feature_dim: 50
+      hidden_layers: [64, 32]
+      parameters: ~10000
+    
+    complex:
+      model_type: "deep_neural_network"
+      feature_dim: 100
+      hidden_layers: [128, 64, 32, 16]
+      parameters: ~50000
+    
+    very_complex:
+      model_type: "transformer"
+      feature_dim: 200
+      hidden_layers: [256, 128, 64]
+      parameters: ~200000
+  
+  # 训练配置
+  training:
+    max_rounds: 100
+    min_rounds: 10
+    convergence_threshold: 0.001
+    early_stopping_patience: 10
+    
+    # 学习率配置
+    learning_rates: [0.001, 0.01, 0.1]
+    
+    # 批次大小配置
+    batch_sizes: [16, 32, 64, 128]
+  
+  # 联邦学习算法
+  algorithms:
+    - "fedavg"        # Federated Averaging
+    - "fedprox"       # Federated Proximal
+    - "fedopt"        # Federated Optimization
+    - "scaffold"      # SCAFFOLD
+  
+  # 迭代次数
+  iterations: 3
+  
+  # 测试间隔（秒）
+  test_interval: 5
+  
+  # 预热轮数
+  warmup_rounds: 2
+
+# 数据分布配置
+data_distribution:
+  # 数据异构性
+  heterogeneity:
+    iid: 0.0          # 独立同分布
+    mild: 0.3         # 轻度异构
+    moderate: 0.6     # 中度异构
+    severe: 0.9       # 严重异构
+  
+  # 标签分布
+  label_distribution:
+    balanced: [0.5, 0.5]
+    imbalanced_mild: [0.7, 0.3]
+    imbalanced_severe: [0.9, 0.1]
+  
+  # 特征分布
+  feature_distribution:
+    gaussian: "normal"
+    uniform: "uniform"
+    skewed: "beta"
+
+# 隐私配置
+privacy:
+  # 差分隐私
+  differential_privacy:
+    enabled: true
+    noise_multipliers: [0.1, 0.5, 1.0, 2.0]
+    l2_norm_clips: [0.5, 1.0, 2.0]
+  
+  # 同态加密
+  homomorphic_encryption:
+    enabled: false
+    key_sizes: [1024, 2048, 4096]
+  
+  # 安全聚合
+  secure_aggregation:
+    enabled: true
+    threshold_schemes: ["shamir", "additive"]
+
+# 聚合配置
+aggregation:
+  # 聚合策略
+  strategies:
+    - "weighted_average"    # 加权平均
+    - "simple_average"      # 简单平均
+    - "median"              # 中位数聚合
+    - "trimmed_mean"        # 截尾均值
+  
+  # 客户端选择
+  client_selection:
+    min_fit_clients_ratio: [0.5, 0.8, 1.0]
+    min_eval_clients_ratio: [0.3, 0.5, 0.8]
+    
+  # 聚合频率
+  aggregation_frequency: [1, 2, 5]  # 每N轮聚合一次
+
+# 性能监控配置
+monitoring:
+  # 资源监控
+  resource_monitoring:
+    enabled: true
+    sample_interval: 0.5  # 采样间隔（秒）
+    metrics:
+      - "cpu_percent"
+      - "memory_usage"
+      - "disk_io"
+      - "network_io"
+      - "gpu_usage"  # 如果有GPU
+  
+  # 通信监控
+  communication_monitoring:
+    enabled: true
+    track_message_sizes: true
+    track_round_times: true
+    track_bandwidth_usage: true
+  
+  # 收敛监控
+  convergence_monitoring:
+    enabled: true
+    metrics:
+      - "loss"
+      - "accuracy"
+      - "f1_score"
+      - "auc"
+    track_per_client: true
+
+# 输出配置
+output:
+  # 结果目录
+  results_dir: "../results/training"
+  
+  # 文件格式
+  formats:
+    - "json"
+    - "csv"
+    - "xlsx"
+  
+  # 报告配置
+  report:
+    generate_charts: true
+    chart_formats: ["png", "svg", "pdf"]
+    include_convergence_plots: true
+    include_communication_analysis: true
+    include_resource_usage: true
+    compress_results: true
+  
+  # 实时输出
+  realtime:
+    enabled: true
+    update_interval: 10  # 秒
+    show_progress: true
+    log_level: "INFO"
+
+# 基准测试场景
+scenarios:
+  # 快速测试
+  quick:
+    participant_counts: [2, 3]
+    data_sizes: [1000, 5000]
+    model_complexities: ["simple"]
+    algorithms: ["fedavg"]
+    iterations: 1
+    max_rounds: 20
+  
+  # 标准测试
+  standard:
+    participant_counts: [2, 5, 10]
+    data_sizes: [1000, 5000, 10000]
+    model_complexities: ["simple", "medium"]
+    algorithms: ["fedavg", "fedprox"]
+    iterations: 3
+    max_rounds: 50
+  
+  # 可扩展性测试
+  scalability:
+    participant_counts: [2, 5, 10, 20, 50]
+    data_sizes: [10000]
+    model_complexities: ["medium"]
+    algorithms: ["fedavg"]
+    iterations: 3
+    max_rounds: 30
+  
+  # 算法对比
+  algorithm_comparison:
+    participant_counts: [5]
+    data_sizes: [10000]
+    model_complexities: ["medium"]
+    algorithms: ["fedavg", "fedprox", "fedopt", "scaffold"]
+    iterations: 5
+    max_rounds: 100
+  
+  # 异构性测试
+  heterogeneity:
+    participant_counts: [10]
+    data_sizes: [5000]
+    model_complexities: ["medium"]
+    algorithms: ["fedavg"]
+    heterogeneity_levels: ["iid", "mild", "moderate", "severe"]
+    iterations: 3
+    max_rounds: 100
+  
+  # 隐私影响测试
+  privacy_impact:
+    participant_counts: [5]
+    data_sizes: [10000]
+    model_complexities: ["medium"]
+    algorithms: ["fedavg"]
+    privacy_levels: ["none", "low", "medium", "high"]
+    iterations: 3
+    max_rounds: 50
+
+# 性能阈值配置
+thresholds:
+  # 训练时间阈值（秒）
+  training_time:
+    excellent: 300    # 5分钟
+    good: 900         # 15分钟
+    acceptable: 1800  # 30分钟
+    poor: 3600        # 1小时
+  
+  # 收敛轮次阈值
+  convergence_rounds:
+    excellent: 20
+    good: 50
+    acceptable: 100
+    poor: 200
+  
+  # 通信开销阈值（MB）
+  communication_overhead:
+    excellent: 10
+    good: 50
+    acceptable: 200
+    poor: 500
+  
+  # 内存使用阈值（MB）
+  memory_usage:
+    excellent: 500
+    good: 1000
+    acceptable: 2000
+    poor: 4000
+  
+  # 准确率阈值
+  accuracy:
+    excellent: 0.95
+    good: 0.90
+    acceptable: 0.85
+    poor: 0.80
+
+# 错误处理配置
+error_handling:
+  # 失败重试
+  retry_on_failure: true
+  max_retries: 3
+  retry_backoff: 2.0  # 指数退避因子
+  
+  # 错误分类
+  error_categories:
+    network: ["ConnectionError", "TimeoutError"]
+    service: ["ServiceUnavailable", "InternalServerError"]
+    training: ["ConvergenceError", "ModelError"]
+    resource: ["OutOfMemoryError", "DiskSpaceError"]
+  
+  # 容错策略
+  fault_tolerance:
+    continue_on_error: true
+    max_consecutive_failures: 3
+    failure_threshold: 0.3  # 30%失败率阈值
+    participant_dropout_handling: "continue"  # continue, restart, abort
+
+# 日志配置
+logging:
+  level: "INFO"
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} | {message}"
+  
+  # 文件日志
+  file:
+    enabled: true
+    path: "train_benchmark.log"
+    rotation: "50 MB"
+    retention: "7 days"
+  
+  # 控制台日志
+  console:
+    enabled: true
+    colorize: true
+  
+  # 详细日志
+  verbose:
+    enabled: false
+    include_model_updates: false
+    include_gradient_norms: false
+    include_communication_details: true
+
+# 环境配置
+environment:
+  # 并发配置
+  concurrency:
+    max_concurrent_trainings: 1
+    max_concurrent_participants: 10
+  
+  # 资源限制
+  resource_limits:
+    max_memory_mb: 8192
+    max_cpu_percent: 80
+    max_gpu_memory_mb: 4096
+  
+  # 网络配置
+  network:
+    connection_pool_size: 20
+    request_timeout: 60
+    keep_alive: true
+    max_message_size_mb: 100
+
+# 验证配置
+validation:
+  # 结果验证
+  verify_results: true
+  accuracy_threshold: 0.01  # 1%容忍度
+  
+  # 性能回归测试
+  performance_regression:
+    enabled: false
+    baseline_file: null
+    tolerance: 0.15  # 15%容忍度
+  
+  # 模型一致性验证
+  model_consistency:
+    check_parameter_consistency: true
+    check_gradient_consistency: false
+    tolerance: 1e-6

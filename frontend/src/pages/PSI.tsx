@@ -1,0 +1,447 @@
+import React, { useState } from 'react'
+import { Table, Button, Space, Tag, Card, Form, Input, Select, Progress, Modal, message } from 'antd'
+import { PlusOutlined, SearchOutlined, EyeOutlined, PlayCircleOutlined, StopOutlined } from '@ant-design/icons'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { apiService } from '@/services/api'
+import { formatDate } from '@/utils'
+
+const { Option } = Select
+
+interface PSITask {
+  id: string
+  name: string
+  description: string
+  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled'
+  progress: number
+  participants: string[]
+  datasetSize: number
+  intersectionSize?: number
+  startTime?: string
+  endTime?: string
+  createdAt: string
+  updatedAt: string
+}
+
+const PSI: React.FC = () => {
+  const [searchForm] = Form.useForm()
+  const [createForm] = Form.useForm()
+  const [isCreateModalVisible, setIsCreateModalVisible] = useState(false)
+  const [selectedTask, setSelectedTask] = useState<PSITask | null>(null)
+  const [searchParams, setSearchParams] = useState({})
+  
+  const queryClient = useQueryClient()
+
+  // 获取PSI任务列表
+  const { data: tasks, isLoading } = useQuery({
+    queryKey: ['psi-tasks', searchParams],
+    queryFn: () => apiService.psi.getList(searchParams),
+  })
+
+  // 创建PSI任务
+  const createMutation = useMutation({
+    mutationFn: apiService.psi.create,
+    onSuccess: () => {
+      message.success('PSI任务创建成功')
+      setIsCreateModalVisible(false)
+      createForm.resetFields()
+      queryClient.invalidateQueries({ queryKey: ['psi-tasks'] })
+    },
+    onError: () => {
+      message.error('创建失败，请重试')
+    },
+  })
+
+  // 启动PSI任务
+  const startMutation = useMutation({
+    mutationFn: apiService.psi.start,
+    onSuccess: () => {
+      message.success('任务启动成功')
+      queryClient.invalidateQueries({ queryKey: ['psi-tasks'] })
+    },
+    onError: () => {
+      message.error('启动失败，请重试')
+    },
+  })
+
+  // 停止PSI任务
+  const stopMutation = useMutation({
+    mutationFn: apiService.psi.stop,
+    onSuccess: () => {
+      message.success('任务已停止')
+      queryClient.invalidateQueries({ queryKey: ['psi-tasks'] })
+    },
+    onError: () => {
+      message.error('停止失败，请重试')
+    },
+  })
+
+  // 状态颜色映射
+  const getStatusColor = (status: string) => {
+    const colors = {
+      pending: 'orange',
+      running: 'blue',
+      completed: 'green',
+      failed: 'red',
+      cancelled: 'gray',
+    }
+    return colors[status as keyof typeof colors] || 'default'
+  }
+
+  // 状态文本映射
+  const getStatusText = (status: string) => {
+    const texts = {
+      pending: '待执行',
+      running: '执行中',
+      completed: '已完成',
+      failed: '失败',
+      cancelled: '已取消',
+    }
+    return texts[status as keyof typeof texts] || status
+  }
+
+  // 表格列配置
+  const columns = [
+    {
+      title: '任务名称',
+      dataIndex: 'name',
+      key: 'name',
+      width: 200,
+    },
+    {
+      title: '参与方',
+      dataIndex: 'participants',
+      key: 'participants',
+      width: 150,
+      render: (participants: string[]) => (
+        <div>
+          {participants.map((participant, index) => (
+            <Tag key={index} size="small">
+              {participant}
+            </Tag>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: '数据集大小',
+      dataIndex: 'datasetSize',
+      key: 'datasetSize',
+      width: 120,
+      render: (size: number) => `${size.toLocaleString()} 条`,
+    },
+    {
+      title: '交集大小',
+      dataIndex: 'intersectionSize',
+      key: 'intersectionSize',
+      width: 120,
+      render: (size?: number) => size ? `${size.toLocaleString()} 条` : '-',
+    },
+    {
+      title: '状态',
+      dataIndex: 'status',
+      key: 'status',
+      width: 100,
+      render: (status: string) => (
+        <Tag color={getStatusColor(status)}>
+          {getStatusText(status)}
+        </Tag>
+      ),
+    },
+    {
+      title: '进度',
+      dataIndex: 'progress',
+      key: 'progress',
+      width: 120,
+      render: (progress: number, record: PSITask) => (
+        <Progress
+          percent={progress}
+          size="small"
+          status={record.status === 'failed' ? 'exception' : undefined}
+        />
+      ),
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      width: 120,
+      render: (date: string) => formatDate(date),
+    },
+    {
+      title: '操作',
+      key: 'actions',
+      width: 150,
+      render: (_, record: PSITask) => (
+        <Space size="small">
+          <Button
+            type="text"
+            size="small"
+            icon={<EyeOutlined />}
+            onClick={() => setSelectedTask(record)}
+          />
+          {record.status === 'pending' && (
+            <Button
+              type="text"
+              size="small"
+              icon={<PlayCircleOutlined />}
+              onClick={() => handleStart(record.id)}
+            />
+          )}
+          {record.status === 'running' && (
+            <Button
+              type="text"
+              size="small"
+              danger
+              icon={<StopOutlined />}
+              onClick={() => handleStop(record.id)}
+            />
+          )}
+        </Space>
+      ),
+    },
+  ]
+
+  // 处理搜索
+  const handleSearch = (values: any) => {
+    setSearchParams(values)
+  }
+
+  // 处理创建
+  const handleCreate = (values: any) => {
+    createMutation.mutate(values)
+  }
+
+  // 处理启动
+  const handleStart = (id: string) => {
+    Modal.confirm({
+      title: '确认启动',
+      content: '确定要启动这个PSI任务吗？',
+      onOk: () => startMutation.mutate(id),
+    })
+  }
+
+  // 处理停止
+  const handleStop = (id: string) => {
+    Modal.confirm({
+      title: '确认停止',
+      content: '确定要停止这个PSI任务吗？',
+      onOk: () => stopMutation.mutate(id),
+    })
+  }
+
+  return (
+    <div className="p-6">
+      {/* 搜索区域 */}
+      <Card className="mb-6">
+        <Form
+          form={searchForm}
+          layout="inline"
+          onFinish={handleSearch}
+          className="mb-4"
+        >
+          <Form.Item name="name" label="任务名称">
+            <Input placeholder="请输入任务名称" allowClear />
+          </Form.Item>
+          <Form.Item name="status" label="状态">
+            <Select placeholder="请选择状态" allowClear style={{ width: 120 }}>
+              <Option value="pending">待执行</Option>
+              <Option value="running">执行中</Option>
+              <Option value="completed">已完成</Option>
+              <Option value="failed">失败</Option>
+              <Option value="cancelled">已取消</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item>
+            <Space>
+              <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
+                搜索
+              </Button>
+              <Button onClick={() => searchForm.resetFields()}>
+                重置
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
+      </Card>
+
+      {/* 操作区域 */}
+      <div className="mb-4 flex justify-between items-center">
+        <h2 className="text-xl font-semibold">数据对齐任务</h2>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => setIsCreateModalVisible(true)}
+        >
+          创建任务
+        </Button>
+      </div>
+
+      {/* 表格 */}
+      <Card>
+        <Table
+          columns={columns}
+          dataSource={tasks?.data || []}
+          rowKey="id"
+          loading={isLoading}
+          pagination={{
+            total: tasks?.total || 0,
+            pageSize: 20,
+            showSizeChanger: true,
+            showQuickJumper: true,
+            showTotal: (total) => `共 ${total} 条记录`,
+          }}
+        />
+      </Card>
+
+      {/* 创建任务模态框 */}
+      <Modal
+        title="创建PSI任务"
+        open={isCreateModalVisible}
+        onCancel={() => setIsCreateModalVisible(false)}
+        footer={null}
+        width={600}
+      >
+        <Form
+          form={createForm}
+          layout="vertical"
+          onFinish={handleCreate}
+        >
+          <Form.Item
+            name="name"
+            label="任务名称"
+            rules={[{ required: true, message: '请输入任务名称' }]}
+          >
+            <Input placeholder="请输入PSI任务名称" />
+          </Form.Item>
+          
+          <Form.Item
+            name="description"
+            label="任务描述"
+            rules={[{ required: true, message: '请输入任务描述' }]}
+          >
+            <Input.TextArea rows={3} placeholder="请输入任务描述" />
+          </Form.Item>
+          
+          <Form.Item
+            name="participants"
+            label="参与方"
+            rules={[{ required: true, message: '请选择参与方' }]}
+          >
+            <Select
+              mode="multiple"
+              placeholder="请选择参与方"
+              options={[
+                { label: '银行A', value: 'bank_a' },
+                { label: '银行B', value: 'bank_b' },
+                { label: '保险公司C', value: 'insurance_c' },
+                { label: '证券公司D', value: 'securities_d' },
+              ]}
+            />
+          </Form.Item>
+          
+          <Form.Item
+            name="datasetPath"
+            label="数据集路径"
+            rules={[{ required: true, message: '请输入数据集路径' }]}
+          >
+            <Input placeholder="请输入数据集文件路径" />
+          </Form.Item>
+          
+          <Form.Item className="mb-0 text-right">
+            <Space>
+              <Button onClick={() => setIsCreateModalVisible(false)}>
+                取消
+              </Button>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={createMutation.isPending}
+              >
+                创建
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* 详情模态框 */}
+      <Modal
+        title="PSI任务详情"
+        open={!!selectedTask}
+        onCancel={() => setSelectedTask(null)}
+        footer={[
+          <Button key="close" onClick={() => setSelectedTask(null)}>
+            关闭
+          </Button>,
+        ]}
+        width={600}
+      >
+        {selectedTask && (
+          <div className="space-y-4">
+            <div>
+              <label className="font-medium">任务名称：</label>
+              <span>{selectedTask.name}</span>
+            </div>
+            <div>
+              <label className="font-medium">任务描述：</label>
+              <p className="mt-1">{selectedTask.description}</p>
+            </div>
+            <div>
+              <label className="font-medium">参与方：</label>
+              <div className="mt-1">
+                {selectedTask.participants.map((participant, index) => (
+                  <Tag key={index}>{participant}</Tag>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="font-medium">数据集大小：</label>
+              <span>{selectedTask.datasetSize.toLocaleString()} 条</span>
+            </div>
+            {selectedTask.intersectionSize && (
+              <div>
+                <label className="font-medium">交集大小：</label>
+                <span>{selectedTask.intersectionSize.toLocaleString()} 条</span>
+              </div>
+            )}
+            <div>
+              <label className="font-medium">状态：</label>
+              <Tag color={getStatusColor(selectedTask.status)}>
+                {getStatusText(selectedTask.status)}
+              </Tag>
+            </div>
+            <div>
+              <label className="font-medium">进度：</label>
+              <Progress
+                percent={selectedTask.progress}
+                status={selectedTask.status === 'failed' ? 'exception' : undefined}
+              />
+            </div>
+            {selectedTask.startTime && (
+              <div>
+                <label className="font-medium">开始时间：</label>
+                <span>{formatDate(selectedTask.startTime)}</span>
+              </div>
+            )}
+            {selectedTask.endTime && (
+              <div>
+                <label className="font-medium">结束时间：</label>
+                <span>{formatDate(selectedTask.endTime)}</span>
+              </div>
+            )}
+            <div>
+              <label className="font-medium">创建时间：</label>
+              <span>{formatDate(selectedTask.createdAt)}</span>
+            </div>
+            <div>
+              <label className="font-medium">更新时间：</label>
+              <span>{formatDate(selectedTask.updatedAt)}</span>
+            </div>
+          </div>
+        )}
+      </Modal>
+    </div>
+  )
+}
+
+export default PSI

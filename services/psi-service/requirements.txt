@@ -1,0 +1,43 @@
+# Web框架
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+python-multipart==0.0.6
+
+# 数据库
+asyncpg==0.29.0
+psycopg2-binary==2.9.9
+
+# 缓存
+redis==5.0.1
+
+# HTTP客户端
+httpx==0.25.2
+
+# 密码学
+cryptography==41.0.8
+PyCryptodome==3.19.0
+
+# 数据处理
+pandas==2.1.4
+numpy==1.24.4
+
+# 监控和指标
+prometheus-client==0.19.0
+
+# 日志
+loguru==0.7.2
+
+# 工具库
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# 开发工具
+pytest==7.4.3
+pytest-asyncio==0.21.1
+black==23.11.0
+flake8==6.1.0
+mypy==1.7.1
+
+# 类型注解
+types-redis==4.6.0.11

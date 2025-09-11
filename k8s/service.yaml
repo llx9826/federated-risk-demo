@@ -1,0 +1,349 @@
+# 联邦风控系统 - Kubernetes Service配置
+# 为所有服务提供网络访问
+
+---
+# PostgreSQL服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: federated-risk
+  labels:
+    app: postgres
+    component: database
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5432
+    targetPort: 5432
+    protocol: TCP
+    name: postgres
+  selector:
+    app: postgres
+
+---
+# Redis服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: federated-risk
+  labels:
+    app: redis
+    component: cache
+spec:
+  type: ClusterIP
+  ports:
+  - port: 6379
+    targetPort: 6379
+    protocol: TCP
+    name: redis
+  selector:
+    app: redis
+
+---
+# API网关服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+  namespace: federated-risk
+  labels:
+    app: api-gateway
+    component: gateway
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  - port: 443
+    targetPort: 8000
+    protocol: TCP
+    name: https
+  selector:
+    app: api-gateway
+
+---
+# 同意服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: consent-service
+  namespace: federated-risk
+  labels:
+    app: consent-service
+    component: consent
+spec:
+  type: ClusterIP
+  ports:
+  - port: 7002
+    targetPort: 7002
+    protocol: TCP
+    name: http
+  selector:
+    app: consent-service
+
+---
+# PSI服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: psi-service
+  namespace: federated-risk
+  labels:
+    app: psi-service
+    component: psi
+spec:
+  type: ClusterIP
+  ports:
+  - port: 7001
+    targetPort: 7001
+    protocol: TCP
+    name: http
+  selector:
+    app: psi-service
+
+---
+# 联邦训练服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: train-service
+  namespace: federated-risk
+  labels:
+    app: train-service
+    component: training
+spec:
+  type: ClusterIP
+  ports:
+  - port: 7004
+    targetPort: 7004
+    protocol: TCP
+    name: http
+  selector:
+    app: train-service
+
+---
+# 模型服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: model-serving
+  namespace: federated-risk
+  labels:
+    app: model-serving
+    component: serving
+spec:
+  type: ClusterIP
+  ports:
+  - port: 7003
+    targetPort: 7003
+    protocol: TCP
+    name: http
+  selector:
+    app: model-serving
+
+---
+# 审计服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: audit-service
+  namespace: federated-risk
+  labels:
+    app: audit-service
+    component: audit
+spec:
+  type: ClusterIP
+  ports:
+  - port: 7005
+    targetPort: 7005
+    protocol: TCP
+    name: http
+  selector:
+    app: audit-service
+
+---
+# 前端服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: federated-risk
+  labels:
+    app: frontend
+    component: ui
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: frontend
+
+---
+# 联邦编排器服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: federated-orchestrator
+  namespace: federated-risk
+  labels:
+    app: federated-orchestrator
+    component: orchestrator
+spec:
+  type: ClusterIP
+  ports:
+  - port: 7006
+    targetPort: 7006
+    protocol: TCP
+    name: http
+  selector:
+    app: federated-orchestrator
+
+---
+# 模型训练器服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: model-trainer
+  namespace: federated-risk
+  labels:
+    app: model-trainer
+    component: trainer
+spec:
+  type: ClusterIP
+  ports:
+  - port: 7007
+    targetPort: 7007
+    protocol: TCP
+    name: http
+  selector:
+    app: model-trainer
+
+---
+# 模型解释器服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: model-explainer
+  namespace: federated-risk
+  labels:
+    app: model-explainer
+    component: explainer
+spec:
+  type: ClusterIP
+  ports:
+  - port: 7008
+    targetPort: 7008
+    protocol: TCP
+    name: http
+  selector:
+    app: model-explainer
+
+---
+# 模型部署服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: model-deployment
+  namespace: federated-risk
+  labels:
+    app: model-deployment
+    component: deployment
+spec:
+  type: ClusterIP
+  ports:
+  - port: 7009
+    targetPort: 7009
+    protocol: TCP
+    name: http
+  selector:
+    app: model-deployment
+
+---
+# 特征存储服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: feature-store
+  namespace: federated-risk
+  labels:
+    app: feature-store
+    component: feature
+spec:
+  type: ClusterIP
+  ports:
+  - port: 7010
+    targetPort: 7010
+    protocol: TCP
+    name: http
+  selector:
+    app: feature-store
+
+---
+# 同意网关服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: consent-gateway
+  namespace: federated-risk
+  labels:
+    app: consent-gateway
+    component: gateway
+spec:
+  type: ClusterIP
+  ports:
+  - port: 7011
+    targetPort: 7011
+    protocol: TCP
+    name: http
+  selector:
+    app: consent-gateway
+
+---
+# Headless服务用于StatefulSet
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-headless
+  namespace: federated-risk
+  labels:
+    app: postgres
+    component: database
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - port: 5432
+    targetPort: 5432
+    protocol: TCP
+    name: postgres
+  selector:
+    app: postgres
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-headless
+  namespace: federated-risk
+  labels:
+    app: redis
+    component: cache
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - port: 6379
+    targetPort: 6379
+    protocol: TCP
+    name: redis
+  selector:
+    app: redis

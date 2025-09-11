@@ -1,0 +1,300 @@
+# 联邦风控系统 - 持久化存储配置
+# PersistentVolume和PersistentVolumeClaim定义
+
+---
+# PostgreSQL持久化存储卷
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-pv
+  namespace: federated-risk
+  labels:
+    app: postgres
+    component: database
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: fast-ssd
+  hostPath:
+    path: /data/postgres
+    type: DirectoryOrCreate
+
+---
+# PostgreSQL持久化存储声明
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: federated-risk
+  labels:
+    app: postgres
+    component: database
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: fast-ssd
+  selector:
+    matchLabels:
+      app: postgres
+      component: database
+
+---
+# Redis持久化存储卷
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-pv
+  namespace: federated-risk
+  labels:
+    app: redis
+    component: cache
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: fast-ssd
+  hostPath:
+    path: /data/redis
+    type: DirectoryOrCreate
+
+---
+# Redis持久化存储声明
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-pvc
+  namespace: federated-risk
+  labels:
+    app: redis
+    component: cache
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: fast-ssd
+  selector:
+    matchLabels:
+      app: redis
+      component: cache
+
+---
+# 模型存储卷
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: model-storage-pv
+  namespace: federated-risk
+  labels:
+    app: model-storage
+    component: storage
+spec:
+  capacity:
+    storage: 50Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: shared-storage
+  nfs:
+    server: nfs-server.federated-risk.svc.cluster.local
+    path: /data/models
+
+---
+# 模型存储声明
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: model-storage-pvc
+  namespace: federated-risk
+  labels:
+    app: model-storage
+    component: storage
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: shared-storage
+  selector:
+    matchLabels:
+      app: model-storage
+      component: storage
+
+---
+# 日志存储卷
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: logs-pv
+  namespace: federated-risk
+  labels:
+    app: logs
+    component: logging
+spec:
+  capacity:
+    storage: 30Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: shared-storage
+  nfs:
+    server: nfs-server.federated-risk.svc.cluster.local
+    path: /data/logs
+
+---
+# 日志存储声明
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: logs-pvc
+  namespace: federated-risk
+  labels:
+    app: logs
+    component: logging
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 30Gi
+  storageClassName: shared-storage
+  selector:
+    matchLabels:
+      app: logs
+      component: logging
+
+---
+# 数据存储卷（用于训练数据）
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: data-storage-pv
+  namespace: federated-risk
+  labels:
+    app: data-storage
+    component: storage
+spec:
+  capacity:
+    storage: 100Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: shared-storage
+  nfs:
+    server: nfs-server.federated-risk.svc.cluster.local
+    path: /data/training
+
+---
+# 数据存储声明
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-storage-pvc
+  namespace: federated-risk
+  labels:
+    app: data-storage
+    component: storage
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: shared-storage
+  selector:
+    matchLabels:
+      app: data-storage
+      component: storage
+
+---
+# 备份存储卷
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: backup-pv
+  namespace: federated-risk
+  labels:
+    app: backup
+    component: backup
+spec:
+  capacity:
+    storage: 200Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: backup-storage
+  hostPath:
+    path: /backup/federated-risk
+    type: DirectoryOrCreate
+
+---
+# 备份存储声明
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backup-pvc
+  namespace: federated-risk
+  labels:
+    app: backup
+    component: backup
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 200Gi
+  storageClassName: backup-storage
+  selector:
+    matchLabels:
+      app: backup
+      component: backup
+
+---
+# StorageClass定义
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: fast-ssd
+  namespace: federated-risk
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
+parameters:
+  type: ssd
+  replication-type: none
+
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: shared-storage
+  namespace: federated-risk
+provisioner: nfs.csi.k8s.io
+volumeBindingMode: Immediate
+allowVolumeExpansion: true
+parameters:
+  server: nfs-server.federated-risk.svc.cluster.local
+  share: /data
+
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: backup-storage
+  namespace: federated-risk
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
+parameters:
+  type: hdd
+  replication-type: raid1
