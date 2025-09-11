@@ -1,0 +1,207 @@
+{
+  "timestamp": "2025-09-11T21:09:23.193348",
+  "summary": {
+    "total": 28,
+    "passed": 15,
+    "failed": 13,
+    "success_rate": 53.57142857142857
+  },
+  "results": [
+    {
+      "name": "consent-service 健康检查",
+      "passed": true,
+      "message": "服务正常运行 (状态码: 404)",
+      "duration": 0.007544994354248047,
+      "timestamp": "2025-09-11T21:08:03.925372"
+    },
+    {
+      "name": "psi-service 健康检查",
+      "passed": false,
+      "message": "服务无响应或不可访问",
+      "duration": 15.017180919647217,
+      "timestamp": "2025-09-11T21:08:18.942637"
+    },
+    {
+      "name": "model-trainer 健康检查",
+      "passed": false,
+      "message": "服务无响应或不可访问",
+      "duration": 15.020262718200684,
+      "timestamp": "2025-09-11T21:08:33.963126"
+    },
+    {
+      "name": "model-explainer 健康检查",
+      "passed": false,
+      "message": "服务无响应或不可访问",
+      "duration": 15.021215200424194,
+      "timestamp": "2025-09-11T21:08:48.984500"
+    },
+    {
+      "name": "frontend 健康检查",
+      "passed": false,
+      "message": "服务无响应或不可访问",
+      "duration": 0.00980687141418457,
+      "timestamp": "2025-09-11T21:08:48.994348"
+    },
+    {
+      "name": "同意服务 - 创建同意记录",
+      "passed": false,
+      "message": "创建失败 (状态码: 405)",
+      "duration": 0.004070281982421875,
+      "timestamp": "2025-09-11T21:08:48.998481"
+    },
+    {
+      "name": "同意服务 - 查询同意状态",
+      "passed": false,
+      "message": "查询失败 (状态码: 404)",
+      "duration": 0.0030672550201416016,
+      "timestamp": "2025-09-11T21:08:49.001553"
+    },
+    {
+      "name": "PSI服务 - 创建会话",
+      "passed": false,
+      "message": "创建失败 (状态码: 502)",
+      "duration": 5.008953094482422,
+      "timestamp": "2025-09-11T21:08:54.010571"
+    },
+    {
+      "name": "模型训练服务 - 创建训练任务",
+      "passed": false,
+      "message": "创建失败 (状态码: 502)",
+      "duration": 5.007080793380737,
+      "timestamp": "2025-09-11T21:08:59.017861"
+    },
+    {
+      "name": "模型解释服务 - SHAP解释",
+      "passed": false,
+      "message": "解释失败 (状态码: 502)",
+      "duration": 5.009324073791504,
+      "timestamp": "2025-09-11T21:09:04.027346"
+    },
+    {
+      "name": "数据文件检查 - partyA_bank.csv",
+      "passed": true,
+      "message": "文件存在且非空 (大小: 1003627 bytes)",
+      "duration": 0.00010609626770019531,
+      "timestamp": "2025-09-11T21:09:04.027595"
+    },
+    {
+      "name": "数据文件检查 - partyB_ecom.csv",
+      "passed": true,
+      "message": "文件存在且非空 (大小: 961174 bytes)",
+      "duration": 3.314018249511719e-05,
+      "timestamp": "2025-09-11T21:09:04.027638"
+    },
+    {
+      "name": "数据文件检查 - metadata.json",
+      "passed": true,
+      "message": "文件存在且非空 (大小: 939 bytes)",
+      "duration": 2.288818359375e-05,
+      "timestamp": "2025-09-11T21:09:04.027669"
+    },
+    {
+      "name": "依赖检查 - fastapi",
+      "passed": true,
+      "message": "依赖包可正常导入",
+      "duration": 0.40466880798339844,
+      "timestamp": "2025-09-11T21:09:04.432405"
+    },
+    {
+      "name": "依赖检查 - uvicorn",
+      "passed": true,
+      "message": "依赖包可正常导入",
+      "duration": 0.1058340072631836,
+      "timestamp": "2025-09-11T21:09:04.538292"
+    },
+    {
+      "name": "依赖检查 - pandas",
+      "passed": true,
+      "message": "依赖包可正常导入",
+      "duration": 0.3669092655181885,
+      "timestamp": "2025-09-11T21:09:04.905254"
+    },
+    {
+      "name": "依赖检查 - numpy",
+      "passed": true,
+      "message": "依赖包可正常导入",
+      "duration": 0.06116676330566406,
+      "timestamp": "2025-09-11T21:09:04.966484"
+    },
+    {
+      "name": "依赖检查 - scikit-learn",
+      "passed": false,
+      "message": "导入失败:   File \"<string>\", line 1\n    import scikit-learn\n                 ^\nSyntaxError: invalid syntax\n",
+      "duration": 0.017451047897338867,
+      "timestamp": "2025-09-11T21:09:04.983992"
+    },
+    {
+      "name": "依赖检查 - xgboost",
+      "passed": true,
+      "message": "依赖包可正常导入",
+      "duration": 1.2471411228179932,
+      "timestamp": "2025-09-11T21:09:06.231198"
+    },
+    {
+      "name": "依赖检查 - shap",
+      "passed": true,
+      "message": "依赖包可正常导入",
+      "duration": 1.7310600280761719,
+      "timestamp": "2025-09-11T21:09:07.962315"
+    },
+    {
+      "name": "依赖检查 - lime",
+      "passed": true,
+      "message": "依赖包可正常导入",
+      "duration": 0.015272855758666992,
+      "timestamp": "2025-09-11T21:09:07.977638"
+    },
+    {
+      "name": "依赖检查 - cryptography",
+      "passed": true,
+      "message": "依赖包可正常导入",
+      "duration": 0.02125692367553711,
+      "timestamp": "2025-09-11T21:09:07.998930"
+    },
+    {
+      "name": "依赖检查 - redis",
+      "passed": true,
+      "message": "依赖包可正常导入",
+      "duration": 0.08910703659057617,
+      "timestamp": "2025-09-11T21:09:08.088084"
+    },
+    {
+      "name": "依赖检查 - httpx",
+      "passed": true,
+      "message": "依赖包可正常导入",
+      "duration": 0.07182192802429199,
+      "timestamp": "2025-09-11T21:09:08.159950"
+    },
+    {
+      "name": "性能测试 - consent-service 响应时间",
+      "passed": true,
+      "message": "响应时间: 0.00s (良好)",
+      "duration": 0.004548311233520508,
+      "timestamp": "2025-09-11T21:09:08.164617"
+    },
+    {
+      "name": "性能测试 - psi-service 响应时间",
+      "passed": false,
+      "message": "响应时间: 5.01s (过慢)",
+      "duration": 5.007272958755493,
+      "timestamp": "2025-09-11T21:09:13.171935"
+    },
+    {
+      "name": "性能测试 - model-trainer 响应时间",
+      "passed": false,
+      "message": "响应时间: 5.01s (过慢)",
+      "duration": 5.010594129562378,
+      "timestamp": "2025-09-11T21:09:18.182569"
+    },
+    {
+      "name": "性能测试 - model-explainer 响应时间",
+      "passed": false,
+      "message": "响应时间: 5.01s (过慢)",
+      "duration": 5.009807109832764,
+      "timestamp": "2025-09-11T21:09:23.192435"
+    }
+  ]
+}
