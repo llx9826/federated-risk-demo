@@ -8,6 +8,27 @@
 
 ### 1. 运行完整测试套件
 
+#### 使用新的测试运行器（推荐）
+
+```bash
+# 快速测试（开发时使用）
+python scripts/test_runner.py quick
+
+# 完整测试（发布前使用）
+python scripts/test_runner.py full
+
+# 仅健康检查
+python scripts/test_runner.py health
+
+# 仅API测试
+python scripts/test_runner.py api
+
+# 仅性能测试
+python scripts/test_runner.py perf
+```
+
+#### 使用传统脚本
+
 ```bash
 # 运行所有测试
 ./test.sh all
@@ -37,9 +58,46 @@
 
 ### 1. 自动化测试
 
-自动化测试脚本 `scripts/self_test.py` 提供了全面的系统测试功能。
+系统提供了多个测试工具，适用于不同的测试场景：
 
-#### 1.1 运行所有自动化测试
+#### 1.1 测试运行器 (test_runner.py)
+
+统一的测试入口，支持多种测试模式：
+
+```bash
+# 快速测试（开发时使用，< 30秒）
+python scripts/test_runner.py quick
+
+# 完整测试（发布前使用，2-5分钟）
+python scripts/test_runner.py full
+
+# 健康检查（仅检查服务状态）
+python scripts/test_runner.py health
+
+# API测试（仅测试API功能）
+python scripts/test_runner.py api
+
+# 性能测试（仅测试性能基准）
+python scripts/test_runner.py perf
+```
+
+#### 1.2 快速测试 (quick_test.py)
+
+适合开发过程中的快速验证：
+
+```bash
+python scripts/quick_test.py
+```
+
+#### 1.3 综合测试 (comprehensive_test.py)
+
+完整的系统测试套件：
+
+```bash
+python scripts/comprehensive_test.py
+```
+
+#### 1.4 传统自测脚本 (self_test.py)
 
 ```bash
 # 基本模式
@@ -48,7 +106,9 @@
 # 详细模式
 ./test.sh self-test -v
 
-# 使用Python直接运行
+# 直接运行
+python scripts/self_test.py
+```# 使用Python直接运行
 python3 scripts/self_test.py --verbose
 ```
 

@@ -1,0 +1,236 @@
+{
+  "summary": {
+    "start_time": "2025-09-11T21:43:32.026639",
+    "end_time": "2025-09-11T21:43:32.267060",
+    "total_duration": 0.240421,
+    "total_tests": 23,
+    "passed_tests": 11,
+    "failed_tests": 8,
+    "warned_tests": 4,
+    "success_rate": 47.82608695652174
+  },
+  "categories": {
+    "健康检查": {
+      "total": 5,
+      "passed": 3,
+      "failed": 2,
+      "warned": 0
+    },
+    "API测试": {
+      "total": 5,
+      "passed": 1,
+      "failed": 4,
+      "warned": 0
+    },
+    "数据流": {
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "warned": 0
+    },
+    "性能": {
+      "total": 4,
+      "passed": 3,
+      "failed": 1,
+      "warned": 0
+    },
+    "安全性": {
+      "total": 5,
+      "passed": 1,
+      "failed": 0,
+      "warned": 4
+    },
+    "集成": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1,
+      "warned": 0
+    }
+  },
+  "detailed_results": [
+    {
+      "category": "健康检查",
+      "test_name": "consent服务",
+      "status": "FAIL",
+      "duration": 0.007684946060180664,
+      "details": "状态码: 404",
+      "timestamp": "2025-09-11T21:43:32.034366"
+    },
+    {
+      "category": "健康检查",
+      "test_name": "psi服务",
+      "status": "PASS",
+      "duration": 0.01421213150024414,
+      "details": "状态: healthy",
+      "timestamp": "2025-09-11T21:43:32.048609"
+    },
+    {
+      "category": "健康检查",
+      "test_name": "trainer服务",
+      "status": "PASS",
+      "duration": 0.016430139541625977,
+      "details": "状态: healthy",
+      "timestamp": "2025-09-11T21:43:32.065062"
+    },
+    {
+      "category": "健康检查",
+      "test_name": "explainer服务",
+      "status": "PASS",
+      "duration": 0.008043050765991211,
+      "details": "状态: healthy",
+      "timestamp": "2025-09-11T21:43:32.073134"
+    },
+    {
+      "category": "健康检查",
+      "test_name": "frontend服务",
+      "status": "FAIL",
+      "duration": 0.0020689964294433594,
+      "details": "状态码: 502",
+      "timestamp": "2025-09-11T21:43:32.075220"
+    },
+    {
+      "category": "API测试",
+      "test_name": "同意服务文档",
+      "status": "PASS",
+      "duration": 0.003454923629760742,
+      "details": "文档可访问: True",
+      "timestamp": "2025-09-11T21:43:32.078712"
+    },
+    {
+      "category": "API测试",
+      "test_name": "创建同意记录",
+      "status": "FAIL",
+      "duration": 0.004029035568237305,
+      "details": "状态码: 405",
+      "timestamp": "2025-09-11T21:43:32.082762"
+    },
+    {
+      "category": "API测试",
+      "test_name": "PSI会话创建",
+      "status": "FAIL",
+      "duration": 0.0056378841400146484,
+      "details": "状态码: 422",
+      "timestamp": "2025-09-11T21:43:32.088456"
+    },
+    {
+      "category": "API测试",
+      "test_name": "训练任务创建",
+      "status": "FAIL",
+      "duration": 0.0037009716033935547,
+      "details": "状态码: 404",
+      "timestamp": "2025-09-11T21:43:32.092214"
+    },
+    {
+      "category": "API测试",
+      "test_name": "模型上传",
+      "status": "FAIL",
+      "duration": 0.0038080215454101562,
+      "details": "状态码: 422",
+      "timestamp": "2025-09-11T21:43:32.096071"
+    },
+    {
+      "category": "数据流",
+      "test_name": "数据文件: data/synth/partyA_bank.csv",
+      "status": "PASS",
+      "duration": 6.699562072753906e-05,
+      "details": "文件大小: 1003627 bytes",
+      "timestamp": "2025-09-11T21:43:32.096198"
+    },
+    {
+      "category": "数据流",
+      "test_name": "数据文件: data/synth/partyB_ecom.csv",
+      "status": "PASS",
+      "duration": 4.8160552978515625e-05,
+      "details": "文件大小: 961174 bytes",
+      "timestamp": "2025-09-11T21:43:32.096281"
+    },
+    {
+      "category": "数据流",
+      "test_name": "数据文件: data/synth/metadata.json",
+      "status": "PASS",
+      "duration": 1.6927719116210938e-05,
+      "details": "文件大小: 939 bytes",
+      "timestamp": "2025-09-11T21:43:32.096309"
+    },
+    {
+      "category": "性能",
+      "test_name": "consent服务响应时间",
+      "status": "FAIL",
+      "duration": 0,
+      "details": "无法获取响应时间",
+      "timestamp": "2025-09-11T21:43:32.113851"
+    },
+    {
+      "category": "性能",
+      "test_name": "psi服务响应时间",
+      "status": "PASS",
+      "duration": 0.010877180099487304,
+      "details": "平均响应时间: 0.011s",
+      "timestamp": "2025-09-11T21:43:32.168268"
+    },
+    {
+      "category": "性能",
+      "test_name": "trainer服务响应时间",
+      "status": "PASS",
+      "duration": 0.0067561626434326175,
+      "details": "平均响应时间: 0.007s",
+      "timestamp": "2025-09-11T21:43:32.202073"
+    },
+    {
+      "category": "性能",
+      "test_name": "explainer服务响应时间",
+      "status": "PASS",
+      "duration": 0.007492637634277344,
+      "details": "平均响应时间: 0.007s",
+      "timestamp": "2025-09-11T21:43:32.239567"
+    },
+    {
+      "category": "安全性",
+      "test_name": "环境变量配置",
+      "status": "PASS",
+      "duration": 0.000377655029296875,
+      "details": "环境变量配置存在",
+      "timestamp": "2025-09-11T21:43:32.239996"
+    },
+    {
+      "category": "安全性",
+      "test_name": "consent安全头检查",
+      "status": "WARN",
+      "duration": 0.0033750534057617188,
+      "details": "缺少安全头",
+      "timestamp": "2025-09-11T21:43:32.243383"
+    },
+    {
+      "category": "安全性",
+      "test_name": "psi安全头检查",
+      "status": "WARN",
+      "duration": 0.007906913757324219,
+      "details": "缺少安全头",
+      "timestamp": "2025-09-11T21:43:32.251304"
+    },
+    {
+      "category": "安全性",
+      "test_name": "trainer安全头检查",
+      "status": "WARN",
+      "duration": 0.0053539276123046875,
+      "details": "缺少安全头",
+      "timestamp": "2025-09-11T21:43:32.256675"
+    },
+    {
+      "category": "安全性",
+      "test_name": "explainer安全头检查",
+      "status": "WARN",
+      "duration": 0.006716012954711914,
+      "details": "缺少安全头",
+      "timestamp": "2025-09-11T21:43:32.263418"
+    },
+    {
+      "category": "集成",
+      "test_name": "服务间通信",
+      "status": "FAIL",
+      "duration": 0.003536224365234375,
+      "details": "部分服务不可达",
+      "timestamp": "2025-09-11T21:43:32.267014"
+    }
+  ]
+}

@@ -113,8 +113,33 @@ services:
     networks:
       - federated-net
 
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=federated_risk
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=123456
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - federated-net
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --requirepass 123456
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - federated-net
+
 volumes:
   artifacts:
+  postgres_data:
+  redis_data:
 
 networks:
   federated-net:

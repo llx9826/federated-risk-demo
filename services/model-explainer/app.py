@@ -50,7 +50,7 @@ from fairlearn.metrics import MetricFrame, selection_rate
 from fairlearn.postprocessing import ThresholdOptimizer
 
 # 环境配置
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:password@localhost:5432/federated_risk")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://root:123456@localhost:5432/federated_risk")
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
 CONSENT_GATEWAY_URL = os.getenv("CONSENT_GATEWAY_URL", "http://localhost:8001")
 MODEL_STORAGE_PATH = os.getenv("MODEL_STORAGE_PATH", "./data/models")
@@ -1485,6 +1485,7 @@ async def shutdown_event():
 
 async def periodic_cleanup():
     """定期清理任务"""
+    import asyncio
     while True:
         try:
             await asyncio.sleep(3600)  # 每小时执行一次

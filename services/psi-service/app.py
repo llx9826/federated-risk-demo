@@ -46,7 +46,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # 环境变量配置
-DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://user:pass@localhost/psi_service_db')
+DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://root:123456@localhost:5432/federated_risk')
 REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379')
 DATA_STORE_PATH = os.getenv('DATA_STORE_PATH', './data/psi')
 CONSENT_GATEWAY_URL = os.getenv('CONSENT_GATEWAY_URL', 'http://consent-gateway:8080')

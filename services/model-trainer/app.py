@@ -44,10 +44,10 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # 环境变量配置
-DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://user:pass@localhost/trainer_db')
+DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://root:123456@localhost:5432/federated_risk')
 REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379')
-MODEL_STORAGE_PATH = os.getenv('MODEL_STORAGE_PATH', '/app/models')
-REPORTS_PATH = os.getenv('REPORTS_PATH', '/app/reports')
+MODEL_STORAGE_PATH = os.getenv('MODEL_STORAGE_PATH', './models')
+REPORTS_PATH = os.getenv('REPORTS_PATH', './reports')
 FEATURE_STORE_URL = os.getenv('FEATURE_STORE_URL', 'http://feature-store:8080')
 MODEL_SERVING_URL = os.getenv('MODEL_SERVING_URL', 'http://model-serving:8080')
 AUDIT_SERVICE_URL = os.getenv('AUDIT_SERVICE_URL', 'http://audit-ledger:8080')
@@ -227,9 +227,28 @@ async def init_redis():
     """初始化Redis连接"""
     global redis_client
     try:
-        redis_client = redis.from_url(REDIS_URL, decode_responses=True)
-        await redis_client.ping()
-        logger.info("Redis连接初始化成功")
+        # 先尝试无密码连接
+        try:
+            redis_client = redis.Redis(
+                host='localhost',
+                port=6379,
+                db=0,
+                decode_responses=True
+            )
+            await redis_client.ping()
+            logger.info("Redis连接初始化成功(无密码)")
+            return
+        except:
+            # 如果无密码连接失败，尝试使用密码
+            redis_client = redis.Redis(
+                host='localhost',
+                port=6379,
+                password='123456',
+                db=0,
+                decode_responses=True
+            )
+            await redis_client.ping()
+            logger.info("Redis连接初始化成功(有密码)")
     except Exception as e:
         logger.error(f"Redis初始化失败: {e}")
         raise
