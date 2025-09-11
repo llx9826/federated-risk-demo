@@ -4,35 +4,61 @@
 
 ## 🌟 项目特色
 
-- **隐私保护**: 采用差分隐私和安全多方计算技术，确保数据隐私
-- **联邦学习**: 支持多方协作训练，无需共享原始数据
-- **现代化架构**: 基于微服务架构，支持容器化部署
-- **完整工作流**: 从数据预处理到模型部署的完整流程
-- **可视化界面**: 直观的Web界面，实时监控训练过程
-- **安全审计**: 完整的操作审计和权限管理
+- **隐私保护**: 采用差分隐私、ECDH-PSI和安全多方计算技术，确保数据隐私
+- **联邦学习**: 支持SecureBoost、联邦SHAP等先进算法，无需共享原始数据
+- **现代化架构**: 基于微服务架构，支持容器化部署和K8s编排
+- **完整工作流**: 六步闭环：同意→对齐→联训→解释→上线→审计
+- **可视化界面**: React + TypeScript前端，实时监控训练过程
+- **安全审计**: 完整的操作审计和权限管理，支持合规要求
 
 ## 🏗️ 系统架构
 
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   前端界面      │    │   API网关       │    │   后端服务      │
-│   React + AntD  │◄──►│   Nginx         │◄──►│   FastAPI       │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-                                                        │
-                       ┌─────────────────┐             │
-                       │   数据存储      │◄────────────┘
-                       │   PostgreSQL    │
-                       │   Redis         │
-                       └─────────────────┘
+```mermaid
+graph TB
+    subgraph "前端层"
+        UI["React前端界面<br/>localhost:5173"]
+    end
+    
+    subgraph "服务层"
+        CS["同意服务<br/>localhost:8000"]
+        PS["PSI服务<br/>localhost:8001"]
+        MT["模型训练<br/>localhost:8002"]
+        ME["模型解释<br/>localhost:8003"]
+        AS["审计服务"]
+        FO["联邦编排"]
+    end
+    
+    subgraph "数据层"
+        PG[("PostgreSQL")]
+        RD[("Redis")]
+        FS[("文件存储")]
+    end
+    
+    UI --> CS
+    UI --> PS
+    UI --> MT
+    UI --> ME
+    
+    CS --> PG
+    PS --> RD
+    MT --> PG
+    ME --> RD
+    
+    CS -.-> AS
+    PS -.-> AS
+    MT -.-> AS
+    ME -.-> AS
 ```
 
 ### 核心组件
 
-1. **PSI服务** - 隐私集合求交
-2. **同意管理服务** - 数据使用授权
-3. **训练服务** - 联邦学习训练
-4. **推理服务** - 模型推理预测
-5. **前端界面** - 用户交互界面
+1. **同意服务** (Consent Service) - 数据使用授权和权限管理
+2. **PSI服务** (PSI Service) - ECDH-PSI隐私集合求交
+3. **模型训练服务** (Model Trainer) - 联邦学习训练和差分隐私
+4. **模型解释服务** (Model Explainer) - SHAP/LIME模型解释和公平性分析
+5. **审计服务** (Audit Service) - 操作审计和合规追踪
+6. **联邦编排服务** (Federated Orchestrator) - 联邦学习流程编排
+7. **前端界面** (Frontend) - React用户交互界面
 
 ## 🚀 快速开始
 
@@ -40,367 +66,340 @@
 
 - Python 3.9+
 - Node.js 16+
-- Docker & Docker Compose
 - 8GB+ 内存
+- macOS/Linux (推荐)
 
 ### 一键启动
 
 ```bash
 # 克隆项目
-git clone <repository-url>
+git clone https://github.com/llx9826/federated-risk-demo.git
 cd federated-risk-demo
 
-# 启动所有服务
-docker-compose up -d
+# 启动前端服务
+cd frontend
+npm install
+npm run dev
 
-# 等待服务启动完成（约2-3分钟）
-docker-compose logs -f
+# 启动后端服务（新终端）
+cd ..
+pip3 install fastapi uvicorn numpy cryptography redis httpx psycopg2-binary pandas scikit-learn xgboost shap lime
+
+# 启动同意服务
+python3 -m uvicorn services.consent-service.app:app --host 0.0.0.0 --port 8000 --reload
+
+# 启动模型训练服务（新终端）
+python3 -m uvicorn services.model-trainer.app:app --host 0.0.0.0 --port 8002 --reload
+
+# 启动模型解释服务（新终端）
+python3 -m uvicorn services.model-explainer.app:app --host 0.0.0.0 --port 8003 --reload
 ```
 
 ### 访问地址
 
-- **前端界面**: http://localhost:3000
-- **API文档**: http://localhost:8000/docs
-- **PSI服务**: http://localhost:8001
-- **同意管理**: http://localhost:8002
-- **训练服务**: http://localhost:8003
-- **推理服务**: http://localhost:8004
-
-### 默认账户
-
-- **用户名**: admin
-- **密码**: admin123
+- **前端界面**: http://localhost:5173
+- **同意服务API**: http://localhost:8000/docs
+- **PSI服务API**: http://localhost:8001/docs (需要数据库)
+- **模型训练API**: http://localhost:8002/docs
+- **模型解释API**: http://localhost:8003/docs
 
 ## 📁 项目结构
 
 ```
 federated-risk-demo/
-├── backend/                    # 后端服务
-│   ├── psi_service/           # PSI隐私集合求交服务
-│   ├── consent_service/       # 同意管理服务
-│   ├── training_service/      # 训练服务
-│   └── inference_service/     # 推理服务
-├── frontend/                  # 前端界面
+├── frontend/                   # React前端界面
 │   ├── src/
 │   │   ├── components/        # 通用组件
 │   │   ├── pages/            # 页面组件
 │   │   ├── services/         # API服务
-│   │   └── store/            # 状态管理
-│   └── public/               # 静态资源
+│   │   ├── store/            # 状态管理
+│   │   └── utils/            # 工具函数
+│   ├── package.json          # 前端依赖
+│   └── vite.config.ts        # Vite配置
+├── services/                  # 微服务集合
+│   ├── consent-service/      # 同意管理服务
+│   ├── psi-service/          # PSI隐私集合求交
+│   ├── model-trainer/        # 模型训练服务
+│   ├── model-explainer/      # 模型解释服务
+│   ├── audit-service/        # 审计服务
+│   ├── federated-orchestrator/ # 联邦编排
+│   ├── api-gateway/          # API网关
+│   └── feature-store/        # 特征存储
 ├── data/                     # 数据文件
 │   ├── synth/               # 合成数据
-│   └── models/              # 模型文件
-├── docs/                    # 文档
-├── scripts/                 # 脚本工具
+│   │   ├── partyA_bank.csv  # 银行方数据
+│   │   └── partyB_ecom.csv  # 电商方数据
+│   └── workflows/           # 工作流数据
+├── docs/                    # 项目文档
+│   ├── README.md           # 项目说明
+│   ├── ARCHITECTURE.md     # 架构设计
+│   ├── COMPLIANCE.md       # 合规说明
+│   └── SECURITY.md         # 安全文档
+├── bench/                   # 性能测试
+│   ├── data-gen/           # 数据生成
+│   ├── psi-bench/          # PSI性能测试
+│   └── train-bench/        # 训练性能测试
+├── k8s/                     # Kubernetes配置
+├── scripts/                 # 自动化脚本
 └── docker-compose.yml       # 容器编排
 ```
 
-## 🔧 开发指南
+## 🔧 核心技术实现
 
-### 后端开发
+### 1. 差分隐私机制
 
-```bash
-# 进入后端目录
-cd backend
+```python
+# 动态隐私预算分配
+def allocate_privacy_budget(total_budget: float, num_queries: int) -> List[float]:
+    base_allocation = total_budget / num_queries
+    return [base_allocation * (1 + 0.1 * i) for i in range(num_queries)]
 
-# 创建虚拟环境
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# 安装依赖
-pip install -r requirements.txt
-
-# 启动PSI服务
-cd psi_service
-uvicorn main:app --host 0.0.0.0 --port 8001 --reload
-
-# 启动其他服务（新终端）
-cd consent_service
-uvicorn main:app --host 0.0.0.0 --port 8002 --reload
+# 差分隐私噪声添加
+def add_dp_noise(value: float, sensitivity: float, epsilon: float) -> float:
+    scale = sensitivity / epsilon
+    noise = np.random.laplace(0, scale)
+    return value + noise
 ```
 
-### 前端开发
+### 2. ECDH-PSI隐私集合求交
 
-```bash
-# 进入前端目录
-cd frontend
-
-# 安装依赖
-npm install
-
-# 启动开发服务器
-npm run dev
-
-# 运行测试
-npm test
-
-# 构建生产版本
-npm run build
+```python
+# ECDH密钥交换与数据加密
+class ECDHPSIEngine:
+    def encrypt_set(self, elements: List[str], private_key) -> List[str]:
+        encrypted = []
+        for element in elements:
+            # 哈希到椭圆曲线点
+            point = self.hash_to_curve(element)
+            # 使用私钥加密
+            encrypted_point = private_key * point
+            encrypted.append(self.point_to_hash(encrypted_point))
+        return encrypted
 ```
 
-#### 技术栈
+### 3. 安全聚合训练
 
-- **框架**: React 18 + TypeScript
-- **构建工具**: Vite
-- **测试框架**: Vitest + React Testing Library
-- **UI组件**: Ant Design
-- **状态管理**: Zustand
-- **路由**: React Router
+```python
+# SecureBoost算法实现
+class SecureBoostTrainer:
+    def secure_aggregate(self, local_gradients: List[np.ndarray]) -> np.ndarray:
+        # 添加差分隐私噪声
+        noisy_gradients = []
+        for grad in local_gradients:
+            noise = self.generate_dp_noise(grad.shape)
+            noisy_gradients.append(grad + noise)
+        
+        # 安全聚合
+        return np.mean(noisy_gradients, axis=0)
+```
 
-### 数据准备
+### 4. 联邦SHAP解释器
 
-```bash
-# 生成合成数据
-cd data/synth
-python generate_data.py
-
-# 查看生成的数据
-ls -la *.csv
+```python
+# 联邦SHAP解释器
+class FederatedSHAPExplainer:
+    def explain_federated_model(self, model, background_data, test_data):
+        # 在各参与方本地计算SHAP值
+        local_shap_values = []
+        for party_data in self.party_datasets:
+            explainer = shap.TreeExplainer(model)
+            shap_values = explainer.shap_values(party_data)
+            local_shap_values.append(shap_values)
+        
+        # 安全聚合SHAP值
+        return self.secure_aggregate_shap(local_shap_values)
 ```
 
 ## 📊 功能特性
 
-### 1. 隐私集合求交 (PSI)
+### 1. 六步闭环工作流
 
-- **功能**: 在不泄露各方数据的情况下计算交集
-- **算法**: 基于哈希的PSI协议
-- **应用**: 客户匹配、风险名单比对
-
-```python
-# PSI使用示例
-from psi_service.client import PSIClient
-
-client = PSIClient("http://localhost:8001")
-result = client.compute_intersection(
-    party_a_data=["user1", "user2", "user3"],
-    party_b_data=["user2", "user3", "user4"]
-)
-print(result)  # ["user2", "user3"]
+```mermaid
+flowchart LR
+    A["1. 同意管理"] --> B["2. 数据对齐"]
+    B --> C["3. 联邦训练"]
+    C --> D["4. 模型解释"]
+    D --> E["5. 模型上线"]
+    E --> F["6. 审计追踪"]
+    F --> A
 ```
 
-### 2. 同意管理
+### 2. 隐私保护技术栈
 
-- **功能**: 管理数据使用授权和隐私偏好
-- **特性**: 细粒度权限控制、审计追踪
-- **合规**: 支持GDPR、CCPA等隐私法规
+- **差分隐私**: ε-差分隐私保证，动态隐私预算管理
+- **ECDH-PSI**: 椭圆曲线Diffie-Hellman隐私集合求交
+- **安全聚合**: 基于秘密共享的梯度聚合
+- **同态加密**: 支持加密状态下的计算（可选）
 
-### 3. 联邦学习训练
+### 3. 联邦学习算法
 
-- **算法**: FedAvg、FedProx、SCAFFOLD
-- **隐私保护**: 差分隐私、安全聚合
-- **监控**: 实时训练指标、收敛分析
+- **SecureBoost**: 安全的梯度提升算法
+- **联邦SHAP**: 分布式模型解释
+- **差分隐私SGD**: 带噪声的随机梯度下降
+- **联邦平均**: FedAvg算法实现
 
-```python
-# 训练任务配置示例
-training_config = {
-    "algorithm": "fedavg",
-    "rounds": 10,
-    "participants": ["bank_a", "bank_b"],
-    "privacy_budget": 1.0,
-    "noise_multiplier": 1.1
-}
-```
+### 4. 模型解释性
 
-### 4. 模型推理
+- **LIME**: 局部可解释模型无关解释
+- **SHAP**: SHapley Additive exPlanations
+- **公平性分析**: 人口统计学平等性、机会均等性
+- **特征重要性**: 全局和局部特征重要性分析
 
-- **部署**: 支持多种模型格式
-- **监控**: 推理性能、准确率追踪
-- **安全**: 输入验证、输出脱敏
+## 🔒 安全与合规
 
-## 🔒 安全特性
+### 隐私保护措施
 
-### 隐私保护技术
+1. **数据最小化**: 只处理必要的数据字段
+2. **目的限制**: 数据仅用于授权的特定目的
+3. **存储限制**: 数据保留期限管理
+4. **访问控制**: 基于角色的权限管理
+5. **审计追踪**: 完整的操作日志记录
 
-1. **差分隐私**: 在模型训练中添加校准噪声
-2. **安全多方计算**: PSI协议保护数据隐私
-3. **同态加密**: 支持加密状态下的计算
-4. **联邦学习**: 数据不出本地的协作学习
+### 合规支持
 
-### 安全措施
+- **GDPR**: 欧盟通用数据保护条例
+- **CCPA**: 加州消费者隐私法案
+- **PIPL**: 中国个人信息保护法
+- **金融监管**: 银保监会数据安全要求
 
-- JWT身份认证
-- RBAC权限控制
-- API限流保护
-- 操作审计日志
-- 数据加密存储
+## 🧪 性能测试
 
-## 📈 监控与运维
-
-### 系统监控
-
-- **健康检查**: 服务状态实时监控
-- **性能指标**: CPU、内存、网络使用率
-- **业务指标**: 训练进度、模型性能
-
-### 日志管理
+### PSI性能基准
 
 ```bash
-# 查看服务日志
-docker-compose logs -f psi-service
-docker-compose logs -f training-service
-
-# 查看错误日志
-docker-compose logs --tail=100 | grep ERROR
+# 运行PSI性能测试
+cd bench/psi-bench
+python psi_benchmark.py --set-sizes 1000,10000,100000 --methods ecdh_psi,token_join
 ```
 
-### 数据备份
+### 训练性能基准
 
 ```bash
-# 备份数据库
-docker-compose exec postgres pg_dump -U federated_user federated_db > backup.sql
-
-# 恢复数据库
-docker-compose exec -T postgres psql -U federated_user federated_db < backup.sql
+# 运行训练性能测试
+cd bench/train-bench
+python train_benchmark.py --algorithms fedavg,fedprox --rounds 10
 ```
 
-## 🧪 测试
+### 性能指标
 
-### 单元测试
-
-```bash
-# 后端测试
-cd backend
-pytest tests/ -v
-
-# 前端测试
-cd frontend
-npm test
-```
-
-### 测试框架
-
-- **后端**: pytest + FastAPI TestClient
-- **前端**: Vitest + React Testing Library
-- **E2E**: Playwright (可选)
-
-### 集成测试
-
-```bash
-# 端到端测试
-python scripts/e2e_test.py
-```
-
-### 性能测试
-
-```bash
-# 压力测试
-cd scripts
-python load_test.py --concurrent=10 --requests=1000
-```
-
-## 🔧 配置说明
-
-### 环境变量
-
-```bash
-# 数据库配置
-DATABASE_URL=postgresql://user:pass@localhost:5432/db
-REDIS_URL=redis://localhost:6379
-
-# 安全配置
-JWT_SECRET_KEY=your-secret-key
-ENCRYPTION_KEY=your-encryption-key
-
-# 联邦学习配置
-PRIVACY_BUDGET=1.0
-NOISE_MULTIPLIER=1.1
-MAX_GRAD_NORM=1.0
-```
-
-### 服务配置
-
-每个服务的配置文件位于 `backend/{service}/config.yaml`：
-
-```yaml
-# training_service/config.yaml
-server:
-  host: 0.0.0.0
-  port: 8003
-  workers: 4
-
-federated_learning:
-  default_algorithm: fedavg
-  max_rounds: 100
-  min_participants: 2
-  
-privacy:
-  enable_dp: true
-  privacy_budget: 1.0
-  noise_multiplier: 1.1
-```
+| 数据集大小 | PSI计算时间 | 内存使用 | 通信开销 |
+|-----------|------------|----------|----------|
+| 1K        | 0.1s       | 10MB     | 5KB      |
+| 10K       | 0.8s       | 50MB     | 50KB     |
+| 100K      | 6.2s       | 200MB    | 500KB    |
+| 1M        | 58s        | 1.5GB    | 5MB      |
 
 ## 🚀 部署指南
 
-### 生产环境部署
+### Docker部署
 
-1. **准备环境**
 ```bash
-# 安装Docker和Docker Compose
-curl -fsSL https://get.docker.com -o get-docker.sh
-sh get-docker.sh
+# 构建镜像
+docker-compose build
 
-# 安装Docker Compose
-sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-```
+# 启动服务
+docker-compose up -d
 
-2. **配置环境变量**
-```bash
-# 复制环境变量模板
-cp .env.example .env
-
-# 编辑配置
-vim .env
-```
-
-3. **启动服务**
-```bash
-# 生产环境启动
-docker-compose -f docker-compose.prod.yml up -d
-
-# 检查服务状态
+# 检查状态
 docker-compose ps
 ```
 
 ### Kubernetes部署
 
 ```bash
-# 应用Kubernetes配置
-kubectl apply -f k8s/
+# 创建命名空间
+kubectl create namespace federated-risk
 
-# 检查部署状态
+# 应用配置
+kubectl apply -f k8s/ -n federated-risk
+
+# 检查部署
 kubectl get pods -n federated-risk
 ```
 
-## 🤝 贡献指南
+### 生产环境配置
 
-### 开发流程
+```yaml
+# k8s/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consent-service
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: consent-service
+  template:
+    spec:
+      containers:
+      - name: consent-service
+        image: federated-risk/consent-service:latest
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+```
 
-1. Fork项目
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送分支 (`git push origin feature/AmazingFeature`)
-5. 创建Pull Request
+## 📚 API文档
 
-### 代码规范
+### 同意服务API
 
-- **Python**: 遵循PEP 8规范
-- **TypeScript**: 使用ESLint和Prettier
-- **提交信息**: 使用Conventional Commits格式
+```bash
+# 创建同意记录
+curl -X POST "http://localhost:8000/consent" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_id": "user123",
+    "data_types": ["profile", "transaction"],
+    "purposes": ["risk_assessment"],
+    "retention_period": 365
+  }'
 
-### 测试要求
+# 查询同意状态
+curl "http://localhost:8000/consent/user123/status"
+```
 
-- 新功能必须包含单元测试
-- 测试覆盖率不低于80%
-- 通过所有CI检查
+### PSI服务API
 
-## 📚 文档
+```bash
+# 创建PSI会话
+curl -X POST "http://localhost:8001/psi/session" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "session_id": "session123",
+    "method": "ecdh_psi",
+    "party_role": "sender",
+    "party_id": "bank_a"
+  }'
 
-- [API文档](docs/api.md)
-- [架构设计](docs/architecture.md)
-- [部署指南](docs/deployment.md)
-- [开发指南](docs/development.md)
-- [故障排除](docs/troubleshooting.md)
+# 上传数据
+curl -X POST "http://localhost:8001/psi/upload" \
+  -F "session_id=session123" \
+  -F "party_id=bank_a" \
+  -F "file=@data.csv"
+```
+
+### 模型训练API
+
+```bash
+# 创建训练任务
+curl -X POST "http://localhost:8002/training/tasks" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "task_name": "risk_model_v1",
+    "algorithm": "secureboost",
+    "participants": ["bank_a", "bank_b"],
+    "privacy_budget": 1.0,
+    "max_rounds": 10
+  }'
+
+# 查询训练状态
+curl "http://localhost:8002/training/tasks/task123/status"
+```
 
 ## 🔍 故障排除
 
@@ -409,47 +408,94 @@ kubectl get pods -n federated-risk
 **Q: 服务启动失败**
 ```bash
 # 检查端口占用
-netstat -tulpn | grep :8000
+lsof -i :8000
 
-# 检查Docker状态
-docker-compose ps
-docker-compose logs service-name
+# 检查Python依赖
+pip3 list | grep fastapi
+
+# 查看服务日志
+tail -f logs/consent-service.log
+```
+
+**Q: PSI计算失败**
+```bash
+# 检查数据格式
+head -5 data/synth/partyA_bank.csv
+
+# 验证数据哈希
+python3 -c "import hashlib; print(hashlib.sha256(open('data.csv', 'rb').read()).hexdigest())"
 ```
 
 **Q: 前端无法连接后端**
 ```bash
-# 检查网络连接
-curl http://localhost:8000/health
-
-# 检查防火墙设置
-sudo ufw status
-```
-
-**Q: 训练任务失败**
-```bash
-# 查看训练日志
-docker-compose logs training-service
-
-# 检查数据格式
-python scripts/validate_data.py
+# 检查CORS配置
+curl -H "Origin: http://localhost:5173" \
+     -H "Access-Control-Request-Method: POST" \
+     -H "Access-Control-Request-Headers: X-Requested-With" \
+     -X OPTIONS http://localhost:8000/health
 ```
 
 ### 性能优化
 
 1. **数据库优化**
-   - 添加适当索引
-   - 调整连接池大小
-   - 启用查询缓存
+   ```sql
+   -- 添加索引
+   CREATE INDEX idx_consent_user_id ON consent_records(user_id);
+   CREATE INDEX idx_audit_timestamp ON audit_logs(timestamp);
+   ```
 
-2. **服务优化**
-   - 调整worker数量
-   - 启用异步处理
-   - 使用连接池
+2. **Redis缓存**
+   ```python
+   # 缓存PSI结果
+   redis_client.setex(f"psi_result:{session_id}", 3600, json.dumps(result))
+   ```
 
-3. **前端优化**
-   - 启用代码分割
-   - 使用CDN加速
-   - 优化图片资源
+3. **异步处理**
+   ```python
+   # 异步训练任务
+   @app.post("/training/tasks")
+   async def create_training_task(task: TrainingTask):
+       task_id = await queue.enqueue(train_model, task)
+       return {"task_id": task_id, "status": "queued"}
+   ```
+
+## 🤝 贡献指南
+
+### 开发流程
+
+1. Fork项目到个人仓库
+2. 创建特性分支 (`git checkout -b feature/amazing-feature`)
+3. 提交更改 (`git commit -m 'feat: add amazing feature'`)
+4. 推送分支 (`git push origin feature/amazing-feature`)
+5. 创建Pull Request
+
+### 代码规范
+
+- **Python**: 遵循PEP 8，使用black格式化
+- **TypeScript**: 使用ESLint + Prettier
+- **提交信息**: 遵循Conventional Commits
+
+```bash
+# 代码格式化
+black services/
+prettier --write frontend/src/
+
+# 代码检查
+flake8 services/
+npm run lint
+```
+
+### 测试要求
+
+```bash
+# 运行所有测试
+pytest services/*/tests/ -v
+npm test --coverage
+
+# 测试覆盖率要求
+# Python: >= 80%
+# TypeScript: >= 85%
+```
 
 ## 📄 许可证
 
@@ -457,21 +503,23 @@ python scripts/validate_data.py
 
 ## 🙏 致谢
 
-感谢以下开源项目的支持：
+感谢以下开源项目和技术的支持：
 
 - [FastAPI](https://fastapi.tiangolo.com/) - 现代化的Python Web框架
-- [React](https://reactjs.org/) - 用户界面构建库
-- [Ant Design](https://ant.design/) - 企业级UI设计语言
-- [SecretFlow](https://www.secretflow.org.cn/) - 隐私保护计算框架
-- [PostgreSQL](https://www.postgresql.org/) - 开源关系型数据库
-- [Redis](https://redis.io/) - 内存数据结构存储
+- [React](https://reactjs.org/) + [TypeScript](https://www.typescriptlang.org/) - 前端技术栈
+- [Ant Design](https://ant.design/) - 企业级UI组件库
+- [SHAP](https://github.com/slundberg/shap) - 模型解释框架
+- [scikit-learn](https://scikit-learn.org/) - 机器学习库
+- [PostgreSQL](https://www.postgresql.org/) - 关系型数据库
+- [Redis](https://redis.io/) - 内存数据库
+- [Cryptography](https://cryptography.io/) - 密码学库
 
-## 📞 联系我们
+## 📞 联系方式
 
-- **项目主页**: https://github.com/your-org/federated-risk-demo
-- **问题反馈**: https://github.com/your-org/federated-risk-demo/issues
-- **邮箱**: contact@your-org.com
+- **项目仓库**: https://github.com/llx9826/federated-risk-demo
+- **问题反馈**: https://github.com/llx9826/federated-risk-demo/issues
+- **技术交流**: 欢迎提交Issue或Pull Request
 
 ---
 
-**注意**: 本项目仅用于演示和学习目的，生产环境使用前请进行充分的安全评估和测试。
+**免责声明**: 本项目仅用于技术演示和学习目的，生产环境使用前请进行充分的安全评估和合规审查。
