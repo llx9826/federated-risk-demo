@@ -1,0 +1,681 @@
+2025-09-12 16:58:11.587 | INFO     | __main__:__init__:68 - 使用多进程模式，工作进程数: 4
+2025-09-12 16:58:11.587 | INFO     | __main__:run_large_scale_federated_training:329 - 开始大规模联邦训练: fed_train_large_1000000_3_1757667491
+2025-09-12 16:58:11.587 | INFO     | __main__:run_large_scale_federated_training:334 - 生成联邦数据集...
+2025-09-12 16:58:11.587 | INFO     | __main__:generate_large_federated_dataset:74 - 生成联邦数据集: 1,000,000 条记录, 3 个参与方
+2025-09-12 16:58:38.582 | ERROR    | __main__:main:620 - 测试失败: Object of type int64 is not JSON serializable
+2025-09-12 16:59:06.765 | INFO     | __main__:__init__:68 - 使用多进程模式，工作进程数: 4
+2025-09-12 16:59:06.766 | INFO     | __main__:run_large_scale_federated_training:329 - 开始大规模联邦训练: fed_train_large_1000000_3_1757667546
+2025-09-12 16:59:06.766 | INFO     | __main__:run_large_scale_federated_training:334 - 生成联邦数据集...
+2025-09-12 16:59:06.766 | INFO     | __main__:generate_large_federated_dataset:74 - 生成联邦数据集: 1,000,000 条记录, 3 个参与方
+2025-09-12 16:59:33.927 | INFO     | __main__:save_federated_dataset:180 - 联邦数据集已保存: data/train_results/federated_dataset_fed_train_large_1000000_3_1757667546
+2025-09-12 16:59:33.928 | INFO     | __main__:run_large_scale_federated_training:343 - 初始化联邦训练...
+2025-09-12 16:59:33.928 | INFO     | __main__:run_large_scale_federated_training:357 - 开始联邦训练: 最大 100 轮
+2025-09-12 16:59:37.788 | ERROR    | __main__:main:620 - 测试失败: shapes (800000,33) and (100,) not aligned: 33 (dim 1) != 100 (dim 0)
+2025-09-12 17:00:10.738 | INFO     | __main__:__init__:68 - 使用多进程模式，工作进程数: 4
+2025-09-12 17:00:10.738 | INFO     | __main__:run_large_scale_federated_training:334 - 开始大规模联邦训练: fed_train_large_1000000_3_1757667610
+2025-09-12 17:00:10.738 | INFO     | __main__:run_large_scale_federated_training:339 - 生成联邦数据集...
+2025-09-12 17:00:10.738 | INFO     | __main__:generate_large_federated_dataset:74 - 生成联邦数据集: 1,000,000 条记录, 3 个参与方
+2025-09-12 17:00:37.992 | INFO     | __main__:save_federated_dataset:180 - 联邦数据集已保存: data/train_results/federated_dataset_fed_train_large_1000000_3_1757667610
+2025-09-12 17:00:37.993 | INFO     | __main__:run_large_scale_federated_training:348 - 初始化联邦训练...
+2025-09-12 17:00:37.993 | INFO     | __main__:run_large_scale_federated_training:362 - 开始联邦训练: 最大 100 轮
+2025-09-12 17:00:41.359 | ERROR    | __main__:main:625 - 测试失败: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (3,) + inhomogeneous part.
+2025-09-12 17:02:47.375 | INFO     | __main__:__init__:68 - 使用多进程模式，工作进程数: 4
+2025-09-12 17:02:47.375 | INFO     | __main__:run_large_scale_federated_training:336 - 开始大规模联邦训练: fed_train_large_1000000_3_1757667767
+2025-09-12 17:02:47.375 | INFO     | __main__:run_large_scale_federated_training:341 - 生成联邦数据集...
+2025-09-12 17:02:47.375 | INFO     | __main__:generate_large_federated_dataset:74 - 生成联邦数据集: 1,000,000 条记录, 3 个参与方
+2025-09-12 17:03:14.261 | INFO     | __main__:save_federated_dataset:180 - 联邦数据集已保存: data/train_results/federated_dataset_fed_train_large_1000000_3_1757667767
+2025-09-12 17:03:14.261 | INFO     | __main__:run_large_scale_federated_training:350 - 初始化联邦训练...
+2025-09-12 17:03:14.261 | INFO     | __main__:run_large_scale_federated_training:364 - 开始联邦训练: 最大 100 轮
+2025-09-12 17:03:17.878 | ERROR    | __main__:main:627 - 测试失败: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (3,) + inhomogeneous part.
+2025-09-12 17:03:38.787 | INFO     | __main__:__init__:68 - 使用多进程模式，工作进程数: 4
+2025-09-12 17:03:38.787 | INFO     | __main__:run_large_scale_federated_training:356 - 开始大规模联邦训练: fed_train_large_1000000_3_1757667818
+2025-09-12 17:03:38.787 | INFO     | __main__:run_large_scale_federated_training:361 - 生成联邦数据集...
+2025-09-12 17:03:38.787 | INFO     | __main__:generate_large_federated_dataset:74 - 生成联邦数据集: 1,000,000 条记录, 3 个参与方
+2025-09-12 17:04:05.229 | INFO     | __main__:save_federated_dataset:180 - 联邦数据集已保存: data/train_results/federated_dataset_fed_train_large_1000000_3_1757667818
+2025-09-12 17:04:05.229 | INFO     | __main__:run_large_scale_federated_training:370 - 初始化联邦训练...
+2025-09-12 17:04:05.229 | INFO     | __main__:run_large_scale_federated_training:384 - 开始联邦训练: 最大 100 轮
+2025-09-12 17:04:08.700 | INFO     | __main__:secure_aggregate:318 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:04:08.701 | INFO     | __main__:secure_aggregate:318 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:04:08.702 | INFO     | __main__:secure_aggregate:318 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:04:08.702 | WARNING  | __main__:secure_aggregate:325 - Gradient shape mismatch: (34,) vs (33,), reshaping...
+2025-09-12 17:04:08.702 | ERROR    | __main__:secure_aggregate:329 - Cannot reshape gradient from (34,) to (33,)
+2025-09-12 17:04:08.703 | ERROR    | __main__:main:647 - 测试失败: operands could not be broadcast together with shapes (100,) (33,) (100,) 
+2025-09-12 17:05:12.578 | INFO     | __main__:__init__:68 - 使用多进程模式，工作进程数: 4
+2025-09-12 17:05:12.578 | INFO     | __main__:run_large_scale_federated_training:358 - 开始大规模联邦训练: fed_train_large_1000000_3_1757667912
+2025-09-12 17:05:12.579 | INFO     | __main__:run_large_scale_federated_training:363 - 生成联邦数据集...
+2025-09-12 17:05:12.579 | INFO     | __main__:generate_large_federated_dataset:74 - 生成联邦数据集: 1,000,000 条记录, 3 个参与方
+2025-09-12 17:05:39.650 | INFO     | __main__:save_federated_dataset:190 - 联邦数据集已保存: data/train_results/federated_dataset_fed_train_large_1000000_3_1757667912
+2025-09-12 17:05:39.650 | INFO     | __main__:run_large_scale_federated_training:372 - 初始化联邦训练...
+2025-09-12 17:05:39.650 | INFO     | __main__:run_large_scale_federated_training:386 - 开始联邦训练: 最大 100 轮
+2025-09-12 17:05:43.160 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:05:43.161 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:05:43.161 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:05:43.161 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:05:46.680 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:05:46.681 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:05:46.681 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:05:46.681 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:05:50.034 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:05:50.035 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:05:50.035 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:05:50.035 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:05:53.210 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:05:53.210 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:05:53.210 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:05:53.210 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:05:56.925 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:05:56.926 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:05:56.927 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:05:56.927 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:06:00.368 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:00.368 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:00.368 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:00.368 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:06:03.915 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:03.916 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:03.916 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:03.916 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:06:07.170 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:07.170 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:07.170 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:07.170 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:06:10.303 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:10.304 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:10.304 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:10.304 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:06:13.695 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:13.696 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:13.696 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:13.696 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:06:13.696 | INFO     | __main__:run_large_scale_federated_training:472 - 轮次 10: AUC=0.6344, KS=0.3734
+2025-09-12 17:06:16.916 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:16.917 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:16.917 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:16.917 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:06:20.052 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:20.052 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:20.052 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:20.052 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:06:23.330 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:23.331 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:23.331 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:23.331 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:06:26.491 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:26.491 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:26.491 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:26.491 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:06:29.846 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:29.847 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:29.847 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:29.847 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:06:33.083 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:33.083 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:33.084 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:33.084 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:06:36.269 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:36.270 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:36.270 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:36.270 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:06:39.373 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:39.373 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:39.373 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:39.373 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:06:42.499 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:42.500 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:42.500 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:42.500 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:06:45.768 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:45.769 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:45.769 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:45.769 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:06:45.769 | INFO     | __main__:run_large_scale_federated_training:472 - 轮次 20: AUC=0.7703, KS=0.4598
+2025-09-12 17:06:49.142 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:49.143 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:49.143 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:49.143 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:06:52.271 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:52.272 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:52.272 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:52.272 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:06:55.526 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:55.527 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:55.527 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:55.527 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:06:58.679 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:58.679 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:58.679 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:06:58.679 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:07:02.085 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:02.085 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:02.085 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:02.086 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:07:05.334 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:05.335 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:05.335 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:05.335 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:07:08.741 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:08.741 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:08.741 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:08.741 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:07:11.928 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:11.928 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:11.928 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:11.929 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:07:15.101 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:15.102 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:15.102 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:15.102 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:07:18.225 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:18.226 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:18.226 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:18.226 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:07:18.226 | INFO     | __main__:run_large_scale_federated_training:472 - 轮次 30: AUC=0.8067, KS=0.4902
+2025-09-12 17:07:21.433 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:21.433 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:21.433 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:21.433 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:07:24.655 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:24.656 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:24.656 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:24.656 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:07:27.863 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:27.864 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:27.864 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:27.864 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:07:31.094 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:31.094 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:31.094 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:31.094 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:07:34.314 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:34.314 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:34.314 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:34.314 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:07:37.486 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:37.486 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:37.486 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:37.486 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:07:40.675 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:40.675 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:40.675 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:40.675 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:07:43.892 | INFO     | __main__:secure_aggregate:328 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:43.892 | INFO     | __main__:secure_aggregate:328 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:43.892 | INFO     | __main__:secure_aggregate:328 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:07:43.892 | INFO     | __main__:secure_aggregate:332 - Total features across all parties: 100
+2025-09-12 17:07:43.892 | INFO     | __main__:run_large_scale_federated_training:467 - 早停触发: 连续 5 轮无改善
+2025-09-12 17:07:43.893 | INFO     | __main__:run_large_scale_federated_training:477 - 测试推理延迟...
+2025-09-12 17:07:43.896 | ERROR    | __main__:main:656 - 测试失败: 'FederatedTrainingBenchmarkLarge' object has no attribute 'use_ray'
+2025-09-12 17:08:08.221 | INFO     | __main__:__init__:71 - 使用多进程模式，工作进程数: 4
+2025-09-12 17:08:08.222 | INFO     | __main__:run_large_scale_federated_training:361 - 开始大规模联邦训练: fed_train_large_1000000_3_1757668088
+2025-09-12 17:08:08.222 | INFO     | __main__:run_large_scale_federated_training:366 - 生成联邦数据集...
+2025-09-12 17:08:08.222 | INFO     | __main__:generate_large_federated_dataset:77 - 生成联邦数据集: 1,000,000 条记录, 3 个参与方
+2025-09-12 17:08:42.909 | INFO     | __main__:save_federated_dataset:193 - 联邦数据集已保存: data/train_results/federated_dataset_fed_train_large_1000000_3_1757668088
+2025-09-12 17:08:42.910 | INFO     | __main__:run_large_scale_federated_training:375 - 初始化联邦训练...
+2025-09-12 17:08:42.910 | INFO     | __main__:run_large_scale_federated_training:389 - 开始联邦训练: 最大 100 轮
+2025-09-12 17:08:46.652 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:08:46.652 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:08:46.653 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:08:46.653 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:08:49.864 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:08:49.865 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:08:49.865 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:08:49.865 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:08:53.080 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:08:53.080 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:08:53.080 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:08:53.080 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:08:56.276 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:08:56.278 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:08:56.278 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:08:56.278 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:08:59.480 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:08:59.481 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:08:59.481 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:08:59.481 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:09:02.649 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:02.650 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:02.650 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:02.650 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:09:05.736 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:05.737 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:05.737 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:05.737 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:09:08.908 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:08.908 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:08.909 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:08.909 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:09:12.078 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:12.078 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:12.078 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:12.078 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:09:15.223 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:15.224 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:15.224 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:15.224 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:09:15.224 | INFO     | __main__:run_large_scale_federated_training:475 - 轮次 10: AUC=0.6586, KS=0.3897
+2025-09-12 17:09:18.453 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:18.454 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:18.454 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:18.454 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:09:21.653 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:21.653 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:21.653 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:21.653 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:09:24.826 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:24.827 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:24.827 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:24.827 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:09:28.022 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:28.023 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:28.023 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:28.023 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:09:31.314 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:31.314 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:31.314 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:31.314 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:09:34.491 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:34.492 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:34.492 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:34.492 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:09:37.676 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:37.676 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:37.676 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:37.676 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:09:40.868 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:40.868 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:40.869 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:40.869 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:09:44.047 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:44.047 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:44.047 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:44.047 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:09:47.249 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:47.249 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:47.249 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:47.249 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:09:47.249 | INFO     | __main__:run_large_scale_federated_training:475 - 轮次 20: AUC=0.7715, KS=0.4745
+2025-09-12 17:09:50.948 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:50.949 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:50.949 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:50.949 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:09:54.245 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:54.245 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:54.245 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:54.246 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:09:57.448 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:57.448 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:57.448 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:09:57.448 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:10:00.705 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:10:00.706 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:10:00.706 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:10:00.706 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:10:03.885 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:10:03.885 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:10:03.885 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:10:03.885 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:10:07.037 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:10:07.037 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:10:07.037 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:10:07.037 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:10:10.237 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:10:10.237 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:10:10.237 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:10:10.237 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:10:13.444 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:10:13.445 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:10:13.445 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:10:13.445 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:10:16.627 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:10:16.627 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:10:16.627 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:10:16.627 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:10:16.628 | INFO     | __main__:run_large_scale_federated_training:470 - 早停触发: 连续 5 轮无改善
+2025-09-12 17:10:16.628 | INFO     | __main__:run_large_scale_federated_training:480 - 测试推理延迟...
+2025-09-12 17:10:16.631 | INFO     | __main__:run_large_scale_federated_training:546 - 联邦训练完成: 1,000,000 条记录, 29 轮, 耗时 128.41 秒
+2025-09-12 17:10:16.631 | INFO     | __main__:run_large_scale_federated_training:547 - 最终AUC: 0.7823, KS: 0.4695
+2025-09-12 17:10:16.690 | INFO     | __main__:generate_summary_report:595 - 汇总报告已保存: data/train_results/train_summary.csv
+2025-09-12 17:15:10.493 | INFO     | __main__:__init__:71 - 使用多进程模式，工作进程数: 8
+2025-09-12 17:15:10.494 | INFO     | __main__:run_large_scale_federated_training:361 - 开始大规模联邦训练: fed_train_large_1000000_5_1757668510
+2025-09-12 17:15:10.494 | INFO     | __main__:run_large_scale_federated_training:366 - 生成联邦数据集...
+2025-09-12 17:15:10.494 | INFO     | __main__:generate_large_federated_dataset:77 - 生成联邦数据集: 1,000,000 条记录, 5 个参与方
+2025-09-12 17:15:37.878 | INFO     | __main__:save_federated_dataset:193 - 联邦数据集已保存: data/train_results/federated_dataset_fed_train_large_1000000_5_1757668510
+2025-09-12 17:15:37.878 | INFO     | __main__:run_large_scale_federated_training:375 - 初始化联邦训练...
+2025-09-12 17:15:37.878 | INFO     | __main__:run_large_scale_federated_training:389 - 开始联邦训练: 最大 100 轮
+2025-09-12 17:15:40.856 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:40.857 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:40.857 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:40.857 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:40.857 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:40.857 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:15:43.905 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:43.906 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:43.906 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:43.906 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:43.906 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:43.906 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:15:46.470 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:46.470 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:46.470 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:46.470 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:46.470 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:46.470 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:15:49.073 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:49.073 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:49.074 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:49.074 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:49.074 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:49.074 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:15:51.637 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:51.638 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:51.638 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:51.638 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:51.638 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:51.638 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:15:54.204 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:54.204 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:54.204 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:54.204 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:54.204 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:54.205 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:15:56.713 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:56.714 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:56.714 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:56.714 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:56.714 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:56.714 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:15:59.582 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:59.582 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:59.582 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:59.582 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:59.582 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:15:59.582 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:16:02.202 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:02.203 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:02.203 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:02.203 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:02.203 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:02.203 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:16:04.998 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:04.999 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:04.999 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:04.999 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:04.999 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:04.999 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:16:04.999 | INFO     | __main__:run_large_scale_federated_training:475 - 轮次 10: AUC=0.6274, KS=0.3761
+2025-09-12 17:16:07.539 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:07.539 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:07.539 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:07.539 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:07.539 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:07.539 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:16:10.091 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:10.091 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:10.091 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:10.091 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:10.091 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:10.091 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:16:12.556 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:12.557 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:12.557 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:12.557 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:12.557 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:12.557 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:16:15.039 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:15.039 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:15.039 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:15.039 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:15.039 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:15.039 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:16:17.653 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:17.654 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:17.654 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:17.654 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:17.654 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:17.654 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:16:20.288 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:20.289 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:20.289 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:20.289 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:20.289 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:20.289 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:16:22.869 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:22.869 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:22.869 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:22.869 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:22.869 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:22.869 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:16:25.403 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:25.403 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:25.403 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:25.403 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:25.403 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:25.403 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:16:28.157 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:28.158 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:28.158 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:28.158 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:28.158 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:28.158 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:16:30.707 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:30.707 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:30.707 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:30.708 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:30.708 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:30.708 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:16:30.708 | INFO     | __main__:run_large_scale_federated_training:475 - 轮次 20: AUC=0.7863, KS=0.4764
+2025-09-12 17:16:33.389 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:33.389 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:33.389 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:33.389 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:33.389 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:33.390 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:16:35.978 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:35.978 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:35.978 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:35.978 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:35.979 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:35.979 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:16:38.740 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:38.740 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:38.740 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:38.740 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:38.740 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:38.740 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:16:41.255 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:41.256 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:41.256 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:41.256 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:41.256 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:41.256 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:16:43.791 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:43.792 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:43.792 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:43.792 | INFO     | __main__:secure_aggregate:331 - Party 3 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:43.792 | INFO     | __main__:secure_aggregate:331 - Party 4 gradient shape: (20,), type: <class 'numpy.ndarray'>
+2025-09-12 17:16:43.792 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:16:43.792 | INFO     | __main__:run_large_scale_federated_training:470 - 早停触发: 连续 5 轮无改善
+2025-09-12 17:16:43.792 | INFO     | __main__:run_large_scale_federated_training:480 - 测试推理延迟...
+2025-09-12 17:16:43.796 | INFO     | __main__:run_large_scale_federated_training:546 - 联邦训练完成: 1,000,000 条记录, 25 轮, 耗时 93.30 秒
+2025-09-12 17:16:43.796 | INFO     | __main__:run_large_scale_federated_training:547 - 最终AUC: 0.7571, KS: 0.4614
+2025-09-12 17:16:43.849 | INFO     | __main__:generate_summary_report:595 - 汇总报告已保存: data/train_results/train_summary.csv
+2025-09-12 17:25:08.931 | INFO     | __main__:__init__:71 - 使用多进程模式，工作进程数: 4
+2025-09-12 17:25:08.932 | INFO     | __main__:run_large_scale_federated_training:361 - 开始大规模联邦训练: fed_train_large_1000000_3_1757669108
+2025-09-12 17:25:08.932 | INFO     | __main__:run_large_scale_federated_training:366 - 生成联邦数据集...
+2025-09-12 17:25:08.932 | INFO     | __main__:generate_large_federated_dataset:77 - 生成联邦数据集: 1,000,000 条记录, 3 个参与方
+2025-09-12 17:25:42.272 | INFO     | __main__:save_federated_dataset:193 - 联邦数据集已保存: data/train_results/federated_dataset_fed_train_large_1000000_3_1757669108
+2025-09-12 17:25:42.273 | INFO     | __main__:run_large_scale_federated_training:375 - 初始化联邦训练...
+2025-09-12 17:25:42.273 | INFO     | __main__:run_large_scale_federated_training:389 - 开始联邦训练: 最大 100 轮
+2025-09-12 17:25:48.454 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:25:48.454 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:25:48.454 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:25:48.454 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:25:59.656 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:25:59.656 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:25:59.656 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:25:59.656 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:26:03.155 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:03.155 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:03.155 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:03.155 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:26:06.682 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:06.682 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:06.682 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:06.682 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:26:10.092 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:10.092 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:10.092 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:10.092 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:26:13.551 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:13.551 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:13.551 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:13.551 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:26:16.971 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:16.972 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:16.972 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:16.972 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:26:20.393 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:20.393 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:20.393 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:20.393 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:26:23.706 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:23.706 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:23.706 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:23.706 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:26:27.055 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:27.055 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:27.055 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:27.055 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:26:27.055 | INFO     | __main__:run_large_scale_federated_training:475 - 轮次 10: AUC=0.6621, KS=0.4123
+2025-09-12 17:26:30.449 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:30.449 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:30.450 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:30.450 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:26:34.360 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:34.361 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:34.361 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:34.361 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:26:38.537 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:38.538 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:38.538 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:38.538 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:26:42.295 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:42.296 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:42.296 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:42.296 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:26:46.372 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:46.372 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:46.372 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:46.372 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:26:50.571 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:50.571 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:50.571 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:50.571 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:26:53.920 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:53.921 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:53.921 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:53.921 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:26:57.656 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:57.656 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:57.656 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:26:57.656 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:27:02.036 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:02.037 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:02.037 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:02.037 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:27:05.843 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:05.844 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:05.844 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:05.844 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:27:05.844 | INFO     | __main__:run_large_scale_federated_training:475 - 轮次 20: AUC=0.7749, KS=0.4703
+2025-09-12 17:27:09.053 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:09.054 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:09.054 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:09.054 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:27:12.396 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:12.396 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:12.397 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:12.397 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:27:16.029 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:16.030 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:16.030 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:16.030 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:27:19.518 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:19.518 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:19.518 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:19.518 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:27:22.906 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:22.907 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:22.907 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:22.907 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:27:26.631 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:26.631 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:26.631 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:26.631 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:27:30.229 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:30.230 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:30.230 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:30.230 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:27:34.546 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:34.547 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:34.547 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:34.547 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:27:38.568 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:38.569 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:38.569 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:38.569 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:27:43.517 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:43.517 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:43.517 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:43.517 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:27:43.518 | INFO     | __main__:run_large_scale_federated_training:475 - 轮次 30: AUC=0.8251, KS=0.4769
+2025-09-12 17:27:48.417 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:48.418 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:48.418 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:48.418 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:27:53.805 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:53.805 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:53.805 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:53.806 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:27:58.542 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:58.542 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:58.543 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:27:58.543 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:28:04.188 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:28:04.189 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:28:04.189 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:28:04.189 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:28:08.839 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:28:08.841 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:28:08.841 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:28:08.841 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:28:14.208 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:28:14.209 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:28:14.209 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:28:14.209 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:28:19.278 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:28:19.278 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:28:19.278 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:28:19.278 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:28:24.653 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:28:24.654 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:28:24.654 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:28:24.654 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:28:30.648 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:28:30.649 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:28:30.649 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:28:30.649 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:28:36.585 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:28:36.585 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:28:36.586 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:28:36.586 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:28:36.586 | INFO     | __main__:run_large_scale_federated_training:475 - 轮次 40: AUC=0.8299, KS=0.5116
+2025-09-12 17:28:42.868 | INFO     | __main__:secure_aggregate:331 - Party 0 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:28:42.869 | INFO     | __main__:secure_aggregate:331 - Party 1 gradient shape: (33,), type: <class 'numpy.ndarray'>
+2025-09-12 17:28:42.869 | INFO     | __main__:secure_aggregate:331 - Party 2 gradient shape: (34,), type: <class 'numpy.ndarray'>
+2025-09-12 17:28:42.869 | INFO     | __main__:secure_aggregate:335 - Total features across all parties: 100
+2025-09-12 17:28:42.869 | INFO     | __main__:run_large_scale_federated_training:470 - 早停触发: 连续 5 轮无改善
+2025-09-12 17:28:42.870 | INFO     | __main__:run_large_scale_federated_training:480 - 测试推理延迟...
+2025-09-12 17:28:42.880 | INFO     | __main__:run_large_scale_federated_training:546 - 联邦训练完成: 1,000,000 条记录, 41 轮, 耗时 213.94 秒
+2025-09-12 17:28:42.880 | INFO     | __main__:run_large_scale_federated_training:547 - 最终AUC: 0.8405, KS: 0.5056
+2025-09-12 17:28:43.044 | INFO     | __main__:generate_summary_report:595 - 汇总报告已保存: data/train_results/train_summary.csv

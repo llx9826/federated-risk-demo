@@ -1,0 +1,24 @@
+{
+  "party_a": {
+    "ids": ["user_001", "user_002", "user_003", "user_004", "user_005"],
+    "features": {
+      "credit_score": [720, 680, 750, 620, 800],
+      "annual_income": [80000, 65000, 95000, 45000, 120000],
+      "has_mortgage": [true, false, true, false, true]
+    },
+    "labels": [0, 1, 0, 1, 0]
+  },
+  "party_b": {
+    "ids": ["user_001", "user_003", "user_005", "user_006", "user_007"],
+    "features": {
+      "debt_ratio": [0.35, 0.28, 0.42, 0.55, 0.31],
+      "payment_history": ["good", "excellent", "fair", "poor", "good"],
+      "account_age_months": [36, 48, 24, 12, 60]
+    }
+  },
+  "metadata": {
+    "intersection_size": 3,
+    "overlap_ratio": 0.6,
+    "generated_at": "2025-01-12T02:00:00Z"
+  }
+}

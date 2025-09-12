@@ -127,7 +127,7 @@ const PSI: React.FC = () => {
       dataIndex: 'datasetSize',
       key: 'datasetSize',
       width: 120,
-      render: (_, record) => `${record.datasetSize.toLocaleString()} 条`,
+      render: (_, record) => record.datasetSize ? `${record.datasetSize.toLocaleString()} 条` : '-',
     },
     {
       title: '交集大小',
@@ -361,12 +361,12 @@ const PSI: React.FC = () => {
             </div>
             <div>
               <label className="font-medium">数据集大小：</label>
-              <span>{selectedTask.datasetSize.toLocaleString()} 条</span>
+              <span>{selectedTask.datasetSize ? selectedTask.datasetSize.toLocaleString() : '-'} 条</span>
             </div>
             {selectedTask.intersectionSize && (
               <div>
                 <label className="font-medium">交集大小：</label>
-                <span>{selectedTask.intersectionSize.toLocaleString()} 条</span>
+                <span>{selectedTask.intersectionSize?.toLocaleString() || '0'} 条</span>
               </div>
             )}
             <div>

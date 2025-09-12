@@ -34,7 +34,21 @@ const Consent: React.FC = () => {
     queryKey: ['consents', searchParams],
     queryFn: async () => {
       const response = await apiService.consent.getList(searchParams)
-      return response.data.consents || []
+      // 转换后端audit_records格式到前端ConsentRecord格式
+      const auditRecords = response.data.consents || []
+      return auditRecords.map((record: any) => ({
+        id: record.id,
+        title: `同意记录 ${record.request_id}`,
+        description: `决策: ${record.decision}, 评分: ${record.score || 'N/A'}`,
+        status: record.decision === 'approved' ? 'approved' : record.decision === 'rejected' ? 'rejected' : 'pending',
+        requester: record.consent_fingerprint.substring(0, 8) + '...',
+        approver: record.decision === 'approved' ? 'System' : undefined,
+        dataTypes: record.metadata?.features || ['未知'],
+        purpose: record.metadata?.purpose || '风险评估',
+        expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30天后过期
+        createdAt: record.timestamp,
+        updatedAt: record.timestamp
+      }))
     },
   })
 
@@ -107,7 +121,7 @@ const Consent: React.FC = () => {
       width: 200,
       render: (_, record) => (
         <div>
-          {record.dataTypes.map((type, index) => (
+          {(record.dataTypes || []).map((type, index) => (
             <Tag key={index} style={{ marginBottom: 4 }}>
               {type}
             </Tag>

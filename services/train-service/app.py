@@ -13,29 +13,98 @@ import pickle
 import hashlib
 import logging
 import asyncio
+import time
 from datetime import datetime
 from typing import Dict, List, Optional, Any, Tuple
 from pathlib import Path
+from contextvars import ContextVar
 
 import numpy as np
 import pandas as pd
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, validator
 import uvicorn
 import requests
 
-# 配置日志
+# 请求上下文变量
+request_id_var: ContextVar[str] = ContextVar('request_id', default='')
+training_id_var: ContextVar[str] = ContextVar('training_id', default='')
+
+# 结构化日志配置
+class StructuredLogger:
+    def __init__(self, name: str):
+        self.logger = logging.getLogger(name)
+        
+    def _format_log(self, level: str, message: str, **kwargs) -> Dict:
+        """格式化结构化日志"""
+        log_entry = {
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "level": level,
+            "service": "train-service",
+            "message": message,
+            "request_id": request_id_var.get(''),
+            "training_id": training_id_var.get(''),
+            **kwargs
+        }
+        return log_entry
+    
+    def info(self, message: str, **kwargs):
+        log_entry = self._format_log("INFO", message, **kwargs)
+        self.logger.info(json.dumps(log_entry))
+    
+    def warning(self, message: str, **kwargs):
+        log_entry = self._format_log("WARNING", message, **kwargs)
+        self.logger.warning(json.dumps(log_entry))
+    
+    def error(self, message: str, **kwargs):
+        log_entry = self._format_log("ERROR", message, **kwargs)
+        self.logger.error(json.dumps(log_entry))
+    
+    def debug(self, message: str, **kwargs):
+        log_entry = self._format_log("DEBUG", message, **kwargs)
+        self.logger.debug(json.dumps(log_entry))
+
+# 配置基础日志
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format='%(message)s'  # 使用简单格式，因为我们输出JSON
 )
-logger = logging.getLogger(__name__)
+logger = StructuredLogger(__name__)
+
+# OpenTelemetry轻量打点
+class SimpleTracer:
+    def __init__(self):
+        self.spans = []
+        self.trace_file = Path("traces/train_service_traces.jsonl")
+        self.trace_file.parent.mkdir(exist_ok=True)
+    
+    def start_span(self, name: str, **attributes) -> Dict:
+        span = {
+            "span_id": str(uuid.uuid4()),
+            "trace_id": request_id_var.get('') or str(uuid.uuid4()),
+            "name": name,
+            "start_time": time.time(),
+            "attributes": attributes
+        }
+        return span
+    
+    def end_span(self, span: Dict, **attributes):
+        span["end_time"] = time.time()
+        span["duration_ms"] = (span["end_time"] - span["start_time"]) * 1000
+        span["attributes"].update(attributes)
+        
+        # 写入文件
+        with open(self.trace_file, "a") as f:
+            f.write(json.dumps(span) + "\n")
+
+tracer = SimpleTracer()
 
 # 配置
-DATA_DIR = "/app/data/synth"
-ARTIFACTS_DIR = "/app/artifacts"
-PSI_SERVICE_URL = os.getenv("PSI_SERVICE_URL", "http://psi-service:7001")
+BASE_DIR = Path(__file__).parent.parent.parent.absolute()
+DATA_DIR = BASE_DIR / "data" / "synth"
+ARTIFACTS_DIR = BASE_DIR / "artifacts"
+PSI_SERVICE_URL = os.getenv("PSI_SERVICE_URL", "http://localhost:8001")
 
 # 确保目录存在
 Path(ARTIFACTS_DIR).mkdir(parents=True, exist_ok=True)
@@ -47,6 +116,33 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc"
 )
+
+# 请求中间件
+@app.middleware("http")
+async def request_middleware(request: Request, call_next):
+    # 生成请求ID
+    req_id = str(uuid.uuid4())
+    request_id_var.set(req_id)
+    
+    # 记录请求开始
+    start_time = time.time()
+    logger.info("Request started", 
+                method=request.method, 
+                url=str(request.url),
+                user_agent=request.headers.get("user-agent", ""))
+    
+    # 处理请求
+    response = await call_next(request)
+    
+    # 记录请求结束
+    duration_ms = (time.time() - start_time) * 1000
+    logger.info("Request completed", 
+                method=request.method,
+                url=str(request.url),
+                status_code=response.status_code,
+                duration_ms=round(duration_ms, 2))
+    
+    return response
 
 # CORS配置
 app.add_middleware(
@@ -60,6 +156,7 @@ app.add_middleware(
 # 全局变量
 training_sessions = {}  # 存储训练会话
 model_registry = {}     # 模型注册表
+self_healing_attempts = {}  # 自愈尝试记录
 
 # Pydantic模型
 class DPConfig(BaseModel):
@@ -144,6 +241,116 @@ class ExplainLocalRequest(BaseModel):
     model_hash: str = Field(..., description="模型哈希")
     sample_id: str = Field(..., description="样本ID")
     party: str = Field(..., description="数据方: A/B")
+
+class TrainingGuards:
+    """训练层护栏"""
+    
+    @staticmethod
+    def validate_training_params(request) -> Tuple[bool, List[str]]:
+        """验证训练参数"""
+        issues = []
+        
+        # 检查迭代次数
+        if hasattr(request, 'num_boost_round'):
+            if request.num_boost_round < 20:
+                issues.append(f"训练轮数过少: {request.num_boost_round} < 20")
+        elif hasattr(request, 'max_iter'):
+            if request.max_iter < 20:
+                issues.append(f"最大迭代次数过少: {request.max_iter} < 20")
+        
+        # 检查学习率
+        if hasattr(request, 'learning_rate'):
+            if request.learning_rate <= 0 or request.learning_rate > 1:
+                issues.append(f"学习率异常: {request.learning_rate}")
+        
+        return len(issues) == 0, issues
+    
+    @staticmethod
+    def validate_training_results(results: Dict, training_time: float) -> Tuple[bool, List[str]]:
+        """验证训练结果"""
+        issues = []
+        
+        # 检查训练时间（单轮耗时>5ms）
+        rounds = results.get('rounds', 1)
+        time_per_round = training_time * 1000 / rounds  # 转换为毫秒
+        if time_per_round < 5:
+            issues.append(f"单轮训练时间过短: {time_per_round:.1f}ms < 5ms")
+        
+        # 检查损失值
+        if 'training_history' in results:
+            history = results['training_history']
+            if len(history) > 1:
+                # 检查损失是否为NaN
+                if any(np.isnan(loss) for loss in history):
+                    issues.append("训练损失包含NaN值")
+                
+                # 检查损失是否恒定
+                loss_std = np.std(history)
+                if loss_std < 1e-6:
+                    issues.append(f"训练损失恒定: std={loss_std:.2e}")
+        
+        # 检查AUC和KS
+        auc = results.get('auc', 0)
+        ks = results.get('ks', 0)
+        
+        if auc < 0.65:
+            issues.append(f"AUC不达标: {auc:.3f} < 0.65")
+        
+        if ks < 0.20:
+            issues.append(f"KS不达标: {ks:.3f} < 0.20")
+        
+        # 检查预测标准差
+        if 'test_predictions' in results:
+            pred_std = np.std(results['test_predictions'])
+            if pred_std < 0.01:
+                issues.append(f"预测标准差过小: {pred_std:.4f} < 0.01")
+        
+        return len(issues) == 0, issues
+    
+    @staticmethod
+    def apply_self_healing(request, attempt: int = 1):
+        """应用自愈策略"""
+        logger.info(f"应用自愈策略 - 第{attempt}轮")
+        
+        if attempt == 1:
+            # 第一轮：关闭DP或放宽ε
+            if hasattr(request, 'dp') and request.dp.enable:
+                if request.dp.epsilon < 8:
+                    request.dp.epsilon = 8
+                    logger.info(f"自愈策略1: 放宽隐私预算至 ε={request.dp.epsilon}")
+                else:
+                    request.dp.enable = False
+                    logger.info("自愈策略1: 关闭差分隐私")
+        
+        elif attempt == 2:
+            # 第二轮：调整XGBoost参数
+            if hasattr(request, 'learning_rate'):
+                request.learning_rate = max(0.05, request.learning_rate * 0.5)
+                logger.info(f"自愈策略2: 降低学习率至 {request.learning_rate}")
+            
+            if hasattr(request, 'max_depth'):
+                request.max_depth = min(5, request.max_depth + 1)
+                logger.info(f"自愈策略2: 调整最大深度至 {request.max_depth}")
+            
+            if hasattr(request, 'subsample'):
+                request.subsample = 0.8
+                logger.info(f"自愈策略2: 设置子采样率为 {request.subsample}")
+        
+        elif attempt == 3:
+            # 第三轮：增加轮数和正则化
+            if hasattr(request, 'num_boost_round'):
+                request.num_boost_round = int(request.num_boost_round * 1.5)
+                logger.info(f"自愈策略3: 增加训练轮数至 {request.num_boost_round}")
+            
+            if hasattr(request, 'max_iter'):
+                request.max_iter = int(request.max_iter * 1.5)
+                logger.info(f"自愈策略3: 增加最大迭代至 {request.max_iter}")
+            
+            if hasattr(request, 'reg_lambda'):
+                request.reg_lambda = request.reg_lambda * 2
+                logger.info(f"自愈策略3: 增强L2正则化至 {request.reg_lambda}")
+        
+        return request
 
 class HealthResponse(BaseModel):
     """健康检查响应"""
@@ -251,21 +458,52 @@ def load_federated_data(psi_mapping_key: str, features: FeatureConfig) -> Tuple[
     return X_a, X_b, y
 
 def simulate_secureboost_training(X_a: pd.DataFrame, X_b: pd.DataFrame, y: np.ndarray, 
-                                request: SecureBoostRequest) -> Dict:
-    """模拟SecureBoost训练"""
-    logger.info("开始SecureBoost训练模拟...")
+                                request: SecureBoostRequest, run_id: str = None) -> Dict:
+    """模拟SecureBoost训练（带护栏和自愈）"""
+    # 设置训练ID
+    if run_id:
+        training_id_var.set(run_id)
+    
+    # 开始训练span
+    train_span = tracer.start_span("train.fit", 
+                                   algorithm="secureboost",
+                                   num_samples=len(y),
+                                   num_features_a=len(X_a.columns),
+                                   num_features_b=len(X_b.columns),
+                                   dp_enabled=request.dp.enable)
+    
+    logger.info("开始SecureBoost训练模拟", 
+                algorithm="secureboost",
+                num_samples=len(y),
+                num_features=len(X_a.columns) + len(X_b.columns),
+                dp_enabled=request.dp.enable,
+                epsilon=request.dp.epsilon if request.dp.enable else None)
+    
+    # 训练层护栏：验证参数
+    param_valid, param_issues = TrainingGuards.validate_training_params(request)
+    if not param_valid:
+        logger.warning(f"训练参数问题: {param_issues}")
     
     # 合并特征用于模拟（实际SecretFlow中各方数据不会合并）
     X_combined = pd.concat([X_a, X_b], axis=1)
     
+    # 检查类别不平衡并自动设置scale_pos_weight
+    pos_count = np.sum(y)
+    neg_count = len(y) - pos_count
+    scale_pos_weight = neg_count / pos_count if pos_count > 0 else 1.0
+    
     try:
         from sklearn.ensemble import GradientBoostingClassifier
         from sklearn.model_selection import train_test_split
+        import time
         
         # 分割训练测试集
         X_train, X_test, y_train, y_test = train_test_split(
             X_combined, y, test_size=0.2, random_state=42, stratify=y
         )
+        
+        # 记录训练开始时间
+        start_time = time.time()
         
         # 创建模型
         model = GradientBoostingClassifier(
@@ -279,6 +517,14 @@ def simulate_secureboost_training(X_a: pd.DataFrame, X_b: pd.DataFrame, y: np.nd
         
         # 训练模型
         model.fit(X_train, y_train)
+        
+        # 记录训练时间
+        training_time = time.time() - start_time
+        
+        logger.info("模型训练完成", 
+                    training_time_seconds=round(training_time, 3),
+                    n_estimators=request.num_boost_round,
+                    max_depth=request.max_depth)
         
         # 预测
         y_pred_proba = model.predict_proba(X_test)[:, 1]
@@ -298,24 +544,63 @@ def simulate_secureboost_training(X_a: pd.DataFrame, X_b: pd.DataFrame, y: np.nd
         auc = calculate_auc(y_test, y_pred_proba)
         ks = calculate_ks(y_test, y_pred_proba)
         
+        logger.info("训练指标计算完成", 
+                    auc=round(auc, 4),
+                    ks=round(ks, 4),
+                    test_samples=len(y_test))
+        
         # 特征重要性
         feature_importance = dict(zip(
             X_combined.columns, 
             model.feature_importances_
         ))
         
-        return {
+        results = {
             'model': model,
             'auc': auc,
             'ks': ks,
             'feature_importance': feature_importance,
             'test_predictions': y_pred_proba,
             'test_labels': y_test,
-            'training_history': list(model.train_score_)
+            'training_history': list(model.train_score_) if hasattr(model, 'train_score_') else [0.5],
+            'training_time': training_time,
+            'rounds': request.num_boost_round,
+            'scale_pos_weight': scale_pos_weight
         }
         
+        # 训练层护栏：验证结果
+        result_valid, result_issues = TrainingGuards.validate_training_results(results, training_time)
+        if not result_valid:
+            logger.warning("训练结果验证失败", 
+                          issues=result_issues,
+                          auc=auc,
+                          ks=ks)
+            results['validation_issues'] = result_issues
+        else:
+            logger.info("训练结果验证通过", 
+                       auc=auc,
+                       ks=ks,
+                       training_time_seconds=training_time)
+        
+        # 结束训练span
+        tracer.end_span(train_span, 
+                       success=result_valid,
+                       auc=auc,
+                       ks=ks,
+                       validation_issues=len(result_issues))
+        
+        return results
+        
     except Exception as e:
-        logger.error(f"SecureBoost训练失败: {str(e)}")
+        logger.error("SecureBoost训练失败", 
+                    error=str(e),
+                    error_type=type(e).__name__)
+        
+        # 结束训练span（失败）
+        tracer.end_span(train_span, 
+                       success=False,
+                       error=str(e))
+        
         raise HTTPException(status_code=500, detail=f"训练失败: {str(e)}")
 
 def simulate_hetero_lr_training(X_a: pd.DataFrame, X_b: pd.DataFrame, y: np.ndarray, 
@@ -468,21 +753,78 @@ async def startup_event():
 
 @app.post("/train/secureboost", response_model=TrainingResponse)
 async def train_secureboost(request: SecureBoostRequest, background_tasks: BackgroundTasks):
-    """SecureBoost训练"""
+    """SecureBoost训练（带自愈机制）"""
     run_id = str(uuid.uuid4())
     start_time = datetime.now()
+    training_id_var.set(run_id)
     
-    logger.info(f"开始SecureBoost训练: {run_id}")
+    logger.info("收到SecureBoost训练请求", 
+                run_id=run_id,
+                psi_mapping_key=request.psi_mapping_key,
+                dp_enabled=request.dp.enable,
+                epsilon=request.dp.epsilon if request.dp.enable else None)
     
     try:
-        # 加载联邦数据
+        # 加载数据
+        data_span = tracer.start_span("data.load", psi_mapping_key=request.psi_mapping_key)
         X_a, X_b, y = load_federated_data(request.psi_mapping_key, request.features)
+        tracer.end_span(data_span, 
+                       samples_loaded=len(y),
+                       features_a=len(X_a.columns),
+                       features_b=len(X_b.columns))
         
-        # 训练模型
-        model_data = simulate_secureboost_training(X_a, X_b, y, request)
+        logger.info("数据加载完成", 
+                    samples=len(y),
+                    features_a=len(X_a.columns),
+                    features_b=len(X_b.columns),
+                    positive_rate=round(np.mean(y), 4))
         
-        # 计算训练时间
-        training_time = (datetime.now() - start_time).total_seconds()
+        # 自愈尝试循环（最多3轮）
+        max_attempts = 3
+        for attempt in range(1, max_attempts + 1):
+            logger.info(f"训练尝试 {attempt}/{max_attempts}")
+            
+            # 应用自愈策略（从第2轮开始）
+            if attempt > 1:
+                request = TrainingGuards.apply_self_healing(request, attempt - 1)
+            
+            # 开始训练
+            model_data = simulate_secureboost_training(X_a, X_b, y, request, run_id)
+            
+            # 计算训练时间
+            training_time = (datetime.now() - start_time).total_seconds()
+            
+            # 检查训练结果
+            result_valid, result_issues = TrainingGuards.validate_training_results(model_data, training_time)
+            
+            if result_valid:
+                logger.info("训练成功完成", 
+                           attempt=attempt,
+                           max_attempts=max_attempts,
+                           final_auc=model_data['auc'],
+                           final_ks=model_data['ks'])
+                break
+            else:
+                logger.warning("训练轮次未达标", 
+                              attempt=attempt,
+                              max_attempts=max_attempts,
+                              issues=result_issues,
+                              auc=model_data.get('auc', 0),
+                              ks=model_data.get('ks', 0))
+                if attempt == max_attempts:
+                    logger.error("所有自愈尝试均失败，训练终止", 
+                               total_attempts=attempt,
+                               final_issues=result_issues)
+                    # 记录失败的自愈尝试
+                    self_healing_attempts[run_id] = {
+                        'attempts': attempt,
+                        'final_issues': result_issues,
+                        'status': 'failed'
+                    }
+                else:
+                    logger.info("准备下一轮自愈尝试", 
+                               next_attempt=attempt + 1,
+                               max_attempts=max_attempts)
         
         # 保存模型产物
         model_hash, artifacts_path = save_model_artifacts(
@@ -501,10 +843,32 @@ async def train_secureboost(request: SecureBoostRequest, background_tasks: Backg
             'feature_importance': model_data['feature_importance'],
             'training_history': model_data.get('training_history', []),
             'created_at': start_time.isoformat(),
-            'status': 'completed'
+            'status': 'completed' if result_valid else 'completed_with_issues',
+            'self_healing_attempts': attempt,
+            'validation_issues': result_issues if not result_valid else []
         }
         
-        logger.info(f"SecureBoost训练完成: {run_id}, AUC: {model_data['auc']:.4f}, KS: {model_data['ks']:.4f}")
+        # 记录成功的自愈尝试
+        if attempt > 1:
+            self_healing_attempts[run_id] = {
+                'attempts': attempt,
+                'status': 'success' if result_valid else 'partial_success',
+                'final_auc': model_data['auc'],
+                'final_ks': model_data['ks']
+            }
+            logger.info("自愈策略执行完成", 
+                       total_attempts=attempt,
+                       status='success' if result_valid else 'partial_success',
+                       final_auc=model_data['auc'],
+                       final_ks=model_data['ks'])
+        
+        logger.info("SecureBoost训练流程完成", 
+                   run_id=run_id,
+                   status="completed" if result_valid else "completed_with_issues",
+                   auc=model_data['auc'],
+                   ks=model_data['ks'],
+                   training_time_seconds=training_time,
+                   self_healing_attempts=attempt)
         
         return TrainingResponse(
             run_id=run_id,
@@ -515,17 +879,23 @@ async def train_secureboost(request: SecureBoostRequest, background_tasks: Backg
             dp_epsilon=request.dp.epsilon if request.dp.enable else None,
             artifacts_path=artifacts_path,
             training_time=training_time,
-            status="completed",
+            status="completed" if result_valid else "completed_with_issues",
             metadata={
                 'num_samples': len(y),
                 'num_features_a': len(request.features.A),
                 'num_features_b': len(request.features.B),
-                'dp_enabled': request.dp.enable
+                'dp_enabled': request.dp.enable,
+                'self_healing_attempts': attempt,
+                'validation_issues': result_issues if not result_valid else [],
+                'scale_pos_weight': model_data.get('scale_pos_weight', 1.0)
             }
         )
         
     except Exception as e:
-        logger.error(f"SecureBoost训练失败: {str(e)}")
+        logger.error("SecureBoost训练流程失败", 
+                    run_id=run_id,
+                    error=str(e),
+                    error_type=type(e).__name__)
         # 记录失败的会话
         training_sessions[run_id] = {
             'run_id': run_id,

@@ -1,0 +1,81 @@
+2025-09-12 16:56:07.610 | INFO     | __main__:__init__:65 - 使用多进程模式，工作进程数: 4
+2025-09-12 16:56:07.610 | INFO     | __main__:run_large_scale_psi:215 - 开始大规模PSI测试: psi_large_ecdh_1000_1757667367
+2025-09-12 16:56:07.610 | INFO     | __main__:run_large_scale_psi:220 - 生成测试数据集...
+2025-09-12 16:56:07.610 | INFO     | __main__:generate_large_dataset:71 - 生成 party_a 数据集: 1,000 条记录
+2025-09-12 16:56:07.612 | INFO     | __main__:generate_large_dataset:71 - 生成 party_b 数据集: 1,000 条记录
+2025-09-12 16:56:07.613 | INFO     | __main__:run_large_scale_psi:229 - 分片保存数据...
+2025-09-12 16:56:07.617 | INFO     | __main__:save_dataset_to_shards:115 - party_a 数据已分片保存: 32 个分片
+2025-09-12 16:56:07.620 | INFO     | __main__:save_dataset_to_shards:115 - party_b 数据已分片保存: 32 个分片
+2025-09-12 16:56:07.620 | INFO     | __main__:run_large_scale_psi:240 - 创建Bloom Filter...
+2025-09-12 16:56:07.622 | INFO     | __main__:run_large_scale_psi:244 - 开始并行PSI计算: 32 个分片
+2025-09-12 16:56:08.165 | ERROR    | __main__:main:434 - 测试失败: 'cryptography.hazmat.bindings._rust.openssl.ec.ECPr' object has no attribute 'private_value'
+2025-09-12 16:56:31.703 | INFO     | __main__:__init__:65 - 使用多进程模式，工作进程数: 4
+2025-09-12 16:56:31.703 | INFO     | __main__:run_large_scale_psi:219 - 开始大规模PSI测试: psi_large_ecdh_1000_1757667391
+2025-09-12 16:56:31.703 | INFO     | __main__:run_large_scale_psi:224 - 生成测试数据集...
+2025-09-12 16:56:31.703 | INFO     | __main__:generate_large_dataset:71 - 生成 party_a 数据集: 1,000 条记录
+2025-09-12 16:56:31.704 | INFO     | __main__:generate_large_dataset:71 - 生成 party_b 数据集: 1,000 条记录
+2025-09-12 16:56:31.705 | INFO     | __main__:run_large_scale_psi:233 - 分片保存数据...
+2025-09-12 16:56:31.708 | INFO     | __main__:save_dataset_to_shards:115 - party_a 数据已分片保存: 32 个分片
+2025-09-12 16:56:31.711 | INFO     | __main__:save_dataset_to_shards:115 - party_b 数据已分片保存: 32 个分片
+2025-09-12 16:56:31.711 | INFO     | __main__:run_large_scale_psi:244 - 创建Bloom Filter...
+2025-09-12 16:56:31.713 | INFO     | __main__:run_large_scale_psi:248 - 开始并行PSI计算: 32 个分片
+2025-09-12 16:56:32.169 | ERROR    | __main__:main:438 - 测试失败: format is invalid with this key
+2025-09-12 16:57:18.601 | INFO     | __main__:__init__:65 - 使用多进程模式，工作进程数: 4
+2025-09-12 16:57:18.602 | INFO     | __main__:run_large_scale_psi:217 - 开始大规模PSI测试: psi_large_ecdh_1000_1757667438
+2025-09-12 16:57:18.602 | INFO     | __main__:run_large_scale_psi:222 - 生成测试数据集...
+2025-09-12 16:57:18.602 | INFO     | __main__:generate_large_dataset:71 - 生成 party_a 数据集: 1,000 条记录
+2025-09-12 16:57:18.604 | INFO     | __main__:generate_large_dataset:71 - 生成 party_b 数据集: 1,000 条记录
+2025-09-12 16:57:18.607 | INFO     | __main__:run_large_scale_psi:231 - 分片保存数据...
+2025-09-12 16:57:18.614 | INFO     | __main__:save_dataset_to_shards:115 - party_a 数据已分片保存: 32 个分片
+2025-09-12 16:57:18.618 | INFO     | __main__:save_dataset_to_shards:115 - party_b 数据已分片保存: 32 个分片
+2025-09-12 16:57:18.618 | INFO     | __main__:run_large_scale_psi:242 - 创建Bloom Filter...
+2025-09-12 16:57:18.620 | INFO     | __main__:run_large_scale_psi:246 - 开始并行PSI计算: 32 个分片
+2025-09-12 16:57:18.995 | ERROR    | __main__:main:436 - 测试失败: 'cryptography.hazmat.bindings._rust.openssl.ec.ECPr' object has no attribute 'private_value'
+2025-09-12 16:57:40.221 | INFO     | __main__:__init__:65 - 使用多进程模式，工作进程数: 4
+2025-09-12 16:57:40.222 | INFO     | __main__:run_large_scale_psi:217 - 开始大规模PSI测试: psi_large_ecdh_1000_1757667460
+2025-09-12 16:57:40.222 | INFO     | __main__:run_large_scale_psi:222 - 生成测试数据集...
+2025-09-12 16:57:40.222 | INFO     | __main__:generate_large_dataset:71 - 生成 party_a 数据集: 1,000 条记录
+2025-09-12 16:57:40.223 | INFO     | __main__:generate_large_dataset:71 - 生成 party_b 数据集: 1,000 条记录
+2025-09-12 16:57:40.224 | INFO     | __main__:run_large_scale_psi:231 - 分片保存数据...
+2025-09-12 16:57:40.227 | INFO     | __main__:save_dataset_to_shards:115 - party_a 数据已分片保存: 32 个分片
+2025-09-12 16:57:40.231 | INFO     | __main__:save_dataset_to_shards:115 - party_b 数据已分片保存: 32 个分片
+2025-09-12 16:57:40.231 | INFO     | __main__:run_large_scale_psi:242 - 创建Bloom Filter...
+2025-09-12 16:57:40.233 | INFO     | __main__:run_large_scale_psi:246 - 开始并行PSI计算: 32 个分片
+2025-09-12 16:57:40.694 | ERROR    | __main__:main:436 - 测试失败: 'cryptography.hazmat.bindings._rust.openssl.ec.ECPr' object has no attribute 'private_value'
+2025-09-12 16:58:02.322 | INFO     | __main__:__init__:65 - 使用多进程模式，工作进程数: 4
+2025-09-12 16:58:02.323 | INFO     | __main__:run_large_scale_psi:217 - 开始大规模PSI测试: psi_large_ecdh_1000_1757667482
+2025-09-12 16:58:02.323 | INFO     | __main__:run_large_scale_psi:222 - 生成测试数据集...
+2025-09-12 16:58:02.323 | INFO     | __main__:generate_large_dataset:71 - 生成 party_a 数据集: 1,000 条记录
+2025-09-12 16:58:02.324 | INFO     | __main__:generate_large_dataset:71 - 生成 party_b 数据集: 1,000 条记录
+2025-09-12 16:58:02.324 | INFO     | __main__:run_large_scale_psi:231 - 分片保存数据...
+2025-09-12 16:58:02.328 | INFO     | __main__:save_dataset_to_shards:115 - party_a 数据已分片保存: 32 个分片
+2025-09-12 16:58:02.331 | INFO     | __main__:save_dataset_to_shards:115 - party_b 数据已分片保存: 32 个分片
+2025-09-12 16:58:02.331 | INFO     | __main__:run_large_scale_psi:242 - 创建Bloom Filter...
+2025-09-12 16:58:02.333 | INFO     | __main__:run_large_scale_psi:246 - 开始并行PSI计算: 32 个分片
+2025-09-12 16:58:02.699 | INFO     | __main__:run_large_scale_psi:345 - PSI测试完成: 1,000 条记录, 耗时 0.38 秒
+2025-09-12 16:58:02.699 | INFO     | __main__:run_large_scale_psi:346 - 吞吐量: 5,324 记录/秒
+2025-09-12 16:58:02.699 | INFO     | __main__:run_large_scale_psi:347 - 准确率: 0.0000
+2025-09-12 16:58:02.706 | INFO     | __main__:generate_summary_report:379 - 汇总报告已保存: ../../reports/psi_summary.csv
+2025-09-12 17:17:03.609 | INFO     | __main__:__init__:65 - 使用多进程模式，工作进程数: 4
+2025-09-12 17:17:03.610 | INFO     | __main__:run_large_scale_psi:217 - 开始大规模PSI测试: psi_large_ecdh_10000000_1757668623
+2025-09-12 17:17:03.610 | INFO     | __main__:run_large_scale_psi:222 - 生成测试数据集...
+2025-09-12 17:17:03.610 | INFO     | __main__:generate_large_dataset:71 - 生成 party_a 数据集: 10,000,000 条记录
+2025-09-12 17:17:12.662 | INFO     | __main__:generate_large_dataset:71 - 生成 party_b 数据集: 10,000,000 条记录
+2025-09-12 17:17:22.725 | INFO     | __main__:run_large_scale_psi:231 - 分片保存数据...
+2025-09-12 17:17:23.855 | INFO     | __main__:save_dataset_to_shards:115 - party_a 数据已分片保存: 32 个分片
+2025-09-12 17:17:24.999 | INFO     | __main__:save_dataset_to_shards:115 - party_b 数据已分片保存: 32 个分片
+2025-09-12 17:17:24.999 | INFO     | __main__:run_large_scale_psi:242 - 创建Bloom Filter...
+2025-09-12 17:17:50.523 | INFO     | __main__:run_large_scale_psi:246 - 开始并行PSI计算: 32 个分片
+2025-09-12 17:18:14.048 | INFO     | __main__:run_large_scale_psi:345 - PSI测试完成: 10,000,000 条记录, 耗时 70.12 秒
+2025-09-12 17:18:14.048 | INFO     | __main__:run_large_scale_psi:346 - 吞吐量: 285,239 记录/秒
+2025-09-12 17:18:14.048 | INFO     | __main__:run_large_scale_psi:347 - 准确率: 0.0312
+2025-09-12 17:18:14.284 | INFO     | __main__:generate_summary_report:379 - 汇总报告已保存: ../../reports/psi_summary.csv
+2025-09-12 17:23:06.875 | INFO     | __main__:__init__:65 - 使用多进程模式，工作进程数: 8
+2025-09-12 17:23:06.876 | INFO     | __main__:run_large_scale_psi:217 - 开始大规模PSI测试: psi_large_ecdh_1000000000_1757668986
+2025-09-12 17:23:06.876 | INFO     | __main__:run_large_scale_psi:222 - 生成测试数据集...
+2025-09-12 17:23:06.876 | INFO     | __main__:generate_large_dataset:71 - 生成 party_a 数据集: 1,000,000,000 条记录
+2025-09-12 17:27:16.042 | INFO     | __main__:__init__:65 - 使用多进程模式，工作进程数: 4
+2025-09-12 17:27:16.042 | INFO     | __main__:run_large_scale_psi:217 - 开始大规模PSI测试: psi_large_ecdh_100000000_1757669236
+2025-09-12 17:27:16.042 | INFO     | __main__:run_large_scale_psi:222 - 生成测试数据集...
+2025-09-12 17:27:16.042 | INFO     | __main__:generate_large_dataset:71 - 生成 party_a 数据集: 100,000,000 条记录
+2025-09-12 18:09:24.524 | INFO     | __main__:generate_large_dataset:71 - 生成 party_b 数据集: 100,000,000 条记录

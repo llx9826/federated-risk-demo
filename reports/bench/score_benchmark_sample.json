@@ -1,0 +1,110 @@
+{
+  "benchmark_id": "score_bench_1757641913",
+  "timestamp": "2025-01-12T02:00:00Z",
+  "test_config": {
+    "tool": "k6",
+    "test_duration": "10m",
+    "ramp_up_stages": [
+      {"target_rps": 10, "duration": "1m"},
+      {"target_rps": 50, "duration": "2m"},
+      {"target_rps": 100, "duration": "3m"},
+      {"target_rps": 300, "duration": "4m"}
+    ]
+  },
+  "performance_metrics": {
+    "total_requests": 95420,
+    "successful_requests": 93285,
+    "failed_requests": 2135,
+    "error_rate": 0.0224,
+    "avg_rps": 159.03,
+    "peak_rps": 287.3
+  },
+  "latency_distribution": {
+    "p50_ms": 52,
+    "p90_ms": 89,
+    "p95_ms": 95,
+    "p99_ms": 180,
+    "max_ms": 1250,
+    "avg_ms": 58.7
+  },
+  "stage_analysis": [
+    {
+      "stage": "warmup",
+      "target_rps": 10,
+      "actual_rps": 9.8,
+      "p50_ms": 42,
+      "p95_ms": 68,
+      "error_rate": 0.0,
+      "cpu_usage": 0.15
+    },
+    {
+      "stage": "gradient_pressure",
+      "target_rps": 50,
+      "actual_rps": 48.2,
+      "p50_ms": 45,
+      "p95_ms": 78,
+      "error_rate": 0.001,
+      "cpu_usage": 0.35
+    },
+    {
+      "stage": "peak_test",
+      "target_rps": 100,
+      "actual_rps": 95.7,
+      "p50_ms": 52,
+      "p95_ms": 95,
+      "error_rate": 0.008,
+      "cpu_usage": 0.65
+    },
+    {
+      "stage": "stability_test",
+      "target_rps": 300,
+      "actual_rps": 287.3,
+      "p50_ms": 78,
+      "p95_ms": 145,
+      "error_rate": 0.021,
+      "cpu_usage": 0.85
+    }
+  ],
+  "resource_usage": {
+    "cpu_utilization_avg": 0.65,
+    "cpu_utilization_peak": 0.85,
+    "memory_usage_avg_gb": 6.8,
+    "memory_usage_peak_gb": 8.2,
+    "network_io_avg_mbps": 25.4,
+    "disk_io_avg_mbps": 12.1
+  },
+  "error_analysis": {
+    "timeout_errors": 1245,
+    "connection_errors": 567,
+    "server_errors_5xx": 234,
+    "client_errors_4xx": 89,
+    "bottleneck_analysis": {
+      "primary_bottleneck": "CPU",
+      "cpu_bound_at_rps": 280,
+      "memory_stable": true,
+      "network_utilization": 0.3
+    }
+  },
+  "optimization_recommendations": [
+    {
+      "optimization": "connection_pooling",
+      "expected_improvement": "15% latency reduction",
+      "implementation_effort": "1 day"
+    },
+    {
+      "optimization": "batch_scoring",
+      "expected_improvement": "40% throughput increase",
+      "implementation_effort": "3 days"
+    },
+    {
+      "optimization": "response_compression",
+      "expected_improvement": "30% bandwidth reduction",
+      "implementation_effort": "0.5 days"
+    },
+    {
+      "optimization": "feature_caching",
+      "expected_improvement": "20% CPU reduction",
+      "implementation_effort": "2 days"
+    }
+  ]
+}

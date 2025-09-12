@@ -1,0 +1,80 @@
+{
+  "config": {
+    "n": 50000,
+    "workers": 4,
+    "shards": 8,
+    "iterations": 3,
+    "overlapRate": 0.3,
+    "outputDir": "reports/bench"
+  },
+  "timestamp": "2025-09-12T07:06:36.759Z",
+  "performance_metrics": {
+    "total_time_ms": 81.81898599999998,
+    "throughput_per_sec": 703062.5062963193,
+    "memory_usage_mb": 1.52587890625,
+    "cpu_utilization": 60
+  },
+  "scalability_analysis": {
+    "workers_vs_throughput": [
+      {
+        "workers": 1,
+        "throughput": 630472.0851988303,
+        "efficiency": 630472.0851988303
+      },
+      {
+        "workers": 2,
+        "throughput": 739713.4213786614,
+        "efficiency": 369856.7106893307
+      },
+      {
+        "workers": 4,
+        "throughput": 794490.005437442,
+        "efficiency": 198622.5013593605
+      }
+    ],
+    "shards_vs_throughput": [
+      {
+        "shards": 2,
+        "throughput": 630472.0851988303,
+        "overhead_ms": 2.4866816581811833
+      },
+      {
+        "shards": 4,
+        "throughput": 739713.4213786614,
+        "overhead_ms": 7.229338510666395
+      },
+      {
+        "shards": 8,
+        "throughput": 794490.005437442,
+        "overhead_ms": 9.741712265147449
+      }
+    ]
+  },
+  "error_analysis": {
+    "total_errors": 0,
+    "error_rate": 0,
+    "error_types": {}
+  },
+  "extrapolation": {
+    "model_type": "Linear scaling with efficiency factor",
+    "formula": "T(n) = n / (703063 * 0.8)",
+    "extrapolations": {
+      "scale_1e8": {
+        "predicted_throughput": 562450.0050370555,
+        "predicted_time_minutes": 2.9632263343243515,
+        "confidence_interval": [
+          2.370581067459481,
+          3.5558716011892217
+        ]
+      },
+      "scale_1e9": {
+        "predicted_throughput": 562450.0050370555,
+        "predicted_time_minutes": 29.632263343243512,
+        "confidence_interval": [
+          23.70581067459481,
+          35.558716011892216
+        ]
+      }
+    }
+  }
+}

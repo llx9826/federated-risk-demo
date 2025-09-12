@@ -1,0 +1,14 @@
+{
+  "test_id": "psi_large_ecdh_10000000_1757668623",
+  "algorithm": "ecdh",
+  "total_size": 10000000,
+  "num_shards": 32,
+  "intersection_ratio": 0.05,
+  "salt": "psi_bench_2025",
+  "data_a_hash": "abf50494bc8855839437ac0967fd5197308c9629874fcef5fc3c4d53b4cdd49a",
+  "data_b_hash": "63ec9e2bbec70a63c8f650b957114b3e0a289c910610bdfbbad7060d7d3c87f7",
+  "expected_intersection": 500000,
+  "actual_intersection": 15624,
+  "accuracy": 0.031248,
+  "timestamp": "2025-09-12T17:18:14.046688"
+}

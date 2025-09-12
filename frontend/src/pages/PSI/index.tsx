@@ -138,7 +138,7 @@ const PSIPage: React.FC = () => {
       addNotification({
         type: 'success',
         title: 'PSI任务创建成功',
-        message: `任务 "${values.name}" 已提交，正在处理中...`,
+        content: `任务 "${values.name}" 已提交，正在处理中...`,
       })
       
       // 模拟任务进度更新
@@ -155,7 +155,7 @@ const PSIPage: React.FC = () => {
       addNotification({
         type: 'error',
         title: 'PSI任务创建失败',
-        message: '请检查输入数据并重试',
+        content: '请检查输入数据并重试',
       })
     } finally {
       setLoading(false)
@@ -178,7 +178,7 @@ const PSIPage: React.FC = () => {
         addNotification({
           type: 'success',
           title: '任务已删除',
-          message: 'PSI任务已成功删除',
+          content: 'PSI任务已成功删除',
         })
       },
     })
@@ -203,7 +203,7 @@ const PSIPage: React.FC = () => {
     addNotification({
       type: 'success',
       title: '下载完成',
-      message: 'PSI结果已下载到本地',
+      content: 'PSI结果已下载到本地',
     })
   }
 
@@ -282,7 +282,7 @@ const PSIPage: React.FC = () => {
       render: (_, record) => (
         record.status === 'completed' ? (
           <Text strong style={{ color: '#1890ff' }}>
-            {record.intersectionSize.toLocaleString()}
+            {record.intersectionSize?.toLocaleString() || '0'}
           </Text>
         ) : (
           <Text type="secondary">-</Text>
@@ -535,20 +535,23 @@ const PSIPage: React.FC = () => {
               {selectedJob.datasetB}
             </Descriptions.Item>
             <Descriptions.Item label="A记录数">
-              {selectedJob.totalRecordsA.toLocaleString()}
+              {selectedJob.totalRecordsA?.toLocaleString() || '0'}
             </Descriptions.Item>
             <Descriptions.Item label="B记录数">
-              {selectedJob.totalRecordsB.toLocaleString()}
+              {selectedJob.totalRecordsB?.toLocaleString() || '0'}
             </Descriptions.Item>
             {selectedJob.status === 'completed' && (
               <>
                 <Descriptions.Item label="交集大小" span={2}>
                   <Text strong style={{ color: '#1890ff', fontSize: 16 }}>
-                    {selectedJob.intersectionSize.toLocaleString()}
+                    {selectedJob.intersectionSize?.toLocaleString() || '0'}
                   </Text>
                 </Descriptions.Item>
                 <Descriptions.Item label="匹配率">
-                  {((selectedJob.intersectionSize / Math.min(selectedJob.totalRecordsA, selectedJob.totalRecordsB)) * 100).toFixed(2)}%
+                  {selectedJob.intersectionSize && selectedJob.totalRecordsA && selectedJob.totalRecordsB ? 
+                    ((selectedJob.intersectionSize / Math.min(selectedJob.totalRecordsA, selectedJob.totalRecordsB)) * 100).toFixed(2) + '%' : 
+                    '0%'
+                  }
                 </Descriptions.Item>
                 <Descriptions.Item label="执行时长">
                   {selectedJob.duration ? `${Math.floor(selectedJob.duration / 60)}分${selectedJob.duration % 60}秒` : '-'}

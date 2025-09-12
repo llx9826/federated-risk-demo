@@ -1,0 +1,67 @@
+{
+  "generation_time": "2025-09-12T09:12:59.092701",
+  "bank_data": {
+    "record_count": 100000,
+    "file_path": "data/synth/large_bank_data.csv",
+    "identifier_path": "data/synth/large_bank_identifiers.txt",
+    "schema": {
+      "user_id": "string",
+      "phone": "string",
+      "email": "string",
+      "id_card": "string",
+      "account_balance": "float",
+      "credit_score": "int",
+      "loan_amount": "float",
+      "deposit_amount": "float",
+      "transaction_count": "int",
+      "account_age_months": "int",
+      "risk_level": "categorical",
+      "account_type": "categorical",
+      "branch_code": "string",
+      "last_transaction_date": "datetime",
+      "kyc_status": "categorical",
+      "monthly_income": "float",
+      "employment_status": "categorical",
+      "education_level": "categorical",
+      "marital_status": "categorical",
+      "age": "int"
+    }
+  },
+  "ecom_data": {
+    "record_count": 100000,
+    "file_path": "data/synth/large_ecom_data.csv",
+    "identifier_path": "data/synth/large_ecom_identifiers.txt",
+    "schema": {
+      "user_id": "string",
+      "phone": "string",
+      "email": "string",
+      "total_orders": "int",
+      "total_amount": "float",
+      "avg_order_value": "float",
+      "favorite_category": "categorical",
+      "membership_level": "categorical",
+      "registration_date": "datetime",
+      "last_order_date": "datetime",
+      "return_rate": "float",
+      "review_count": "int",
+      "avg_rating": "float",
+      "payment_method": "categorical",
+      "shipping_address_count": "int",
+      "cart_abandonment_rate": "float",
+      "mobile_usage_rate": "float",
+      "social_media_connected": "boolean",
+      "newsletter_subscribed": "boolean",
+      "customer_service_contacts": "int",
+      "loyalty_points": "int",
+      "referral_count": "int",
+      "seasonal_buyer": "boolean",
+      "price_sensitivity": "categorical",
+      "brand_loyalty": "categorical"
+    }
+  },
+  "psi_config": {
+    "expected_intersection_size": "approximately 30,000-40,000 records",
+    "hash_algorithm": "SHA256",
+    "identifier_format": "16-character hex string"
+  }
+}

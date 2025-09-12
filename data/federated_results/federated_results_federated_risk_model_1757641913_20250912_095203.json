@@ -1,0 +1,24 @@
+{
+  "id": 16,
+  "task_id": "federated_risk_model_1757641913",
+  "task_name": "联邦风险评估模型训练",
+  "algorithm": "secure_boost",
+  "privacy_level": "medium",
+  "participants": [
+    "bank",
+    "ecommerce"
+  ],
+  "config": "{\"algorithm\": \"secure_boost\", \"max_depth\": 6, \"reg_alpha\": 0.0, \"subsample\": 0.8, \"num_rounds\": 10, \"reg_lambda\": 1.0, \"learning_rate\": 0.1, \"privacy_level\": \"medium\", \"colsample_bytree\": 0.8, \"enable_secure_agg\": true, \"early_stopping_rounds\": 10}",
+  "status": "completed",
+  "progress": 1.0,
+  "current_round": 10,
+  "total_rounds": 10,
+  "model_hash": "ab2fd07486159755b8ae16c0ddcbc57fb4acd0f3c67aac456d38a4861161c385",
+  "model_path": "./models/federated_risk_model_1757641913_model.pkl",
+  "evaluation_results": "{\"ks\": 0.732092837134854, \"auc\": 0.9295718287314926, \"recall\": 0.7179916742816529, \"f1_score\": 0.7556462856214347, \"precision\": 0.7974690360569138, \"training_time\": 1.271896, \"communication_cost\": 20.0, \"privacy_budget_used\": 0.2}",
+  "shap_results": "{\"global_importance\": {\"debt_ratio\": 0.2487786413219774, \"account_age\": 0.16705856927859347, \"order_count\": 0.017001143320657008, \"return_rate\": 0.021273019037382775, \"total_spent\": 0.045664095333689834, \"credit_score\": 0.10918119230749894, \"has_mortgage\": 0.18665896469680143, \"annual_income\": 0.1666006188707703, \"avg_order_value\": 0.00990179825913119, \"days_since_last_order\": 0.027881957573497575}, \"privacy_preserving\": true, \"explanation_quality\": 0.1, \"feature_interactions\": {\"debt_ratio_x_account_age\": 0.19756540323756006, \"credit_score_x_debt_ratio\": 0.12782575891328335, \"debt_ratio_x_has_mortgage\": 0.1360943238428323, \"annual_income_x_debt_ratio\": 0.03580204238340474, \"credit_score_x_account_age\": 0.08380650880491158, \"has_mortgage_x_account_age\": 0.22279089283294834, \"annual_income_x_account_age\": 0.20731460721928482, \"credit_score_x_has_mortgage\": 0.07270552773117522, \"annual_income_x_has_mortgage\": 0.04109090014773554, \"credit_score_x_annual_income\": 0.02097962427947013}}",
+  "error_message": null,
+  "created_at": "2025-09-12T01:51:53.304755+00:00",
+  "updated_at": "2025-09-12T01:51:54.961610+00:00",
+  "completed_at": "2025-09-12T01:51:54.961610+00:00"
+}

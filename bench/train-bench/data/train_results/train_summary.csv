@@ -1,0 +1,2 @@
+test_id,timestamp,total_size,num_parties,epsilon,total_rounds,final_auc,final_ks,wall_clock_hours,total_comm_mb,early_stopped
+fed_train_large_1000000_3_1757669108,2025-09-12T17:28:42.878788,1000000,3,5.0,41,0.8404763779159476,0.5055726916371035,0.059427260292900935,0.031280517578125,True

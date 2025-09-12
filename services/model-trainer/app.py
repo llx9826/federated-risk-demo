@@ -328,6 +328,9 @@ class SecureBoostTrainer:
             # 合并参与方数据（模拟纵向联邦学习）
             combined_data = self._combine_vertical_data(participants_data)
             
+            # 训练前断言检查
+            await self._validate_training_preconditions(combined_data, target_column)
+            
             # 分割训练和测试集
             # 移除ID列和目标列以外的所有列作为特征
             feature_cols = [col for col in combined_data.columns if col not in ['id', target_column]]
@@ -391,6 +394,9 @@ class SecureBoostTrainer:
             
             training_time = (datetime.utcnow() - start_time).total_seconds()
             privacy_budget_used = 1.0 / self.epsilon if self.epsilon != float('inf') else 0.0
+            
+            # 训练后断言检查
+            await self._validate_training_results(auc, ks, y_pred_proba, training_time)
             
             # 保存模型
             model_path = f"{MODEL_STORAGE_PATH}/{task_id}_model.pkl"
@@ -474,6 +480,74 @@ class SecureBoostTrainer:
         )
         
         return model
+    
+    async def _validate_training_preconditions(self, combined_data: pd.DataFrame, target_column: str):
+        """训练前断言检查"""
+        logger.info("开始训练前数据质量检查...")
+        
+        # 检查数据规模
+        if len(combined_data) < 1000:
+            raise ValueError(f"数据样本数量过少: {len(combined_data)} < 1000")
+        
+        # 检查标签分布
+        if target_column not in combined_data.columns:
+            raise ValueError(f"目标列 {target_column} 不存在")
+        
+        y = combined_data[target_column]
+        unique_labels = y.nunique()
+        if unique_labels < 2:
+            raise ValueError(f"标签类别数量不足: {unique_labels} < 2")
+        
+        # 检查类别平衡性
+        class_counts = y.value_counts()
+        min_class_ratio = class_counts.min() / len(y)
+        if min_class_ratio < 0.03:
+            logger.warning(f"类别不平衡严重，最小类别占比: {min_class_ratio:.3f}")
+            # 不直接失败，但记录警告
+        
+        # 检查特征质量
+        feature_cols = [col for col in combined_data.columns if col not in ['id', target_column]]
+        for col in feature_cols:
+            # 检查缺失率
+            missing_rate = combined_data[col].isnull().sum() / len(combined_data)
+            if missing_rate > 0.99:
+                raise ValueError(f"特征 {col} 缺失率过高: {missing_rate:.3f}")
+            
+            # 检查方差
+            if combined_data[col].var() == 0:
+                raise ValueError(f"特征 {col} 方差为0（常量列）")
+        
+        # 检查隐私预算
+        if self.epsilon < 1 and self.config.algorithm not in [AlgorithmType.SECURE_BOOST]:
+            raise ValueError(f"算法 {self.config.algorithm} 不支持差分隐私 (ε={self.epsilon})")
+        
+        logger.info(f"训练前检查通过: {len(combined_data)} 样本, {len(feature_cols)} 特征, 正样本比例 {y.mean():.3f}")
+    
+    async def _validate_training_results(self, auc: float, ks: float, y_pred_proba: np.ndarray, training_time: float):
+        """训练后断言检查"""
+        logger.info("开始训练后质量检查...")
+        
+        # 检查性能指标
+        if auc < 0.65:
+            raise ValueError(f"模型AUC过低: {auc:.4f} < 0.65")
+        
+        if ks < 0.20:
+            raise ValueError(f"模型KS过低: {ks:.4f} < 0.20")
+        
+        # 检查预测分布
+        pred_std = np.std(y_pred_proba)
+        if pred_std < 0.01:
+            raise ValueError(f"预测标准差过小（退化分布）: {pred_std:.6f} < 0.01")
+        
+        # 检查训练时间（防止训练即时完成）
+        if training_time < 0.005:  # 5毫秒
+            raise ValueError(f"训练时间过短（可能未进入有效训练）: {training_time:.6f}s < 0.005s")
+        
+        # 检查预测值范围
+        if y_pred_proba.min() == y_pred_proba.max():
+            raise ValueError("所有预测值相同（模型未学习）")
+        
+        logger.info(f"训练后检查通过: AUC={auc:.4f}, KS={ks:.4f}, 预测标准差={pred_std:.4f}, 训练时间={training_time:.3f}s")
 
 class FederatedSHAPExplainer:
     """联邦SHAP解释器"""
@@ -674,38 +748,72 @@ async def execute_training(request: TrainingRequest):
             )
 
 async def load_participants_data(request: TrainingRequest) -> Dict[str, pd.DataFrame]:
-    """加载参与方数据（模拟）"""
+    """加载参与方数据（模拟）- 生成具有真实信号的数据"""
     participants_data = {}
     
     # 纵向联邦学习：不同参与方拥有不同的特征子集
-    n_samples = 1000  # 统一样本数量
+    n_samples = 10000  # 增加样本数量以提高训练质量
     total_features = len(request.feature_columns)
     
+    # 设置固定随机种子确保可重现性
+    np.random.seed(42)
+    
+    # 生成基础特征矩阵
+    all_features = np.random.randn(n_samples, total_features)
+    
+    # 创建有意义的目标变量（基于特征的线性组合加噪声）
+    # 使用前几个特征作为主要信号
+    signal_features = min(5, total_features)
+    weights = np.array([2.0, -1.5, 1.2, -0.8, 0.6][:signal_features])  # 不同权重
+    
+    # 计算线性组合
+    linear_combination = np.dot(all_features[:, :signal_features], weights)
+    
+    # 添加非线性交互项
+    if total_features >= 2:
+        interaction = all_features[:, 0] * all_features[:, 1] * 0.5
+        linear_combination += interaction
+    
+    # 添加噪声并转换为概率
+    noise = np.random.normal(0, 0.3, n_samples)
+    logits = linear_combination + noise
+    probabilities = 1 / (1 + np.exp(-logits))
+    
+    # 生成二分类标签，确保合理的正负样本比例
+    target_labels = (probabilities > np.percentile(probabilities, 80)).astype(int)
+    
+    # 验证标签分布
+    positive_rate = target_labels.mean()
+    logger.info(f"生成数据正样本比例: {positive_rate:.3f}")
+    
+    # 如果正样本比例过低或过高，重新调整
+    if positive_rate < 0.05 or positive_rate > 0.95:
+        threshold = np.percentile(probabilities, 85)  # 调整阈值
+        target_labels = (probabilities > threshold).astype(int)
+        positive_rate = target_labels.mean()
+        logger.info(f"调整后正样本比例: {positive_rate:.3f}")
+    
     for i, participant_id in enumerate(request.participants):
-        # 模拟生成数据
-        np.random.seed(hash(participant_id) % 2**32)
-        
         # 为每个参与方分配不同的特征子集
         features_per_party = total_features // len(request.participants)
         start_idx = i * features_per_party
         end_idx = start_idx + features_per_party if i < len(request.participants) - 1 else total_features
         
         participant_features = request.feature_columns[start_idx:end_idx]
-        n_features = len(participant_features)
         
-        # 生成特征数据
-        features = np.random.randn(n_samples, n_features)
+        # 获取该参与方的特征数据
+        participant_feature_data = all_features[:, start_idx:end_idx]
         
-        data = pd.DataFrame(features, columns=participant_features)
+        data = pd.DataFrame(participant_feature_data, columns=participant_features)
         data['id'] = range(n_samples)  # 统一的ID用于对齐
         
         # 第一个参与方有标签
         if participant_id == request.participants[0]:
-            # 生成目标变量（基于所有特征的简化版本）
-            target = (features.sum(axis=1) + np.random.randn(n_samples) * 0.1) > 0
-            data[request.target_column] = target.astype(int)
+            data[request.target_column] = target_labels
         
         participants_data[participant_id] = data
+        
+        logger.info(f"参与方 {participant_id}: {len(participant_features)} 个特征, {n_samples} 个样本")
     
     return participants_data
 
@@ -833,6 +941,122 @@ async def get_training_report(task_id: str):
     except Exception as e:
         logger.error(f"获取训练报告失败: {e}")
         raise HTTPException(status_code=500, detail="内部服务器错误")
+
+# 测试专用路由（仅在NODE_ENV=test时可用）
+def is_test_environment() -> bool:
+    """检查是否为测试环境"""
+    return os.getenv('NODE_ENV', '').lower() == 'test'
+
+@app.post("/test/reset")
+async def test_reset():
+    """重置测试环境"""
+    if not is_test_environment():
+        raise HTTPException(status_code=404, detail="路由不存在")
+    
+    try:
+        # 清理训练任务
+        async with db_pool.acquire() as conn:
+            await conn.execute("DELETE FROM training_jobs WHERE task_id LIKE 'test_%'")
+            await conn.execute("DELETE FROM training_metrics WHERE task_id LIKE 'test_%'")
+        
+        # 清理模型文件
+        import glob
+        test_models = glob.glob(f"{MODEL_STORAGE_PATH}/test_*")
+        for model_file in test_models:
+            if os.path.exists(model_file):
+                os.remove(model_file)
+        
+        # 清理报告文件
+        test_reports = glob.glob(f"{REPORTS_PATH}/train_report_test_*")
+        for report_file in test_reports:
+            if os.path.exists(report_file):
+                os.remove(report_file)
+        
+        logger.info("测试环境重置完成")
+        return {"message": "测试环境重置成功", "timestamp": datetime.utcnow().isoformat()}
+        
+    except Exception as e:
+        logger.error(f"测试环境重置失败: {e}")
+        raise HTTPException(status_code=500, detail="重置失败")
+
+class TestSeedRequest(BaseModel):
+    """测试数据生成请求"""
+    n: int = Field(default=50000, ge=1000, le=100000, description="样本数量")
+    overlap: float = Field(default=0.6, ge=0.1, le=1.0, description="交集比例")
+    parties: List[str] = Field(default=["A", "B"], description="参与方列表")
+    seed: int = Field(default=42, description="随机种子")
+    bad_rate: float = Field(default=0.12, ge=0.05, le=0.3, description="坏账率")
+    noise: float = Field(default=0.15, ge=0.0, le=0.5, description="噪声水平")
+
+@app.post("/test/seed")
+async def test_seed(request: TestSeedRequest):
+    """生成测试数据"""
+    if not is_test_environment():
+        raise HTTPException(status_code=404, detail="路由不存在")
+    
+    try:
+        # 调用合成数据生成器
+        import subprocess
+        import sys
+        
+        cmd = [
+            sys.executable, "tools/seed/synth_vertical_v2.py",
+            "--n", str(request.n),
+            "--overlap", str(request.overlap),
+            "--parties", ",".join(request.parties),
+            "--seed", str(request.seed),
+            "--bad_rate", str(request.bad_rate),
+            "--noise", str(request.noise)
+        ]
+        
+        result = subprocess.run(cmd, capture_output=True, text=True, cwd=".")
+        
+        if result.returncode != 0:
+            logger.error(f"数据生成失败: {result.stderr}")
+            raise HTTPException(status_code=500, detail=f"数据生成失败: {result.stderr}")
+        
+        return {
+            "message": "测试数据生成成功",
+            "parameters": request.dict(),
+            "output": result.stdout,
+            "timestamp": datetime.utcnow().isoformat()
+        }
+        
+    except subprocess.SubprocessError as e:
+        logger.error(f"数据生成进程失败: {e}")
+        raise HTTPException(status_code=500, detail="数据生成进程失败")
+    except Exception as e:
+        logger.error(f"测试数据生成失败: {e}")
+        raise HTTPException(status_code=500, detail="数据生成失败")
+
+@app.post("/test/selftest")
+async def test_selftest():
+    """触发全链路自测"""
+    if not is_test_environment():
+        raise HTTPException(status_code=404, detail="路由不存在")
+    
+    try:
+        # 执行自测脚本
+        import subprocess
+        
+        result = subprocess.run(
+            ["bash", "scripts/selftest.sh"],
+            capture_output=True,
+            text=True,
+            cwd="."
+        )
+        
+        return {
+            "message": "全链路自测完成",
+            "exit_code": result.returncode,
+            "stdout": result.stdout,
+            "stderr": result.stderr,
+            "timestamp": datetime.utcnow().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"全链路自测失败: {e}")
+        raise HTTPException(status_code=500, detail="自测失败")
 
 @app.get("/health")
 async def health_check():

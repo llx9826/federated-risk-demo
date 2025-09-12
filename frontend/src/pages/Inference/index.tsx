@@ -332,9 +332,9 @@ const InferencePage: React.FC = () => {
       title: '任务名称',
       dataIndex: 'name',
       key: 'name',
-      render: (text: string, record: InferenceJob) => (
+      render: (_, record: InferenceJob) => (
         <div>
-          <div style={{ fontWeight: 500 }}>{text}</div>
+          <div style={{ fontWeight: 500 }}>{record.name}</div>
           <div style={{ fontSize: 12, color: '#666', marginTop: 4 }}>
             {record.description}
           </div>
@@ -357,13 +357,13 @@ const InferencePage: React.FC = () => {
       dataIndex: 'participants',
       key: 'participants',
       width: 150,
-      render: (participants: string[]) => (
+      render: (_, record: InferenceJob) => (
         <div>
-          {participants.slice(0, 2).map(p => (
+          {record.participants.slice(0, 2).map(p => (
             <Tag key={p} style={{ marginBottom: 2 }}>{p}</Tag>
           ))}
-          {participants.length > 2 && (
-            <Tag>+{participants.length - 2}</Tag>
+          {record.participants.length > 2 && (
+            <Tag>+{record.participants.length - 2}</Tag>
           )}
         </div>
       ),
@@ -373,14 +373,14 @@ const InferencePage: React.FC = () => {
       dataIndex: 'status',
       key: 'status',
       width: 120,
-      render: (status: string, record: InferenceJob) => {
-        const config = getStatusConfig(status)
+      render: (_, record: InferenceJob) => {
+        const config = getStatusConfig(record.status)
         return (
           <div>
             <Tag icon={config.icon} color={config.color}>
               {config.text}
             </Tag>
-            {status === 'running' && (
+            {record.status === 'running' && (
               <Progress
                 percent={record.progress}
                 size="small"
@@ -399,7 +399,7 @@ const InferencePage: React.FC = () => {
       render: (_, record: InferenceJob) => (
         <div>
           <Text style={{ fontSize: 12 }}>
-            {record.processedSamples.toLocaleString()}/{record.totalSamples.toLocaleString()}
+            {record.processedSamples?.toLocaleString() || '0'}/{record.totalSamples?.toLocaleString() || '0'}
           </Text>
           {record.status === 'completed' && record.accuracy && (
             <div style={{ fontSize: 12, color: '#52c41a', marginTop: 2 }}>
@@ -414,7 +414,7 @@ const InferencePage: React.FC = () => {
       dataIndex: 'createdAt',
       key: 'createdAt',
       width: 120,
-      render: (time: string) => dayjs(time).format('MM-DD HH:mm'),
+      render: (_, record: InferenceJob) => dayjs(record.createdAt).format('MM-DD HH:mm'),
     },
     {
       title: '操作',
@@ -760,7 +760,7 @@ const InferencePage: React.FC = () => {
               </Tag>
             </Descriptions.Item>
             <Descriptions.Item label="进度">
-              {selectedJob.progress}% ({selectedJob.processedSamples.toLocaleString()}/{selectedJob.totalSamples.toLocaleString()})
+              {selectedJob.progress}% ({selectedJob.processedSamples?.toLocaleString() || '0'}/{selectedJob.totalSamples?.toLocaleString() || '0'})
             </Descriptions.Item>
             <Descriptions.Item label="创建时间">
               {dayjs(selectedJob.createdAt).format('YYYY-MM-DD HH:mm:ss')}
@@ -773,7 +773,7 @@ const InferencePage: React.FC = () => {
             {selectedJob.results && (
               <>
                 <Descriptions.Item label="预测数量">
-                  {selectedJob.results.predictions.toLocaleString()}
+                  {selectedJob.results.predictions?.toLocaleString() || '0'}
                 </Descriptions.Item>
                 <Descriptions.Item label="正例率">
                   {(selectedJob.results.positiveRate * 100).toFixed(1)}%

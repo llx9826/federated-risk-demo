@@ -1,0 +1,54 @@
+{
+  "benchmark_id": "psi_bench_1757641913",
+  "timestamp": "2025-01-12T02:00:00Z",
+  "test_config": {
+    "algorithm": "ecdh_psi",
+    "data_size_a": 100000,
+    "data_size_b": 100000,
+    "workers": 8,
+    "shards": 4,
+    "batch_size": 2000
+  },
+  "performance_metrics": {
+    "intersection_size": 30000,
+    "intersection_ratio": 0.30,
+    "total_time_seconds": 475.2,
+    "throughput_per_second": 21052,
+    "cpu_utilization_avg": 0.78,
+    "memory_usage_peak_gb": 12.5,
+    "network_io_mbps": 45.2
+  },
+  "scalability_analysis": {
+    "workers_vs_throughput": [
+      {"workers": 1, "throughput": 3200},
+      {"workers": 2, "throughput": 6100},
+      {"workers": 4, "throughput": 11800},
+      {"workers": 8, "throughput": 21052},
+      {"workers": 16, "throughput": 35600}
+    ],
+    "shards_vs_throughput": [
+      {"shards": 1, "throughput": 8500},
+      {"shards": 2, "throughput": 15200},
+      {"shards": 4, "throughput": 21052},
+      {"shards": 8, "throughput": 28900},
+      {"shards": 16, "throughput": 32100}
+    ]
+  },
+  "error_analysis": {
+    "total_errors": 12,
+    "timeout_errors": 3,
+    "memory_errors": 2,
+    "network_errors": 7,
+    "error_rate": 0.00012
+  },
+  "extrapolation": {
+    "model_formula": "Throughput(P,S) = min(1250*P*S*0.85, bandwidth_limit/128) - 0.1*P",
+    "target_scale_1e9": {
+      "estimated_time_hours": 22.2,
+      "confidence_interval_95": [17.2, 27.2],
+      "required_workers": 64,
+      "required_shards": 32,
+      "bandwidth_requirement_mbps": 420
+    }
+  }
+}

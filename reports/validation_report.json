@@ -1,0 +1,389 @@
+{
+  "timestamp": "2025-09-12T17:39:04.403474",
+  "project_root": ".",
+  "psi_deliverables": {
+    "psi_summary": {
+      "exists": true,
+      "size": 306,
+      "sha256": "c34b0733ca3e3197df9854ac505c7dfac83b68a7f6d64da146d7daf49f5ceef2",
+      "readable": true,
+      "records": 1,
+      "columns": [
+        "test_id",
+        "timestamp",
+        "algorithm",
+        "total_size",
+        "num_shards",
+        "intersection_ratio",
+        "num_workers",
+        "use_bloom",
+        "wall_clock_hours",
+        "total_throughput_per_sec",
+        "accuracy",
+        "total_processed"
+      ]
+    },
+    "psi_results": {
+      "exists": true,
+      "size": 14932,
+      "sha256": "503624cac17ce2fcd7ee867229925d4dcaa4b41a4e5706d6024231ada2ccfe13",
+      "readable": true,
+      "records": 2
+    },
+    "psi_integrity": {
+      "exists": true,
+      "size": 486,
+      "sha256": "aad9590909a6c998b21f05cb6521855d3b9b213084007d1ade86c76b87e9b737",
+      "readable": true,
+      "test_id": "psi_large_ecdh_10000000_1757668623",
+      "accuracy": 0.031248
+    },
+    "psi_charts": [
+      {
+        "exists": true,
+        "size": 90435,
+        "sha256": "453709ce6efd010d499f8f8480dd48d32b8a01544874dfbf4a2eacbf1d41db72",
+        "readable": true,
+        "name": "psi_throughput.png"
+      },
+      {
+        "exists": true,
+        "size": 54612,
+        "sha256": "2c9bb137c4250828dde03900ed84e9a35ec84b946998bacb5d8852348e210637",
+        "readable": true,
+        "name": "psi_latency.png"
+      }
+    ]
+  },
+  "train_deliverables": {
+    "train_summary": {
+      "exists": true,
+      "size": 289,
+      "sha256": "34f2d64e74e25ea0681f85ecce1bf0f2ff8d349639a1f07df3b69d71f265b5f9",
+      "readable": true,
+      "records": 1,
+      "columns": [
+        "test_id",
+        "timestamp",
+        "total_size",
+        "num_parties",
+        "epsilon",
+        "total_rounds",
+        "final_auc",
+        "final_ks",
+        "wall_clock_hours",
+        "total_comm_mb",
+        "early_stopped"
+      ]
+    },
+    "train_reports": [
+      {
+        "exists": true,
+        "size": 1154,
+        "sha256": "8bbdc6bac79bb36c5e022b9bb8ee905184ec7e9decbf3410445e020b49825b49",
+        "readable": true,
+        "name": "train_report_federated_risk_model_1757641694.json",
+        "test_id": null,
+        "final_auc": null,
+        "final_ks": null
+      },
+      {
+        "exists": true,
+        "size": 1155,
+        "sha256": "eb96ce373141208359959adbdf2fffcf237c98b045bead1708bd9a9a119f01a5",
+        "readable": true,
+        "name": "train_report_federated_risk_model_1757641913.json",
+        "test_id": null,
+        "final_auc": null,
+        "final_ks": null
+      },
+      {
+        "exists": true,
+        "size": 1153,
+        "sha256": "ca35725762527de3a99c36e1e66ee9fc56c3fae43a28901fdbf888d04367d898",
+        "readable": true,
+        "name": "train_report_federated_risk_model_1757641713.json",
+        "test_id": null,
+        "final_auc": null,
+        "final_ks": null
+      },
+      {
+        "exists": true,
+        "size": 1106,
+        "sha256": "dc5f99ecf3af57199edd67d97ccf85ef50473e664b540a96dcae1e1ef8fecd7e",
+        "readable": true,
+        "name": "train_report_federated_risk_model_1757641844.json",
+        "test_id": null,
+        "final_auc": null,
+        "final_ks": null
+      },
+      {
+        "exists": true,
+        "size": 1027,
+        "sha256": "b9a869d9612ddeeb97b1f62f6b8c7be439fc6f3be4537af6b3416f95c94731a0",
+        "readable": true,
+        "name": "train_report_test_task_20250112_003.json",
+        "test_id": null,
+        "final_auc": null,
+        "final_ks": null
+      },
+      {
+        "exists": true,
+        "size": 1151,
+        "sha256": "431aaf2c3b63902970f68ad4b49de0deae3657d35a6ca9b1bf3b3324c49972fa",
+        "readable": true,
+        "name": "train_report_federated_risk_model_1757641828.json",
+        "test_id": null,
+        "final_auc": null,
+        "final_ks": null
+      },
+      {
+        "exists": true,
+        "size": 1156,
+        "sha256": "716f0d5256162c87058a681ce37269abcb69682641fea8ccc1fdd5e9355be1db",
+        "readable": true,
+        "name": "train_report_federated_risk_model_1757641802.json",
+        "test_id": null,
+        "final_auc": null,
+        "final_ks": null
+      }
+    ],
+    "train_models": [
+      {
+        "exists": true,
+        "size": 13229,
+        "sha256": "e8d9757eee92ce16f135677725e2c2be13b3753d8520e9a256074369dc4004b1",
+        "readable": true,
+        "name": "fed_training_006_model.pkl"
+      },
+      {
+        "exists": true,
+        "size": 12529,
+        "sha256": "0d67dd5b6111206595f732925bc81dd55fa6e16b7254c531cfffb3c1af5a036c",
+        "readable": true,
+        "name": "fed_training_007_model.pkl"
+      },
+      {
+        "exists": true,
+        "size": 34529,
+        "sha256": "1595630d32c28c3a470ae2a6b4699819615cd27ee7812ec9800b3f382cf942cc",
+        "readable": true,
+        "name": "federated_risk_model_1757641844_model.pkl"
+      },
+      {
+        "exists": true,
+        "size": 32629,
+        "sha256": "60df8d532d7f80b378cc6d00a3ac45d16312635f4f16a5835acda7c975d0491c",
+        "readable": true,
+        "name": "federated_risk_model_1757641713_model.pkl"
+      },
+      {
+        "exists": true,
+        "size": 18402,
+        "sha256": "891bbbef59aef31e5cac5afd39c9c4a294a252f0cb9a331df9dd0dc88de1cdf5",
+        "readable": true,
+        "name": "test_task_20250112_003_model.pkl"
+      },
+      {
+        "exists": true,
+        "size": 21617,
+        "sha256": "98c0872c96a7ca7a4b84218968d3d04d43a16053e6de69cb6c22cbab8963fae4",
+        "readable": true,
+        "name": "fed_training_001_model.pkl"
+      },
+      {
+        "exists": true,
+        "size": 34127,
+        "sha256": "37f51e55b8a2a186f38a6ec19d923ac7dbbe7349ad67c3c25a6cfa276608a85e",
+        "readable": true,
+        "name": "federated_risk_model_1757641694_model.pkl"
+      },
+      {
+        "exists": true,
+        "size": 35623,
+        "sha256": "ab2fd07486159755b8ae16c0ddcbc57fb4acd0f3c67aac456d38a4861161c385",
+        "readable": true,
+        "name": "federated_risk_model_1757641913_model.pkl"
+      },
+      {
+        "exists": true,
+        "size": 12877,
+        "sha256": "6f5fc2fc8d53b67ff5a1fee51bacce4d426a785c16446d846d442de2b56c0d48",
+        "readable": true,
+        "name": "fed_training_008_model.pkl"
+      },
+      {
+        "exists": true,
+        "size": 34399,
+        "sha256": "2c9f320998120f8dffa809f393e4782c571b03b1ea6eb195d4bc91b080e0ceec",
+        "readable": true,
+        "name": "federated_risk_model_1757641828_model.pkl"
+      },
+      {
+        "exists": true,
+        "size": 12484,
+        "sha256": "cc147dd7725388dda75d042c75f72e40f938fb11c068267579be7125a0ba3133",
+        "readable": true,
+        "name": "fed_training_003_model.pkl"
+      },
+      {
+        "exists": true,
+        "size": 32561,
+        "sha256": "32de5c84426deef0d8fbc0c0d3b3a0dc64758d80c4e8d641e4d3a387ab1796ca",
+        "readable": true,
+        "name": "federated_risk_model_1757641802_model.pkl"
+      }
+    ],
+    "train_charts": [
+      {
+        "exists": true,
+        "size": 54612,
+        "sha256": "2c9bb137c4250828dde03900ed84e9a35ec84b946998bacb5d8852348e210637",
+        "readable": true,
+        "name": "train_auc_ks_vs_epsilon.png"
+      },
+      {
+        "exists": false,
+        "size": 0,
+        "sha256": null,
+        "readable": false,
+        "name": "train_comm_vs_round.png"
+      }
+    ]
+  },
+  "documentation": {
+    "showcase_doc": {
+      "exists": true,
+      "size": 4275,
+      "sha256": "2c5dcec87671414851f1e6183dbd2d33f8804827555c8db3b3108327c95d6acd",
+      "readable": true,
+      "word_count": 388,
+      "line_count": 114
+    },
+    "other_docs": [
+      {
+        "exists": true,
+        "size": 7118,
+        "sha256": "961c6a190b845d639cd6d6de873df6f15e482fd73032e44bbe32d1b646a48f0f",
+        "readable": true,
+        "name": "README.md"
+      },
+      {
+        "exists": true,
+        "size": 14261,
+        "sha256": "12f322726bd341a31caed10187e8168cd0cf27bb8298ff935a21313b8aab67c0",
+        "readable": true,
+        "name": "ARCHITECTURE.md"
+      },
+      {
+        "exists": true,
+        "size": 33506,
+        "sha256": "970a05137718617d6a72c189a85bf43a247aa3bad2671873841718b3f39455a4",
+        "readable": true,
+        "name": "SECURITY.md"
+      },
+      {
+        "exists": true,
+        "size": 13945,
+        "sha256": "538a9da8b3c7fbe69799081cdb9a029d9581feb2e38334d9a0c330735c286fa9",
+        "readable": true,
+        "name": "COMPLIANCE.md"
+      }
+    ]
+  },
+  "traceability": {
+    "file_manifest": {
+      "reports/psi_results.jsonl": {
+        "sha256": "503624cac17ce2fcd7ee867229925d4dcaa4b41a4e5706d6024231ada2ccfe13",
+        "size": 14932,
+        "modified": 1757668694.048084
+      },
+      "reports/train_report_federated_risk_model_1757641694.json": {
+        "sha256": "8bbdc6bac79bb36c5e022b9bb8ee905184ec7e9decbf3410445e020b49825b49",
+        "size": 1154,
+        "modified": 1757641696.5788026
+      },
+      "reports/train_report_federated_risk_model_1757641913.json": {
+        "sha256": "eb96ce373141208359959adbdf2fffcf237c98b045bead1708bd9a9a119f01a5",
+        "size": 1155,
+        "modified": 1757641915.5575597
+      },
+      "reports/train_report_federated_risk_model_1757641713.json": {
+        "sha256": "ca35725762527de3a99c36e1e66ee9fc56c3fae43a28901fdbf888d04367d898",
+        "size": 1153,
+        "modified": 1757641715.4951982
+      },
+      "reports/psi_summary.csv": {
+        "sha256": "c34b0733ca3e3197df9854ac505c7dfac83b68a7f6d64da146d7daf49f5ceef2",
+        "size": 306,
+        "modified": 1757668694.2845473
+      },
+      "reports/psi_integrity.json": {
+        "sha256": "aad9590909a6c998b21f05cb6521855d3b9b213084007d1ade86c76b87e9b737",
+        "size": 486,
+        "modified": 1757668694.0471632
+      },
+      "reports/extrapolation_analysis.json": {
+        "sha256": "39482f6e95bf61994886267c0ae671feac808b2778950d48e51c1edc32e28b76",
+        "size": 4158,
+        "modified": 1757660420.8179524
+      },
+      "reports/train_report_federated_risk_model_1757641844.json": {
+        "sha256": "dc5f99ecf3af57199edd67d97ccf85ef50473e664b540a96dcae1e1ef8fecd7e",
+        "size": 1106,
+        "modified": 1757641846.153501
+      },
+      "reports/train_report_test_task_20250112_003.json": {
+        "sha256": "b9a869d9612ddeeb97b1f62f6b8c7be439fc6f3be4537af6b3416f95c94731a0",
+        "size": 1027,
+        "modified": 1757610181.470131
+      },
+      "reports/train_report_federated_risk_model_1757641828.json": {
+        "sha256": "431aaf2c3b63902970f68ad4b49de0deae3657d35a6ca9b1bf3b3324c49972fa",
+        "size": 1151,
+        "modified": 1757641830.1462796
+      },
+      "reports/federated_training_report_federated_risk_model_1757641913.json": {
+        "sha256": "eb96ce373141208359959adbdf2fffcf237c98b045bead1708bd9a9a119f01a5",
+        "size": 1155,
+        "modified": 1757641923.758865
+      },
+      "reports/train_report_federated_risk_model_1757641802.json": {
+        "sha256": "716f0d5256162c87058a681ce37269abcb69682641fea8ccc1fdd5e9355be1db",
+        "size": 1156,
+        "modified": 1757641804.27669
+      },
+      "reports/bench/psi_benchmark_sample.json": {
+        "sha256": "94710a34c61e7650150a234f590db19574ae9146084d1938292caa63ec3510e7",
+        "size": 1517,
+        "modified": 1757660350.969424
+      },
+      "reports/bench/score_benchmark_sample.json": {
+        "sha256": "e4363c7195e5084b1f5c020de0874b0fedbe783f8873ad0007e999a112b4ab7e",
+        "size": 2638,
+        "modified": 1757660392.295338
+      },
+      "reports/bench/train_benchmark_sample.json": {
+        "sha256": "2efec860d7cbaa008c5df8e1cbe4042045b8c2dd13e5b4d8732ccad8798fffc3",
+        "size": 1947,
+        "modified": 1757660370.222051
+      },
+      "reports/bench/psi_benchmark_result.json": {
+        "sha256": "0893ebff365b0ecdb0eaf0560948557182f8b797bbc0580b3a019ce90562cb0f",
+        "size": 1921,
+        "modified": 1757660796.76549
+      }
+    },
+    "hash_consistency": true,
+    "timestamp_consistency": true,
+    "id_consistency": true,
+    "unique_test_ids": 2
+  },
+  "summary": {
+    "total_files": 32,
+    "valid_files": 31,
+    "completion_rate": 0.96875,
+    "file_manifest_count": 16,
+    "unique_test_ids": 2
+  }
+}

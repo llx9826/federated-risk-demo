@@ -1,0 +1,17 @@
+{
+  "session_id": "perf_test_1757641504",
+  "intersection_size": 0,
+  "intersection_elements": null,
+  "computation_time_ms": 5897,
+  "method_used": "ecdh_psi",
+  "party_contributions": {
+    "bank": 100000,
+    "ecommerce": 100000
+  },
+  "metadata": {
+    "total_elements": 200000,
+    "intersection_rate": 0.0,
+    "computation_method": "ecdh_psi"
+  },
+  "timestamp": "2025-09-12T01:45:21.022649Z"
+}

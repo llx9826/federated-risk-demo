@@ -1,0 +1,139 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e6]:
+  - complementary [ref=e8]:
+    - generic [ref=e9]:
+      - generic [ref=e11] [cursor=pointer]:
+        - generic [ref=e13] [cursor=pointer]: 联
+        - heading "联邦风控" [level=1] [ref=e14] [cursor=pointer]
+      - menu [ref=e16]:
+        - menuitem "dashboard 仪表板" [ref=e17] [cursor=pointer]:
+          - generic [ref=e20] [cursor=pointer]:
+            - img "dashboard" [ref=e22] [cursor=pointer]:
+              - img [ref=e23] [cursor=pointer]
+            - generic [ref=e25] [cursor=pointer]: 仪表板
+        - menuitem "safety-certificate 同意管理" [ref=e26] [cursor=pointer]:
+          - generic [ref=e29] [cursor=pointer]:
+            - img "safety-certificate" [ref=e31] [cursor=pointer]:
+              - img [ref=e32] [cursor=pointer]
+            - generic [ref=e34] [cursor=pointer]: 同意管理
+        - menuitem "share-alt PSI对齐" [ref=e35] [cursor=pointer]:
+          - generic [ref=e38] [cursor=pointer]:
+            - img "share-alt" [ref=e40] [cursor=pointer]:
+              - img [ref=e41] [cursor=pointer]
+            - generic [ref=e43] [cursor=pointer]: PSI对齐
+        - menuitem "experiment 模型训练" [ref=e44] [cursor=pointer]:
+          - generic [ref=e47] [cursor=pointer]:
+            - img "experiment" [ref=e49] [cursor=pointer]:
+              - img [ref=e50] [cursor=pointer]
+            - generic [ref=e52] [cursor=pointer]: 模型训练
+        - menuitem "cloud-server 推理服务" [ref=e53] [cursor=pointer]:
+          - generic [ref=e56] [cursor=pointer]:
+            - img "cloud-server" [ref=e58] [cursor=pointer]:
+              - img [ref=e59] [cursor=pointer]
+            - generic [ref=e63] [cursor=pointer]: 推理服务
+        - menuitem "setting 系统设置" [ref=e64] [cursor=pointer]:
+          - generic [ref=e67] [cursor=pointer]:
+            - img "setting" [ref=e69] [cursor=pointer]:
+              - img [ref=e70] [cursor=pointer]
+            - generic [ref=e72] [cursor=pointer]: 系统设置
+      - generic [ref=e74]:
+        - img "bell" [ref=e78] [cursor=pointer]:
+          - img [ref=e79] [cursor=pointer]
+        - img "user" [ref=e84] [cursor=pointer]:
+          - img [ref=e85] [cursor=pointer]
+      - img [ref=e88] [cursor=pointer]
+  - main [ref=e91]:
+    - generic [ref=e101]:
+      - generic [ref=e102]:
+        - generic [ref=e103]:
+          - heading "仪表盘" [level=1] [ref=e104]
+          - paragraph [ref=e105]: 系统概览和实时监控
+        - button "loading 刷新数据" [ref=e106]:
+          - img "loading" [ref=e108]:
+            - img [ref=e109]
+          - generic [ref=e111]: 刷新数据
+      - generic [ref=e112]:
+        - generic [ref=e116]:
+          - generic [ref=e117]: 活跃用户
+          - generic [ref=e118]:
+            - img "user" [ref=e120]:
+              - img [ref=e121]
+            - generic [ref=e124]: "0"
+            - img "arrow-up" [ref=e126]:
+              - img [ref=e127]
+        - generic [ref=e132]:
+          - generic [ref=e133]: 运行中任务
+          - generic [ref=e134]:
+            - img "cloud-server" [ref=e136]:
+              - img [ref=e137]
+            - generic [ref=e142]: "0"
+        - generic [ref=e146]:
+          - generic [ref=e147]: 已完成任务
+          - generic [ref=e148]:
+            - img "database" [ref=e150]:
+              - img [ref=e151]
+            - generic [ref=e154]: "0"
+        - generic [ref=e158]:
+          - generic [ref=e159]: 成功率
+          - generic [ref=e160]:
+            - img "safety" [ref=e162]:
+              - img [ref=e163]
+            - generic [ref=e166]: 0.00%
+      - generic [ref=e167]:
+        - generic [ref=e169]:
+          - generic [ref=e172]: 系统健康状态
+          - generic [ref=e174]:
+            - progressbar [ref=e175]
+            - generic [ref=e183]:
+              - paragraph [ref=e184]: 0%
+              - paragraph [ref=e185]: 整体健康度
+        - generic [ref=e187]:
+          - generic [ref=e190]: 数据处理量
+          - generic [ref=e192]:
+            - generic [ref=e193]:
+              - generic [ref=e194]:
+                - generic [ref=e195]: 今日处理
+                - generic [ref=e196]: 0 B
+              - progressbar [ref=e197]
+            - generic [ref=e202]:
+              - generic [ref=e203]:
+                - generic [ref=e204]: 本周处理
+                - generic [ref=e205]: 0 B
+              - progressbar [ref=e206]
+            - generic [ref=e211]:
+              - generic [ref=e212]:
+                - generic [ref=e213]: 本月处理
+                - generic [ref=e214]: 0 B
+              - progressbar [ref=e215]
+        - generic [ref=e221]:
+          - generic [ref=e224]: 快速操作
+          - generic [ref=e226]:
+            - button "创建新任务" [ref=e228] [cursor=pointer]:
+              - generic [ref=e229] [cursor=pointer]: 创建新任务
+            - button "查看数据对齐" [ref=e231] [cursor=pointer]:
+              - generic [ref=e232] [cursor=pointer]: 查看数据对齐
+            - button "模型管理" [ref=e234] [cursor=pointer]:
+              - generic [ref=e235] [cursor=pointer]: 模型管理
+            - button "系统设置" [ref=e237] [cursor=pointer]:
+              - generic [ref=e238] [cursor=pointer]: 系统设置
+      - generic [ref=e241]:
+        - generic [ref=e244]: 最近活动
+        - generic [ref=e248]:
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - table:
+                    - rowgroup:
+                      - row "类型 描述 状态 用户 时间":
+                        - columnheader "类型"
+                        - columnheader "描述"
+                        - columnheader "状态"
+                        - columnheader "用户"
+                        - columnheader "时间"
+                    - rowgroup:
+                      - row:
+                        - cell
+```

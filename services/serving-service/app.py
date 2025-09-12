@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import Dict, List, Optional, Any
@@ -12,16 +12,113 @@ import pandas as pd
 import requests
 from datetime import datetime, timedelta
 import logging
+from contextvars import ContextVar
+from pathlib import Path
+
+# 请求追踪上下文
+request_id_var: ContextVar[str] = ContextVar('request_id', default='')
+scoring_session_id_var: ContextVar[str] = ContextVar('scoring_session_id', default='')
+
+# 结构化日志器
+class StructuredLogger:
+    def __init__(self, name: str):
+        self.logger = logging.getLogger(name)
+        
+    def _format_log(self, level: str, message: str, **kwargs) -> str:
+        log_data = {
+            'timestamp': datetime.utcnow().isoformat(),
+            'level': level,
+            'service': 'serving-service',
+            'request_id': request_id_var.get(''),
+            'scoring_session_id': scoring_session_id_var.get(''),
+            'message': message,
+            **kwargs
+        }
+        return json.dumps(log_data, ensure_ascii=False)
+    
+    def info(self, message: str, **kwargs):
+        self.logger.info(self._format_log('INFO', message, **kwargs))
+    
+    def error(self, message: str, **kwargs):
+        self.logger.error(self._format_log('ERROR', message, **kwargs))
+    
+    def warning(self, message: str, **kwargs):
+        self.logger.warning(self._format_log('WARNING', message, **kwargs))
+    
+    def debug(self, message: str, **kwargs):
+        self.logger.debug(self._format_log('DEBUG', message, **kwargs))
+
+# 轻量追踪器
+class SimpleTracer:
+    def __init__(self):
+        self.spans = []
+    
+    def start_span(self, operation_name: str, **tags) -> dict:
+        span = {
+            'operation_name': operation_name,
+            'start_time': time.time(),
+            'tags': tags,
+            'request_id': request_id_var.get(''),
+            'scoring_session_id': scoring_session_id_var.get('')
+        }
+        return span
+    
+    def finish_span(self, span: dict, **tags):
+        span['finish_time'] = time.time()
+        span['duration_ms'] = (span['finish_time'] - span['start_time']) * 1000
+        span['tags'].update(tags)
+        self.spans.append(span)
+        
+        # 导出到文件
+        trace_file = Path('./traces/serving_traces.jsonl')
+        trace_file.parent.mkdir(exist_ok=True)
+        with open(trace_file, 'a') as f:
+            f.write(json.dumps(span, ensure_ascii=False) + '\n')
 
 # 配置日志
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(message)s'  # 使用结构化格式
+)
+logger = StructuredLogger(__name__)
+tracer = SimpleTracer()
 
 app = FastAPI(
     title="Federated Serving Service",
     description="联邦学习推理服务 - 在线打分、模型注册、审计回执",
     version="1.0.0"
 )
+
+# 请求中间件
+@app.middleware("http")
+async def request_middleware(request: Request, call_next):
+    # 生成请求ID
+    req_id = str(uuid.uuid4())
+    request_id_var.set(req_id)
+    
+    start_time = time.time()
+    
+    logger.info("请求开始", 
+                method=request.method, 
+                url=str(request.url),
+                client_ip=request.client.host if request.client else None)
+    
+    try:
+        response = await call_next(request)
+        duration_ms = (time.time() - start_time) * 1000
+        
+        logger.info("请求完成",
+                    status_code=response.status_code,
+                    duration_ms=duration_ms)
+        
+        response.headers["X-Request-ID"] = req_id
+        return response
+    except Exception as e:
+        duration_ms = (time.time() - start_time) * 1000
+        logger.error("请求失败",
+                     error=str(e),
+                     duration_ms=duration_ms)
+        raise
 
 # CORS配置
 app.add_middleware(
@@ -33,10 +130,11 @@ app.add_middleware(
 )
 
 # 配置
-CONSENT_SERVICE_URL = os.getenv("CONSENT_SERVICE_URL", "http://consent-service:7002")
-DATA_DIR = "/app/data"
-MODELS_DIR = "/app/models"
-ARTIFACTS_DIR = "/app/artifacts"
+CONSENT_SERVICE_URL = os.getenv("CONSENT_SERVICE_URL", "http://localhost:8000")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+DATA_DIR = os.path.join(BASE_DIR, "data")
+MODELS_DIR = os.path.join(BASE_DIR, "models")
+ARTIFACTS_DIR = os.path.join(BASE_DIR, "data", "artifacts")
 
 # 确保目录存在
 os.makedirs(DATA_DIR, exist_ok=True)

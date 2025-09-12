@@ -21,6 +21,8 @@ from pathlib import Path
 from enum import Enum
 import asyncio
 import time
+from contextvars import ContextVar
+import uuid
 
 import numpy as np
 from cryptography.hazmat.primitives import hashes, serialization
@@ -28,7 +30,7 @@ from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.backends import default_backend
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks, UploadFile, File, Form, Header
+from fastapi import FastAPI, HTTPException, BackgroundTasks, UploadFile, File, Form, Header, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, validator
 import httpx
@@ -38,12 +40,73 @@ from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTEN
 from fastapi.responses import Response
 import uvicorn
 
+# 请求追踪上下文
+request_id_var: ContextVar[str] = ContextVar('request_id', default='')
+psi_session_id_var: ContextVar[str] = ContextVar('psi_session_id', default='')
+
+# 结构化日志器
+class StructuredLogger:
+    def __init__(self, name: str):
+        self.logger = logging.getLogger(name)
+        
+    def _format_log(self, level: str, message: str, **kwargs) -> str:
+        log_data = {
+            'timestamp': datetime.utcnow().isoformat(),
+            'level': level,
+            'service': 'psi-service',
+            'request_id': request_id_var.get(''),
+            'psi_session_id': psi_session_id_var.get(''),
+            'message': message,
+            **kwargs
+        }
+        return json.dumps(log_data, ensure_ascii=False)
+    
+    def info(self, message: str, **kwargs):
+        self.logger.info(self._format_log('INFO', message, **kwargs))
+    
+    def error(self, message: str, **kwargs):
+        self.logger.error(self._format_log('ERROR', message, **kwargs))
+    
+    def warning(self, message: str, **kwargs):
+        self.logger.warning(self._format_log('WARNING', message, **kwargs))
+    
+    def debug(self, message: str, **kwargs):
+        self.logger.debug(self._format_log('DEBUG', message, **kwargs))
+
+# 轻量追踪器
+class SimpleTracer:
+    def __init__(self):
+        self.spans = []
+    
+    def start_span(self, operation_name: str, **tags) -> dict:
+        span = {
+            'operation_name': operation_name,
+            'start_time': time.time(),
+            'tags': tags,
+            'request_id': request_id_var.get(''),
+            'psi_session_id': psi_session_id_var.get('')
+        }
+        return span
+    
+    def finish_span(self, span: dict, **tags):
+        span['finish_time'] = time.time()
+        span['duration_ms'] = (span['finish_time'] - span['start_time']) * 1000
+        span['tags'].update(tags)
+        self.spans.append(span)
+        
+        # 导出到文件
+        trace_file = Path('./traces/psi_traces.jsonl')
+        trace_file.parent.mkdir(exist_ok=True)
+        with open(trace_file, 'a') as f:
+            f.write(json.dumps(span, ensure_ascii=False) + '\n')
+
 # 配置日志
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format='%(message)s'  # 使用结构化格式
 )
-logger = logging.getLogger(__name__)
+logger = StructuredLogger(__name__)
+tracer = SimpleTracer()
 
 # 环境变量配置
 DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://root:123456@localhost:5432/federated_risk')
@@ -81,6 +144,7 @@ class PSIMethod(str, Enum):
 
 class PSIStatus(str, Enum):
     PENDING = "pending"
+    READY = "ready"
     RUNNING = "running"
     COMPLETED = "completed"
     FAILED = "failed"
@@ -97,6 +161,37 @@ app = FastAPI(
     description="隐私集合求交服务，支持ECDH-PSI和Token-join",
     version="1.0.0"
 )
+
+# 请求中间件
+@app.middleware("http")
+async def request_middleware(request: Request, call_next):
+    # 生成请求ID
+    req_id = str(uuid.uuid4())
+    request_id_var.set(req_id)
+    
+    start_time = time.time()
+    
+    logger.info("请求开始", 
+                method=request.method, 
+                url=str(request.url),
+                client_ip=request.client.host if request.client else None)
+    
+    try:
+        response = await call_next(request)
+        duration_ms = (time.time() - start_time) * 1000
+        
+        logger.info("请求完成",
+                    status_code=response.status_code,
+                    duration_ms=duration_ms)
+        
+        response.headers["X-Request-ID"] = req_id
+        return response
+    except Exception as e:
+        duration_ms = (time.time() - start_time) * 1000
+        logger.error("请求失败",
+                     error=str(e),
+                     duration_ms=duration_ms)
+        raise
 
 # CORS配置
 app.add_middleware(
@@ -121,9 +216,15 @@ class ECDHPSIEngine:
         public_key = private_key.public_key()
         return private_key, public_key
     
-    def hash_element(self, element: str) -> bytes:
+    def hash_element(self, element) -> bytes:
         """哈希元素"""
-        return hashlib.sha256(element.encode('utf-8')).digest()
+        if isinstance(element, dict):
+            # 字典类型转换为JSON字符串
+            element_str = json.dumps(element, sort_keys=True, ensure_ascii=False)
+        else:
+            # 其他类型转换为字符串
+            element_str = str(element)
+        return hashlib.sha256(element_str.encode('utf-8')).digest()
     
     def point_to_hash(self, point: ec.EllipticCurvePublicKey) -> str:
         """将椭圆曲线点转换为哈希值"""
@@ -178,15 +279,21 @@ class TokenJoinEngine:
     def __init__(self):
         self.salt_length = 32
     
-    def generate_tokens(self, elements: List[str], salt: Optional[bytes] = None) -> Tuple[List[str], bytes]:
+    def generate_tokens(self, elements: List, salt: Optional[bytes] = None) -> Tuple[List[str], bytes]:
         """生成令牌"""
         if salt is None:
             salt = secrets.token_bytes(self.salt_length)
         
         tokens = []
         for element in elements:
+            # 处理不同类型的元素
+            if isinstance(element, dict):
+                element_str = json.dumps(element, sort_keys=True, ensure_ascii=False)
+            else:
+                element_str = str(element)
+            
             # 使用HMAC-like方法生成令牌
-            token_input = salt + element.encode('utf-8')
+            token_input = salt + element_str.encode('utf-8')
             token = hashlib.sha256(token_input).hexdigest()
             tokens.append(token)
         
@@ -409,9 +516,20 @@ async def send_audit_log(event_type: str, event_data: dict):
     except Exception as e:
         logger.error(f"审计日志发送失败: {e}")
 
-def calculate_data_hash(data: List[str]) -> str:
+def calculate_data_hash(data: List) -> str:
     """计算数据哈希"""
-    sorted_data = sorted(data)
+    # 处理不同类型的数据
+    if not data:
+        return hashlib.sha256(b'').hexdigest()
+    
+    # 如果是字典列表，转换为字符串后排序
+    if isinstance(data[0], dict):
+        str_data = [json.dumps(item, sort_keys=True, ensure_ascii=False) for item in data]
+        sorted_data = sorted(str_data)
+    else:
+        # 如果是字符串列表，直接排序
+        sorted_data = sorted(str(item) for item in data)
+    
     content = '\n'.join(sorted_data)
     return hashlib.sha256(content.encode('utf-8')).hexdigest()
 
@@ -1043,6 +1161,48 @@ async def health_check():
 async def get_prometheus_metrics():
     """获取Prometheus指标"""
     return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
+# 测试专用路由 (仅在测试环境下可用)
+@app.post("/test/psi/setup-mock-data")
+async def setup_mock_psi_data(session_id: str, party_1_id: str = "party_1", party_2_id: str = "party_2"):
+    """为测试环境预设PSI数据"""
+    if session_id not in active_psi_sessions:
+        raise HTTPException(status_code=404, detail="会话不存在")
+    
+    session = active_psi_sessions[session_id]
+    
+    # 生成模拟数据
+    # 创建有交集的测试数据
+    common_elements = [f"common_{i}" for i in range(1000, 1500)]  # 500个共同元素
+    party_1_unique = [f"party1_{i}" for i in range(2000, 2500)]  # 500个party1独有
+    party_2_unique = [f"party2_{i}" for i in range(3000, 3500)]  # 500个party2独有
+    
+    party_1_data = common_elements + party_1_unique  # 1000个元素
+    party_2_data = common_elements + party_2_unique  # 1000个元素
+    
+    # 存储到Redis
+    data_key_1 = f"psi_data:{session_id}:{party_1_id}"
+    data_key_2 = f"psi_data:{session_id}:{party_2_id}"
+    
+    await redis_client.setex(data_key_1, 3600, json.dumps(party_1_data))
+    await redis_client.setex(data_key_2, 3600, json.dumps(party_2_data))
+    
+    # 更新会话状态
+    session["uploaded_parties"].add(party_1_id)
+    session["uploaded_parties"].add(party_2_id)
+    session["data_uploaded"] = {party_1_id: True, party_2_id: True}
+    session["data_ready"] = True
+    session["updated_at"] = datetime.utcnow()
+    
+    logger.info(f"为会话 {session_id} 预设测试数据: {party_1_id}({len(party_1_data)}), {party_2_id}({len(party_2_data)})")
+    
+    return {
+        "session_id": session_id,
+        "party_1_data_size": len(party_1_data),
+        "party_2_data_size": len(party_2_data),
+        "expected_intersection_size": len(common_elements),
+        "data_ready": True
+    }
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 7001))

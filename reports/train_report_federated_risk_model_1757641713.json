@@ -1,0 +1,39 @@
+{
+  "task_id": "federated_risk_model_1757641713",
+  "timestamp": "2025-09-12T01:48:35.494859",
+  "performance_metrics": {
+    "auc": 0.9548954895489549,
+    "ks": 0.8104810481048105,
+    "precision": 0.8273065516926719,
+    "recall": 0.7240530023151569,
+    "f1_score": 0.772243663360397,
+    "training_time": 1.276956,
+    "communication_cost": 20.0,
+    "privacy_budget_used": 0.2
+  },
+  "feature_importance": {
+    "credit_score": 0.12349017772923508,
+    "annual_income": 0.1738079390483239,
+    "debt_ratio": 0.22070828336659043,
+    "has_mortgage": 0.20686955199061702,
+    "account_age": 0.15830261267191614,
+    "total_spent": 0.0371935024766946,
+    "order_count": 0.016459227593834426,
+    "avg_order_value": 0.008829978218119925,
+    "return_rate": 0.02384907318058393,
+    "days_since_last_order": 0.03048965372408446
+  },
+  "privacy_guarantees": {
+    "differential_privacy": true,
+    "privacy_budget_used": 0.2
+  },
+  "training_summary": {
+    "training_time": 1.276956,
+    "communication_cost": 20.0,
+    "model_quality": {
+      "auc": 0.9548954895489549,
+      "ks": 0.8104810481048105,
+      "f1_score": 0.772243663360397
+    }
+  }
+}
