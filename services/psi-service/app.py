@@ -520,6 +520,7 @@ async def create_psi_session(
                 json.dumps(request.metadata))
         
         # 缓存到内存
+        now = datetime.utcnow()
         active_psi_sessions[request.session_id] = {
             "method": request.method,
             "status": PSIStatus.PENDING,
@@ -527,7 +528,8 @@ async def create_psi_session(
             "party_id": request.party_id,
             "other_parties": request.other_parties,
             "timeout_seconds": request.timeout_seconds,
-            "created_at": datetime.utcnow(),
+            "created_at": now,
+            "updated_at": now,
             "uploaded_parties": set(),
             "data_ready": False
         }
@@ -638,17 +640,18 @@ async def upload_psi_data(
         # 更新会话状态
         session["uploaded_parties"].add(party_id)
         session["data_uploaded"] = {p: p in session["uploaded_parties"] for p in [session["party_id"]] + session["other_parties"]}
+        session["updated_at"] = datetime.utcnow()
         
         # 检查是否所有参与方都已上传
         all_parties = [session["party_id"]] + session["other_parties"]
         if len(session["uploaded_parties"]) == len(all_parties):
-            session["status"] = PSIStatus.READY
+            session["status"] = PSIStatus.PENDING  # 保持PENDING状态，等待计算
             session["data_ready"] = True
             
             async with db_pool.acquire() as conn:
                 await conn.execute(
                     "UPDATE psi_sessions SET status = $1, updated_at = NOW() WHERE session_id = $2",
-                    PSIStatus.READY.value, session_id
+                    PSIStatus.PENDING.value, session_id
                 )
         
         # 发送审计日志
@@ -705,7 +708,8 @@ async def compute_psi(
             
             session = active_psi_sessions[request.session_id]
             
-            if not session["data_ready"]:
+            logger.info(f"会话状态检查: session_id={request.session_id}, data_ready={session.get('data_ready', 'NOT_SET')}, status={session['status']}, uploaded_parties={session.get('uploaded_parties', set())}")
+            if not session.get("data_ready", False):
                 raise HTTPException(status_code=400, detail="数据未准备就绪")
             
             # 更新状态为计算中
@@ -865,6 +869,51 @@ async def compute_psi(
             psi_duration.labels(method="psi_compute", set_size_bucket="unknown").observe(time.time() - start_time)
             active_sessions.set(len(active_psi_sessions))
 
+@app.get("/psi/sessions", response_model=List[PSISessionStatus])
+async def get_psi_sessions(limit: int = 100, offset: int = 0):
+    """获取PSI会话列表"""
+    try:
+        sessions = []
+        
+        # 从内存中获取活跃会话
+        for session_id, session in active_psi_sessions.items():
+            all_parties = [session["party_id"]] + session["other_parties"]
+            data_uploaded = {party: party in session["uploaded_parties"] for party in all_parties}
+            
+            progress = 0.0
+            if session["status"] == PSIStatus.PENDING:
+                progress = len(session["uploaded_parties"]) / len(all_parties) * 50
+            elif session["status"] == PSIStatus.READY:
+                progress = 50.0
+            elif session["status"] == PSIStatus.RUNNING:
+                progress = 75.0
+            elif session["status"] == PSIStatus.COMPLETED:
+                progress = 100.0
+            
+            session_status = PSISessionStatus(
+                session_id=session_id,
+                status=session["status"],
+                method=session["method"],
+                parties=all_parties,
+                data_uploaded=data_uploaded,
+                progress_percentage=progress,
+                created_at=session["created_at"],
+                updated_at=session["updated_at"],
+                error_message=session.get("error_message"),
+                result=session.get("result")
+            )
+            sessions.append(session_status)
+        
+        # 按创建时间倒序排序
+        sessions.sort(key=lambda x: x.created_at, reverse=True)
+        
+        # 应用分页
+        return sessions[offset:offset + limit]
+        
+    except Exception as e:
+        logger.error(f"获取PSI会话列表失败: {str(e)}")
+        raise HTTPException(status_code=500, detail="获取会话列表失败")
+
 @app.get("/psi/sessions/{session_id}", response_model=PSISessionStatus)
 async def get_psi_session_status(session_id: str):
     """获取PSI会话状态"""
@@ -893,7 +942,7 @@ async def get_psi_session_status(session_id: str):
                 data_uploaded=data_uploaded,
                 progress_percentage=progress,
                 created_at=session["created_at"],
-                updated_at=datetime.utcnow()
+                updated_at=session.get("updated_at", datetime.utcnow())
             )
         
         # 从数据库查找

@@ -1,0 +1,240 @@
+// 使用CSS变量替代antd主题导入
+
+.action-bar {
+  display: flex;
+  padding: 16px;
+  border-top: 1px solid var(--ant-color-border-secondary);
+  background: var(--ant-color-bg-container);
+  transition: all 0.2s ease;
+  
+  // 对齐方式
+  &-start {
+    justify-content: flex-start;
+  }
+  
+  &-center {
+    justify-content: center;
+  }
+  
+  &-end {
+    justify-content: flex-end;
+  }
+  
+  // 粘性定位
+  &-sticky {
+    position: sticky;
+    bottom: 0;
+    z-index: 100;
+    box-shadow: var(--ant-box-shadow-secondary);
+    backdrop-filter: saturate(180%) blur(8px);
+    
+    // 支持iOS安全区域
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
+    
+    // 暗色主题阴影
+    [data-theme='dark'] & {
+      box-shadow: var(--ant-box-shadow-secondary);
+    }
+  }
+  
+  // 桌面端布局
+  &-desktop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    
+    .action-bar-danger-section {
+      flex: 0 0 auto;
+    }
+    
+    .action-bar-main-section {
+      flex: 0 0 auto;
+      margin-left: auto;
+    }
+  }
+  
+  // 移动端布局
+  &-mobile {
+    flex-direction: column;
+    gap: 8px;
+    
+    .action-bar-danger-section {
+      order: 2; // 危险操作置底
+      padding-top: 8px;
+      border-top: 1px solid var(--ant-color-border-secondary);
+    }
+  }
+  
+  // 移动端响应式
+  &-mobile-layout {
+    padding: 12px 16px;
+    
+    .action-bar-button {
+      width: 100% !important;
+      min-width: auto !important;
+      margin-bottom: 8px;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+  
+  // 平板端响应式
+  &-tablet-layout {
+    padding: 14px 16px;
+    
+    .action-bar-button {
+      min-width: 100px;
+    }
+  }
+  
+  // 按钮样式
+  .action-bar-button {
+    transition: all 0.2s ease;
+    
+    // 确保按钮最小宽度
+    &:not(.ant-btn-icon-only) {
+      min-width: 112px;
+    }
+    
+    // 图标按钮样式
+    &.ant-btn-icon-only {
+      min-width: 32px;
+      width: 32px;
+      height: 32px;
+    }
+    
+    // 主按钮强调
+    &.ant-btn-primary {
+      font-weight: 500;
+    }
+    
+    // 危险按钮样式
+    &.ant-btn-dangerous {
+      border-color: var(--ant-color-error);
+      color: var(--ant-color-error);
+      
+      &:hover {
+        background-color: var(--ant-color-error-bg-hover);
+        border-color: var(--ant-color-error-border-hover);
+      }
+    }
+  }
+  
+  // 危险操作区域
+  .action-bar-danger-section {
+    .action-bar-button {
+      border-color: var(--ant-color-error-border);
+      color: var(--ant-color-error);
+      
+      &:hover {
+        background-color: var(--ant-color-error-bg-hover);
+        border-color: var(--ant-color-error-border-hover);
+      }
+      
+      &.ant-btn-primary {
+        background-color: var(--ant-color-error);
+        border-color: var(--ant-color-error);
+        color: #fff;
+        
+        &:hover {
+          background-color: var(--ant-color-error-hover);
+          border-color: var(--ant-color-error-hover);
+        }
+      }
+    }
+  }
+}
+
+// 响应式断点
+@media (max-width: 768px) {
+  .action-bar {
+    &:not(.action-bar-mobile-layout) {
+      flex-direction: column;
+      align-items: stretch;
+      
+      .action-bar-desktop {
+        flex-direction: column;
+        
+        .action-bar-danger-section,
+        .action-bar-main-section {
+          width: 100%;
+          margin-left: 0;
+          
+          .ant-space {
+            width: 100%;
+            
+            .ant-space-item {
+              flex: 1;
+              
+              .action-bar-button {
+                width: 100%;
+              }
+            }
+          }
+        }
+        
+        .action-bar-main-section {
+          order: 1;
+        }
+        
+        .action-bar-danger-section {
+          order: 2;
+          margin-top: 8px;
+          padding-top: 8px;
+          border-top: 1px solid var(--ant-color-border-secondary);
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .action-bar {
+    padding: 12px;
+    
+    .action-bar-button {
+      min-width: auto !important;
+      height: 40px;
+      font-size: 14px;
+    }
+  }
+}
+
+// 暗色主题适配
+[data-theme='dark'] {
+  .action-bar {
+    border-top-color: var(--ant-color-border-secondary);
+    background: var(--ant-color-bg-container);
+    
+    &-sticky {
+      box-shadow: var(--ant-box-shadow-secondary);
+    }
+    
+    .action-bar-danger-section {
+      border-top-color: var(--ant-color-border-secondary);
+    }
+  }
+}
+
+// 高对比度模式
+@media (prefers-contrast: high) {
+  .action-bar {
+    border-top-width: 2px;
+    
+    .action-bar-button {
+      border-width: 2px;
+      font-weight: 600;
+    }
+  }
+}
+
+// 减少动画模式
+@media (prefers-reduced-motion: reduce) {
+  .action-bar,
+  .action-bar-button {
+    transition: none;
+  }
+}

@@ -1,0 +1,136 @@
+// ProLayout 银行级样式定制
+
+.ant-pro-layout {
+  // Header 高度设置为 56px
+  .ant-layout-header {
+    height: 56px !important;
+    line-height: 56px !important;
+    padding: 0 24px;
+    background: var(--ant-color-bg-container);
+    border-bottom: 1px solid var(--ant-color-border-secondary);
+    box-shadow: none;
+  }
+  
+  // Sider 样式
+  .ant-layout-sider {
+    background: var(--ant-color-bg-container);
+    border-right: 1px solid var(--ant-color-border-secondary);
+    
+    .ant-menu {
+      background: transparent;
+      border-right: none;
+      
+      .ant-menu-item {
+        margin: 4px 8px;
+        border-radius: 8px;
+        height: 40px;
+        line-height: 40px;
+        
+        &:hover {
+          background-color: var(--ant-color-fill-tertiary);
+        }
+        
+        &.ant-menu-item-selected {
+          background-color: var(--ant-color-primary-bg);
+          color: var(--ant-color-primary);
+          
+          &::after {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+  
+  // 内容区域
+  .ant-layout-content {
+    background: var(--ant-color-bg-layout);
+    
+    .ant-pro-page-container {
+      .ant-pro-page-container-children-content {
+        margin: 24px;
+        
+        // 内容区域最大宽度限制
+        max-width: 1440px;
+        margin-left: auto;
+        margin-right: auto;
+        
+        @media (max-width: 1200px) {
+          max-width: 1200px;
+        }
+      }
+    }
+  }
+  
+  // Logo 区域
+  .ant-pro-layout-logo {
+    padding: 16px;
+    
+    h1 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--ant-color-text);
+      margin: 0;
+    }
+  }
+  
+  // 面包屑样式
+  .ant-pro-page-container-children-container {
+    .ant-breadcrumb {
+      margin-bottom: 16px;
+      
+      .ant-breadcrumb-link {
+        color: var(--ant-color-text-secondary);
+        
+        &:hover {
+          color: var(--ant-color-primary);
+        }
+      }
+      
+      .ant-breadcrumb-separator {
+        color: var(--ant-color-text-quaternary);
+      }
+    }
+  }
+  
+  // 页面标题
+  .ant-pro-page-header-wrap {
+    .ant-page-header {
+      padding: 0 0 16px 0;
+      
+      .ant-page-header-heading-title {
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--ant-color-text);
+      }
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .ant-pro-layout {
+    .ant-layout-content {
+      .ant-pro-page-container {
+        .ant-pro-page-container-children-content {
+          margin: 16px;
+        }
+      }
+    }
+  }
+}
+
+// 暗色主题适配
+[data-theme='dark'] {
+  .ant-pro-layout {
+    .ant-layout-header {
+      background: var(--ant-color-bg-container);
+      border-bottom-color: var(--ant-color-border-secondary);
+    }
+    
+    .ant-layout-sider {
+      background: var(--ant-color-bg-container);
+      border-right-color: var(--ant-color-border-secondary);
+    }
+  }
+}

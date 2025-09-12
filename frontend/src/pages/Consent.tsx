@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { Table, Button, Space, Tag, Card, Form, Input, Select, DatePicker, Modal, message } from 'antd'
+import { Button, Space, Tag, Modal, message } from 'antd'
+import { ProTable, PageContainer, ProForm, ProFormText, ProFormSelect, ProFormDateRangePicker, ProFormTextArea, ProFormDatePicker } from '@ant-design/pro-components'
+import type { ProColumns } from '@ant-design/pro-components'
 import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiService } from '@/services/api'
 import { formatDate } from '@/utils'
-import '@/styles/consent.css'
-
-const { RangePicker } = DatePicker
-const { Option } = Select
 
 interface ConsentRecord {
   id: string
@@ -24,8 +22,7 @@ interface ConsentRecord {
 }
 
 const Consent: React.FC = () => {
-  const [searchForm] = Form.useForm()
-  const [createForm] = Form.useForm()
+  const [createForm] = ProForm.useForm()
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false)
   const [selectedRecord, setSelectedRecord] = useState<ConsentRecord | null>(null)
   const [searchParams, setSearchParams] = useState({})
@@ -90,7 +87,7 @@ const Consent: React.FC = () => {
   }
 
   // 表格列配置
-  const columns = [
+  const columns: ProColumns<ConsentRecord>[] = [
     {
       title: '标题',
       dataIndex: 'title',
@@ -107,11 +104,11 @@ const Consent: React.FC = () => {
       title: '数据类型',
       dataIndex: 'dataTypes',
       key: 'dataTypes',
-      width: 150,
-      render: (dataTypes: string[]) => (
+      width: 200,
+      render: (_, record) => (
         <div>
-          {dataTypes.map((type, index) => (
-            <Tag key={index}>
+          {record.dataTypes.map((type, index) => (
+            <Tag key={index} style={{ marginBottom: 4 }}>
               {type}
             </Tag>
           ))}
@@ -119,10 +116,10 @@ const Consent: React.FC = () => {
       ),
     },
     {
-      title: '用途',
+      title: '使用目的',
       dataIndex: 'purpose',
       key: 'purpose',
-      width: 150,
+      width: 200,
       ellipsis: true,
     },
     {
@@ -130,9 +127,9 @@ const Consent: React.FC = () => {
       dataIndex: 'status',
       key: 'status',
       width: 100,
-      render: (status: string) => (
-        <Tag color={getStatusColor(status)}>
-          {getStatusText(status)}
+      render: (_, record) => (
+        <Tag color={getStatusColor(record.status)}>
+          {getStatusText(record.status)}
         </Tag>
       ),
     },
@@ -141,40 +138,44 @@ const Consent: React.FC = () => {
       dataIndex: 'expiryDate',
       key: 'expiryDate',
       width: 120,
-      render: (date: string) => formatDate(date),
+      render: (_, record) => formatDate(record.expiryDate),
     },
     {
       title: '创建时间',
       dataIndex: 'createdAt',
       key: 'createdAt',
       width: 120,
-      render: (date: string) => formatDate(date),
+      render: (_, record) => formatDate(record.createdAt),
     },
     {
       title: '操作',
-      key: 'actions',
-      width: 150,
-      render: (_: any, record: ConsentRecord) => (
-        <Space size="small">
+      key: 'action',
+      width: 200,
+      valueType: 'option',
+      render: (_, record) => (
+        <Space size="middle">
           <Button
-            type="text"
-            size="small"
+            type="link"
             icon={<EyeOutlined />}
             onClick={() => setSelectedRecord(record)}
-          />
+          >
+            查看
+          </Button>
           <Button
-            type="text"
-            size="small"
+            type="link"
             icon={<EditOutlined />}
-            onClick={() => handleEdit(record)}
-          />
+            onClick={() => handleEdit(record.id)}
+          >
+            编辑
+          </Button>
           <Button
-            type="text"
-            size="small"
+            type="link"
             danger
             icon={<DeleteOutlined />}
             onClick={() => handleDelete(record.id)}
-          />
+          >
+            删除
+          </Button>
         </Space>
       ),
     },
@@ -186,14 +187,14 @@ const Consent: React.FC = () => {
   }
 
   // 处理创建
-  const handleCreate = (values: any) => {
-    createMutation.mutate(values)
+  const handleCreate = async (values: any) => {
+    await createMutation.mutateAsync(values)
   }
 
   // 处理编辑
-  const handleEdit = (record: ConsentRecord) => {
+  const handleEdit = (id: string) => {
     // TODO: 实现编辑功能
-    message.info('编辑功能开发中')
+    message.info('编辑功能待实现')
   }
 
   // 处理删除
@@ -206,80 +207,35 @@ const Consent: React.FC = () => {
   }
 
   return (
-    <div>
-      {/* 页面标题和操作区域 */}
-      <div className="bg-white px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900 mb-1">同意管理</h1>
-          <p className="text-sm text-gray-600">管理数据使用同意记录，确保合规性</p>
-        </div>
+    <PageContainer
+      title="数据使用同意管理"
+      subTitle="管理数据使用同意记录，确保合规性"
+      extra={[
         <Button
+          key="add"
           type="primary"
-          size="large"
           icon={<PlusOutlined />}
           onClick={() => setIsCreateModalVisible(true)}
-          className="shadow-sm"
         >
-          创建同意
-        </Button>
-      </div>
-
-      <div className="p-6">
-        {/* 搜索区域 */}
-        <Card className="mb-6 shadow-sm">
-          <Form
-            form={searchForm}
-            layout="inline"
-            onFinish={handleSearch}
-            className="search-form"
-          >
-            <Form.Item name="title" label="标题">
-              <Input placeholder="请输入标题" allowClear style={{ width: 200 }} />
-            </Form.Item>
-            <Form.Item name="requester" label="申请人">
-              <Input placeholder="请输入申请人" allowClear style={{ width: 150 }} />
-            </Form.Item>
-            <Form.Item name="status" label="状态">
-              <Select placeholder="请选择状态" allowClear style={{ width: 120 }}>
-                <Option value="pending">待审批</Option>
-                <Option value="approved">已批准</Option>
-                <Option value="rejected">已拒绝</Option>
-                <Option value="expired">已过期</Option>
-              </Select>
-            </Form.Item>
-            <Form.Item name="dateRange" label="创建时间">
-              <RangePicker style={{ width: 240 }} />
-            </Form.Item>
-            <Form.Item>
-              <Space>
-                <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
-                  搜索
-                </Button>
-                <Button onClick={() => searchForm.resetFields()}>
-                  重置
-                </Button>
-              </Space>
-            </Form.Item>
-          </Form>
-        </Card>
-
-      {/* 表格 */}
-        <Card className="shadow-sm">
-          <Table
-            columns={columns}
-            dataSource={consents || []}
-            rowKey="id"
-            loading={isLoading}
-            pagination={{
-              total: 0,
-              pageSize: 20,
-              showSizeChanger: true,
-              showQuickJumper: true,
-              showTotal: (total) => `共 ${total} 条记录`,
-            }}
-          />
-        </Card>
-      </div>
+          新增同意
+        </Button>,
+      ]}
+    >
+      <ProTable<ConsentRecord>
+        columns={columns}
+        dataSource={consents || []}
+        loading={isLoading}
+        rowKey="id"
+        pagination={{
+          pageSize: 10,
+          showSizeChanger: true,
+          showQuickJumper: true,
+        }}
+        search={{
+          labelWidth: 'auto',
+        }}
+        toolBarRender={false}
+      />
 
       {/* 创建同意模态框 */}
       <Modal
@@ -289,79 +245,66 @@ const Consent: React.FC = () => {
         footer={null}
         width={600}
       >
-        <Form
+        <ProForm
           form={createForm}
           layout="vertical"
           onFinish={handleCreate}
+          submitter={{
+            searchConfig: {
+              submitText: '创建',
+              resetText: '取消',
+            },
+            resetButtonProps: {
+              onClick: () => setIsCreateModalVisible(false),
+            },
+            submitButtonProps: {
+              loading: createMutation.isPending,
+            },
+          }}
         >
-          <Form.Item
+          <ProFormText
             name="title"
             label="标题"
+            placeholder="请输入同意记录标题"
             rules={[{ required: true, message: '请输入标题' }]}
-          >
-            <Input placeholder="请输入同意记录标题" />
-          </Form.Item>
+          />
           
-          <Form.Item
+          <ProFormTextArea
             name="description"
             label="描述"
+            placeholder="请输入详细描述"
             rules={[{ required: true, message: '请输入描述' }]}
-          >
-            <Input.TextArea rows={3} placeholder="请输入详细描述" />
-          </Form.Item>
+          />
           
-          <Form.Item
+          <ProFormText
             name="purpose"
             label="使用目的"
+            placeholder="请输入数据使用目的"
             rules={[{ required: true, message: '请输入使用目的' }]}
-          >
-            <Input placeholder="请输入数据使用目的" />
-          </Form.Item>
+          />
           
-          <Form.Item
+          <ProFormSelect
             name="dataTypes"
             label="数据类型"
+            placeholder="请选择数据类型"
+            mode="multiple"
+            options={[
+              { label: '用户信息', value: 'user_info' },
+              { label: '交易记录', value: 'transaction' },
+              { label: '行为数据', value: 'behavior' },
+              { label: '设备信息', value: 'device' },
+              { label: '位置信息', value: 'location' },
+            ]}
             rules={[{ required: true, message: '请选择数据类型' }]}
-          >
-            <Select
-              mode="multiple"
-              placeholder="请选择数据类型"
-              options={[
-                { label: '用户信息', value: 'user_info' },
-                { label: '交易记录', value: 'transaction' },
-                { label: '行为数据', value: 'behavior' },
-                { label: '设备信息', value: 'device' },
-                { label: '位置信息', value: 'location' },
-              ]}
-            />
-          </Form.Item>
+          />
           
-          <Form.Item
+          <ProFormDatePicker
             name="expiryDate"
             label="过期时间"
+            placeholder="请选择过期时间"
             rules={[{ required: true, message: '请选择过期时间' }]}
-          >
-            <DatePicker
-              style={{ width: '100%' }}
-              placeholder="请选择过期时间"
-            />
-          </Form.Item>
-          
-          <Form.Item className="mb-0 text-right">
-            <Space>
-              <Button onClick={() => setIsCreateModalVisible(false)}>
-                取消
-              </Button>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={createMutation.isPending}
-              >
-                创建
-              </Button>
-            </Space>
-          </Form.Item>
-        </Form>
+          />
+        </ProForm>
       </Modal>
 
       {/* 详情模态框 */}
@@ -427,7 +370,7 @@ const Consent: React.FC = () => {
           </div>
         )}
       </Modal>
-    </div>
+    </PageContainer>
   )
 }
 

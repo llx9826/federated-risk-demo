@@ -689,11 +689,55 @@ async def get_system_metrics():
 @app.get("/consent")
 async def get_consents(limit: int = 100):
     """获取同意记录列表"""
-    return {
-        "consents": [],
-        "total": 0,
-        "message": "暂无同意记录"
-    }
+    global audit_db_conn
+    
+    try:
+        # 查询审计数据库中的同意记录
+        cursor = audit_db_conn.execute(
+            "SELECT * FROM audit_records ORDER BY timestamp DESC LIMIT ?",
+            (limit,)
+        )
+        records = cursor.fetchall()
+        
+        consents = []
+        for record in records:
+            # 安全地解析metadata字段
+            metadata = {}
+            if record[9]:  # metadata字段
+                try:
+                    if isinstance(record[9], str):
+                        metadata = json.loads(record[9])
+                    else:
+                        metadata = {"raw_data": str(record[9])}
+                except (json.JSONDecodeError, TypeError):
+                    metadata = {"raw_data": str(record[9])}
+            
+            consents.append({
+                "id": record[0],  # audit_id
+                "request_id": record[1],  # request_id
+                "consent_fingerprint": record[2],  # consent_fingerprint
+                "model_hash": record[3],  # model_hash
+                "threshold": record[4],  # threshold
+                "policy_version": record[5],  # policy_version
+                "timestamp": record[6],  # timestamp
+                "decision": record[7],  # decision
+                "score": record[8],  # score
+                "metadata": metadata  # metadata
+            })
+        
+        return {
+            "consents": consents,
+            "total": len(consents),
+            "message": f"找到 {len(consents)} 条同意记录" if consents else "暂无同意记录"
+        }
+        
+    except Exception as e:
+        logger.error(f"查询同意记录失败: {str(e)}")
+        return {
+            "consents": [],
+            "total": 0,
+            "message": "查询同意记录失败"
+        }
 
 @app.get("/policies")
 async def get_policies():

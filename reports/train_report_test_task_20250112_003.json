@@ -1,0 +1,37 @@
+{
+  "task_id": "test_task_20250112_003",
+  "timestamp": "2025-09-11T17:03:01.469709",
+  "performance_metrics": {
+    "auc": 0.9228218269520652,
+    "ks": 0.7097779117676615,
+    "precision": 0.8264288386859986,
+    "recall": 0.6956339796345375,
+    "f1_score": 0.755411636129754,
+    "training_time": 0.029129,
+    "communication_cost": 0.0,
+    "privacy_budget_used": 0.2
+  },
+  "feature_importance": {
+    "feature_1": 0.2226724342655792,
+    "feature_2": 0.1925350859425605,
+    "feature_3": 0.2509349848912913,
+    "feature_4": 0.24864052262010317,
+    "feature_5": 0.00774357958360082,
+    "feature_6": 0.028266663274673455,
+    "feature_7": 0.025257852329082675,
+    "feature_8": 0.0239488770931089
+  },
+  "privacy_guarantees": {
+    "differential_privacy": true,
+    "privacy_budget_used": 0.2
+  },
+  "training_summary": {
+    "training_time": 0.029129,
+    "communication_cost": 0.0,
+    "model_quality": {
+      "auc": 0.9228218269520652,
+      "ks": 0.7097779117676615,
+      "f1_score": 0.755411636129754
+    }
+  }
+}

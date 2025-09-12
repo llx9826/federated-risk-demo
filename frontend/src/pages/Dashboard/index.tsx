@@ -2,16 +2,15 @@ import React, { useEffect, useState } from 'react'
 import {
   Row,
   Col,
-  Card,
   Statistic,
   Progress,
-  Table,
   Tag,
   Space,
   Button,
   Spin,
   Typography,
   Alert,
+  Tooltip,
 } from 'antd'
 import {
   ShareAltOutlined,
@@ -22,9 +21,14 @@ import {
   FileTextOutlined,
   ReloadOutlined,
   ArrowUpOutlined,
+  RiseOutlined,
+  FallOutlined,
 } from '@ant-design/icons'
+import { ProCard, PageContainer, ProTable } from '@ant-design/pro-components'
+import type { ProColumns } from '@ant-design/pro-components'
 import { Line } from '@ant-design/plots'
 import { useAppStore } from '@store/app'
+import { useChartTheme } from '@hooks/useChartTheme'
 import dayjs from 'dayjs'
 
 const { Title, Text } = Typography
@@ -57,6 +61,7 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState<DashboardData | null>(null)
   const { addNotification } = useAppStore()
+  const { getLineConfig } = useChartTheme()
 
   // 模拟数据加载
   const loadDashboardData = async () => {
@@ -133,7 +138,7 @@ const Dashboard: React.FC = () => {
       addNotification({
         type: 'error',
         title: '数据加载失败',
-        message: '无法加载仪表板数据，请稍后重试',
+        content: '无法加载仪表板数据，请稍后重试',
       })
     } finally {
       setLoading(false)
@@ -202,14 +207,14 @@ const Dashboard: React.FC = () => {
   }
 
   // 活动表格列配置
-  const activityColumns = [
+  const activityColumns: ProColumns<DashboardData['recentActivities'][0]>[] = [
     {
       title: '类型',
       dataIndex: 'type',
       key: 'type',
       width: 80,
-      render: (type: string) => {
-        const config = getActivityConfig(type)
+      render: (_, record) => {
+        const config = getActivityConfig(record.type)
         return (
           <Tag icon={config.icon} color={config.color}>
             {config.label}
@@ -227,8 +232,8 @@ const Dashboard: React.FC = () => {
       dataIndex: 'status',
       key: 'status',
       width: 100,
-      render: (status: string) => {
-        const config = getStatusConfig(status)
+      render: (_, record) => {
+        const config = getStatusConfig(record.status)
         return <Tag color={config.color}>{config.text}</Tag>
       },
     },
@@ -243,170 +248,248 @@ const Dashboard: React.FC = () => {
       dataIndex: 'timestamp',
       key: 'timestamp',
       width: 120,
-      render: (timestamp: string) => dayjs(timestamp).format('HH:mm:ss'),
+      render: (_, record) => dayjs(record.timestamp).format('HH:mm:ss'),
     },
   ]
 
   return (
-    <div style={{ padding: 24 }}>
-      {/* 页面标题 */}
-      <div style={{ marginBottom: 24 }}>
-        <Space>
-          <Title level={2} style={{ margin: 0 }}>仪表板</Title>
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={loadDashboardData}
-            loading={loading}
-          >
-            刷新
-          </Button>
-        </Space>
-        <Text type="secondary">联邦风控系统运行概览</Text>
-      </div>
+    <PageContainer
+      title="仪表盘"
+      subTitle="联邦风控系统实时监控中心"
+      extra={[
+        <Button
+          key="refresh"
+          icon={<ReloadOutlined />}
+          onClick={loadDashboardData}
+          loading={loading}
+          type="primary"
+        >
+          刷新数据
+        </Button>,
+      ]}
+    >
 
       {/* 概览统计 */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title="PSI任务总数"
-              value={data.overview.totalPsiJobs}
-              prefix={<ShareAltOutlined />}
-              valueStyle={{ color: '#1890ff' }}
-            />
-          </Card>
+          <ProCard bordered hoverable>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ 
+                width: 48, 
+                height: 48, 
+                margin: '0 auto 16px', 
+                borderRadius: '50%', 
+                backgroundColor: 'var(--ant-color-primary)', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center' 
+              }}>
+                <ShareAltOutlined style={{ fontSize: '24px', color: 'white' }} />
+              </div>
+              <Statistic
+                title="PSI任务总数"
+                value={data.overview.totalPsiJobs}
+                valueStyle={{ color: 'var(--ant-color-primary)' }}
+              />
+              <Text type="success" style={{ fontSize: '12px' }}>↗ +15% 本周</Text>
+            </div>
+          </ProCard>
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title="同意请求总数"
-              value={data.overview.totalConsentRequests}
-              prefix={<SafetyCertificateOutlined />}
-              valueStyle={{ color: '#52c41a' }}
-            />
-          </Card>
+          <ProCard bordered hoverable>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ 
+                width: 48, 
+                height: 48, 
+                margin: '0 auto 16px', 
+                borderRadius: '50%', 
+                backgroundColor: 'var(--ant-color-success)', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center' 
+              }}>
+                <SafetyCertificateOutlined style={{ fontSize: '24px', color: 'white' }} />
+              </div>
+              <Statistic
+                title="同意请求总数"
+                value={data.overview.totalConsentRequests}
+                valueStyle={{ color: 'var(--ant-color-success)' }}
+              />
+              <Text type="success" style={{ fontSize: '12px' }}>↗ +8% 本周</Text>
+            </div>
+          </ProCard>
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title="训练任务总数"
-              value={data.overview.totalTrainingJobs}
-              prefix={<ExperimentOutlined />}
-              valueStyle={{ color: '#722ed1' }}
-            />
-          </Card>
+          <ProCard bordered hoverable>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ 
+                width: 48, 
+                height: 48, 
+                margin: '0 auto 16px', 
+                borderRadius: '50%', 
+                backgroundColor: '#722ed1', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center' 
+              }}>
+                <ExperimentOutlined style={{ fontSize: '24px', color: 'white' }} />
+              </div>
+              <Statistic
+                title="训练任务总数"
+                value={data.overview.totalTrainingJobs}
+                valueStyle={{ color: '#722ed1' }}
+              />
+              <Text type="success" style={{ fontSize: '12px' }}>↗ +23% 本周</Text>
+            </div>
+          </ProCard>
         </Col>
         <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title="推理次数"
-              value={data.overview.totalInferences}
-              prefix={<CloudServerOutlined />}
-              valueStyle={{ color: '#fa8c16' }}
-            />
-          </Card>
+          <ProCard bordered hoverable>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ 
+                width: 48, 
+                height: 48, 
+                margin: '0 auto 16px', 
+                borderRadius: '50%', 
+                backgroundColor: 'var(--ant-color-warning)', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center' 
+              }}>
+                <CloudServerOutlined style={{ fontSize: '24px', color: 'white' }} />
+              </div>
+              <Statistic
+                title="推理次数"
+                value={data.overview.totalInferences}
+                valueStyle={{ color: 'var(--ant-color-warning)' }}
+              />
+              <Text type="success" style={{ fontSize: '12px' }}>↗ +31% 本周</Text>
+            </div>
+          </ProCard>
         </Col>
       </Row>
 
       {/* 系统状态 */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col xs={24} sm={12} lg={8}>
-          <Card title="系统运行时间">
-            <Progress
-              type="circle"
-              percent={data.overview.systemUptime}
-              format={(percent) => `${percent}%`}
-              strokeColor="#52c41a"
-            />
-            <div style={{ textAlign: 'center', marginTop: 16 }}>
-              <Text type="secondary">系统稳定运行</Text>
+          <ProCard title="系统运行时间" bordered hoverable>
+            <div style={{ textAlign: 'center' }}>
+              <Progress
+                type="circle"
+                percent={data.overview.systemUptime}
+                format={(percent) => `${percent}%`}
+                strokeColor="var(--ant-color-success)"
+                size={120}
+              />
+              <div style={{ marginTop: 16 }}>
+                <Text type="success">系统稳定运行</Text>
+              </div>
             </div>
-          </Card>
+          </ProCard>
         </Col>
         <Col xs={24} sm={12} lg={8}>
-          <Card>
-            <Statistic
-              title="活跃用户"
-              value={data.overview.activeUsers}
-              prefix={<UserOutlined />}
-              suffix={<ArrowUpOutlined style={{ color: '#52c41a' }} />}
-              valueStyle={{ color: '#1890ff' }}
-            />
-            <div style={{ marginTop: 16 }}>
-              <Text type="secondary">较昨日 +12%</Text>
+          <ProCard title="活跃用户" bordered hoverable>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ 
+                width: 48, 
+                height: 48, 
+                margin: '0 auto 16px', 
+                borderRadius: '50%', 
+                backgroundColor: 'var(--ant-color-primary)', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center' 
+              }}>
+                <UserOutlined style={{ fontSize: '24px', color: 'white' }} />
+              </div>
+              <Statistic
+                value={data.overview.activeUsers}
+                suffix={<ArrowUpOutlined style={{ color: 'var(--ant-color-success)' }} />}
+                valueStyle={{ color: 'var(--ant-color-primary)' }}
+              />
+              <div style={{ marginTop: 16 }}>
+                <Text type="success">较昨日 +12%</Text>
+              </div>
             </div>
-          </Card>
+          </ProCard>
         </Col>
         <Col xs={24} sm={12} lg={8}>
-          <Card title="系统负载">
+          <ProCard title="系统负载" bordered hoverable>
             <div>
-              {data.performanceMetrics.systemLoad.map((item) => (
-                <div key={item.service} style={{ marginBottom: 12 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <Text style={{ fontSize: 12 }}>{item.service}</Text>
-                    <Text style={{ fontSize: 12 }}>CPU: {item.cpu}% | 内存: {item.memory}%</Text>
+              {data.performanceMetrics.systemLoad.map((item, index) => (
+                <div key={item.service} style={{ marginBottom: 16 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <Text strong>{item.service}</Text>
+                    <Text type="secondary">CPU: {item.cpu}% | 内存: {item.memory}%</Text>
                   </div>
                   <Progress
                     percent={item.cpu}
+                    strokeColor="var(--ant-color-primary)"
                     size="small"
-                    strokeColor={item.cpu > 80 ? '#ff4d4f' : item.cpu > 60 ? '#faad14' : '#52c41a'}
                     showInfo={false}
                   />
                 </div>
               ))}
             </div>
-          </Card>
+          </ProCard>
         </Col>
       </Row>
 
       {/* 图表和活动 */}
-      <Row gutter={[16, 16]}>
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col xs={24} lg={16}>
-          <Card title="PSI吞吐量趋势" extra={<Text type="secondary">最近24小时</Text>}>
-            <Line
-              data={data.performanceMetrics.psiThroughput}
-              xField="time"
-              yField="value"
-              smooth
-              color="#1890ff"
-              height={300}
-              point={{
-                size: 3,
-                shape: 'circle',
-              }}
-              tooltip={{
-                formatter: (datum: any) => {
-                  return { name: '吞吐量', value: `${datum.value} 次/小时` }
-                },
-              }}
-            />
-          </Card>
+          <ProCard
+            title="PSI吞吐量趋势"
+            extra={<Text type="secondary">最近24小时</Text>}
+            bordered
+            hoverable
+          >
+              <Line
+                data={data.performanceMetrics.psiThroughput}
+                xField="time"
+                yField="value"
+                height={300}
+                {...getLineConfig()}
+                tooltip={{
+                  formatter: (datum: any) => {
+                    return { name: '吞吐量', value: `${datum.value} 次/小时` }
+                  },
+                }}
+              />
+          </ProCard>
         </Col>
         <Col xs={24} lg={8}>
-          <Card title="最近活动" extra={<Text type="secondary">实时更新</Text>}>
-            <Table
+          <ProCard
+            title="最近活动"
+            extra={<Text type="secondary">实时更新</Text>}
+            bordered
+            hoverable
+          >
+            <ProTable
               dataSource={data.recentActivities}
               columns={activityColumns}
               pagination={false}
               size="small"
               scroll={{ y: 300 }}
               rowKey="id"
+              className="modern-table"
+              search={false}
+              toolBarRender={false}
             />
-          </Card>
+          </ProCard>
         </Col>
       </Row>
 
       {/* 训练指标 */}
-      <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+      <Row gutter={[16, 16]}>
         <Col xs={24} lg={12}>
-          <Card title="模型训练准确率">
+          <ProCard title="模型训练准确率" bordered hoverable>
             <Line
               data={data.performanceMetrics.trainingAccuracy}
               xField="time"
               yField="accuracy"
-              smooth
-              color="#52c41a"
               height={250}
+              {...getLineConfig()}
               yAxis={{
                 min: 0.7,
                 max: 1.0,
@@ -417,27 +500,26 @@ const Dashboard: React.FC = () => {
                 },
               }}
             />
-          </Card>
+          </ProCard>
         </Col>
         <Col xs={24} lg={12}>
-          <Card title="训练损失">
+          <ProCard title="训练损失" bordered hoverable>
             <Line
               data={data.performanceMetrics.trainingAccuracy}
               xField="time"
               yField="loss"
-              smooth
-              color="#ff4d4f"
               height={250}
+              {...getLineConfig()}
               tooltip={{
                 formatter: (datum: any) => {
                   return { name: '损失', value: datum.loss.toFixed(4) }
                 },
               }}
             />
-          </Card>
+          </ProCard>
         </Col>
       </Row>
-    </div>
+    </PageContainer>
   )
 }
 

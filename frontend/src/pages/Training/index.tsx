@@ -1,26 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import {
-  Card,
-  Form,
-  Input,
-  Button,
-  Select,
-  Table,
-  Tag,
-  Space,
-  Modal,
-  Descriptions,
-  Typography,
-  Row,
-  Col,
-  Statistic,
-  Progress,
-  Tabs,
-  Steps,
-  InputNumber,
-  Slider,
-  Upload,
-} from 'antd'
+import { Button, Space, Tag, Progress, Modal, message, Descriptions, Typography, Row, Col, Statistic } from 'antd'
+import { ProTable, PageContainer, ProForm, ProFormText, ProFormSelect, ProFormTextArea, ProFormDigit, ProFormSlider } from '@ant-design/pro-components'
+import type { ProColumns } from '@ant-design/pro-components'
 import {
   ExperimentOutlined,
   PlayCircleOutlined,
@@ -29,21 +10,18 @@ import {
   EyeOutlined,
   DownloadOutlined,
   DeleteOutlined,
-  UploadOutlined,
+  PlusOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
   ExclamationCircleOutlined,
-  PlusOutlined,
 } from '@ant-design/icons'
 import { Line } from '@ant-design/plots'
-import { useAppStore } from '@store/app'
+import { useChartTheme } from '@/hooks/useChartTheme'
+import { formatDate } from '@/utils'
 import dayjs from 'dayjs'
+import axios from 'axios'
 
 const { Title, Text } = Typography
-const { Option } = Select
-const { TextArea } = Input
-// const { TabPane } = Tabs // 已弃用，使用items属性替代
-const { Step } = Steps
 
 interface TrainingJob {
   id: string
@@ -78,112 +56,64 @@ interface TrainingJob {
 }
 
 const TrainingPage: React.FC = () => {
-  const [form] = Form.useForm()
-  const [jobs, setJobs] = useState<TrainingJob[]>([])
-  const [loading, setLoading] = useState(false)
+  const { getLineConfig } = useChartTheme()
+  const [form] = ProForm.useForm()
   const [createModalVisible, setCreateModalVisible] = useState(false)
   const [detailVisible, setDetailVisible] = useState(false)
   const [selectedJob, setSelectedJob] = useState<TrainingJob | null>(null)
-  const [currentStep, setCurrentStep] = useState(0)
-  const { addNotification } = useAppStore()
+  const [loading, setLoading] = useState(false)
 
-  // 模拟训练任务数据
-  const mockJobs: TrainingJob[] = [
-    {
-      id: '1',
-      name: '信用风险评估模型',
-      description: '基于多方数据的联邦学习信用风险评估模型训练',
-      algorithm: 'FedAvg',
-      status: 'completed',
-      progress: 100,
-      currentEpoch: 50,
-      totalEpochs: 50,
-      accuracy: 0.892,
-      loss: 0.234,
-      participants: ['银行A', '银行B', '金融机构C'],
-      datasetSize: 150000,
-      createdAt: dayjs().subtract(3, 'day').toISOString(),
-      startedAt: dayjs().subtract(3, 'day').add(5, 'minute').toISOString(),
-      completedAt: dayjs().subtract(2, 'day').toISOString(),
-      duration: 7200,
-      creator: '张三',
-      config: {
-        learningRate: 0.001,
-        batchSize: 32,
-        privacyBudget: 1.0,
-        aggregationMethod: 'weighted_average',
-      },
-      metrics: Array.from({ length: 50 }, (_, i) => ({
-        epoch: i + 1,
-        accuracy: 0.6 + (i * 0.006) + Math.random() * 0.02,
-        loss: 2.0 - (i * 0.035) + Math.random() * 0.1,
-        timestamp: dayjs().subtract(3, 'day').add(i * 2, 'minute').toISOString(),
-      })),
-    },
-    {
-      id: '2',
-      name: '反欺诈检测模型',
-      description: '多方联邦学习反欺诈检测模型',
-      algorithm: 'FedProx',
-      status: 'running',
-      progress: 65,
-      currentEpoch: 32,
-      totalEpochs: 50,
-      accuracy: 0.834,
-      loss: 0.412,
-      participants: ['支付平台A', '电商平台B'],
-      datasetSize: 80000,
-      createdAt: dayjs().subtract(2, 'hour').toISOString(),
-      startedAt: dayjs().subtract(1, 'hour').toISOString(),
-      creator: '李四',
-      config: {
-        learningRate: 0.002,
-        batchSize: 64,
-        privacyBudget: 0.8,
-        aggregationMethod: 'fedprox',
-      },
-      metrics: Array.from({ length: 32 }, (_, i) => ({
-        epoch: i + 1,
-        accuracy: 0.65 + (i * 0.005) + Math.random() * 0.015,
-        loss: 1.8 - (i * 0.04) + Math.random() * 0.08,
-        timestamp: dayjs().subtract(2, 'hour').add(i * 1.5, 'minute').toISOString(),
-      })),
-    },
-    {
-      id: '3',
-      name: '客户流失预测模型',
-      description: '基于用户行为的客户流失预测联邦模型',
-      algorithm: 'FedAvg',
-      status: 'pending',
-      progress: 0,
-      currentEpoch: 0,
-      totalEpochs: 30,
-      accuracy: 0,
-      loss: 0,
-      participants: ['电信运营商A', '互联网公司B'],
-      datasetSize: 200000,
-      createdAt: dayjs().subtract(30, 'minute').toISOString(),
-      creator: '王五',
-      config: {
-        learningRate: 0.0015,
-        batchSize: 128,
-        privacyBudget: 1.2,
-        aggregationMethod: 'weighted_average',
-      },
-      metrics: [],
-    },
-  ]
+  // 训练任务数据
+  const [jobs, setJobs] = useState<TrainingJob[]>([])
 
+  // 从后端API获取训练任务列表
+  const fetchTrainingJobs = async () => {
+    try {
+      const response = await axios.get('http://localhost:8002/tasks')
+      const backendJobs = response.data.map((task: any) => ({
+        id: task.task_id,
+        name: task.task_id,
+        description: `联邦学习训练任务 - ${task.task_id}`,
+        algorithm: 'XGBoost',
+        status: task.status === 'completed' ? 'completed' : task.status === 'running' ? 'running' : 'pending',
+        progress: task.status === 'completed' ? 100 : task.status === 'running' ? 50 : 0,
+        currentEpoch: task.status === 'completed' ? 100 : 0,
+        totalEpochs: 100,
+        accuracy: task.metrics?.accuracy || 0,
+        loss: task.metrics?.loss || 0,
+        participants: task.participants || [],
+        datasetSize: 1000,
+        createdAt: task.created_at || dayjs().toISOString(),
+        startedAt: task.started_at,
+        completedAt: task.completed_at,
+        creator: '系统',
+        config: {
+          learningRate: 0.1,
+          batchSize: 100,
+          privacyBudget: 1.0,
+          aggregationMethod: 'SecureAgg',
+        },
+        metrics: [],
+      }))
+      setJobs(backendJobs)
+    } catch (error) {
+      console.error('获取训练任务失败:', error)
+      message.error('获取训练任务失败')
+    }
+  }
+
+  // 组件加载时获取数据
   useEffect(() => {
-    setJobs(mockJobs)
+    fetchTrainingJobs()
+    // 每30秒刷新一次数据
+    const interval = setInterval(fetchTrainingJobs, 30000)
+    return () => clearInterval(interval)
   }, [])
 
   // 创建训练任务
   const handleCreateJob = async (values: any) => {
     setLoading(true)
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
       const newJob: TrainingJob = {
         id: Date.now().toString(),
         name: values.name,
@@ -211,19 +141,10 @@ const TrainingPage: React.FC = () => {
       setJobs(prev => [newJob, ...prev])
       setCreateModalVisible(false)
       form.resetFields()
-      setCurrentStep(0)
       
-      addNotification({
-        type: 'success',
-        title: '训练任务创建成功',
-        message: `任务 "${values.name}" 已创建，等待开始训练`,
-      })
+      message.success('训练任务创建成功')
     } catch (error) {
-      addNotification({
-        type: 'error',
-        title: '创建失败',
-        message: '训练任务创建失败，请重试',
-      })
+      message.error('创建失败，请重试')
     } finally {
       setLoading(false)
     }
@@ -242,11 +163,7 @@ const TrainingPage: React.FC = () => {
       return job
     }))
     
-    addNotification({
-      type: 'success',
-      title: '训练已开始',
-      message: '联邦学习训练任务已开始执行',
-    })
+    message.success('训练已开始')
   }
 
   // 暂停训练
@@ -258,11 +175,7 @@ const TrainingPage: React.FC = () => {
       return job
     }))
     
-    addNotification({
-      type: 'warning',
-      title: '训练已暂停',
-      message: '训练任务已暂停，可以随时恢复',
-    })
+    message.warning('训练已暂停')
   }
 
   // 停止训练
@@ -282,11 +195,7 @@ const TrainingPage: React.FC = () => {
           return job
         }))
         
-        addNotification({
-          type: 'error',
-          title: '训练已停止',
-          message: '训练任务已被手动停止',
-        })
+        message.error('训练已停止')
       },
     })
   }
@@ -298,11 +207,7 @@ const TrainingPage: React.FC = () => {
       content: '确定要删除这个训练任务吗？此操作不可撤销。',
       onOk: () => {
         setJobs(prev => prev.filter(job => job.id !== jobId))
-        addNotification({
-          type: 'success',
-          title: '任务已删除',
-          message: '训练任务已成功删除',
-        })
+        message.success('任务已删除')
       },
     })
   }
@@ -310,11 +215,7 @@ const TrainingPage: React.FC = () => {
   // 下载模型
   const handleDownloadModel = (job: TrainingJob) => {
     if (job.status !== 'completed') {
-      addNotification({
-        type: 'warning',
-        title: '无法下载',
-        message: '只有已完成的训练任务才能下载模型',
-      })
+      message.warning('只有已完成的训练任务才能下载模型')
       return
     }
     
@@ -335,11 +236,7 @@ const TrainingPage: React.FC = () => {
     a.click()
     URL.revokeObjectURL(url)
     
-    addNotification({
-      type: 'success',
-      title: '下载完成',
-      message: '模型文件已下载到本地',
-    })
+    message.success('模型文件已下载到本地')
   }
 
   // 状态配置
@@ -361,14 +258,14 @@ const TrainingPage: React.FC = () => {
   }
 
   // 表格列配置
-  const columns = [
+  const columns: ProColumns<TrainingJob>[] = [
     {
       title: '任务名称',
       dataIndex: 'name',
       key: 'name',
-      render: (text: string, record: TrainingJob) => (
+      render: (_, record) => (
         <div>
-          <div style={{ fontWeight: 500 }}>{text}</div>
+          <div style={{ fontWeight: 500 }}>{record.name}</div>
           <div style={{ fontSize: 12, color: '#666', marginTop: 4 }}>
             {record.description}
           </div>
@@ -380,8 +277,8 @@ const TrainingPage: React.FC = () => {
       dataIndex: 'algorithm',
       key: 'algorithm',
       width: 100,
-      render: (algorithm: string) => (
-        <Tag color="blue">{algorithm}</Tag>
+      render: (_, record) => (
+        <Tag color="blue">{record.algorithm}</Tag>
       ),
     },
     {
@@ -389,13 +286,13 @@ const TrainingPage: React.FC = () => {
       dataIndex: 'participants',
       key: 'participants',
       width: 150,
-      render: (participants: string[]) => (
+      render: (_, record) => (
         <div>
-          {participants.slice(0, 2).map(p => (
+          {record.participants.slice(0, 2).map(p => (
             <Tag key={p} style={{ marginBottom: 2 }}>{p}</Tag>
           ))}
-          {participants.length > 2 && (
-            <Tag>+{participants.length - 2}</Tag>
+          {record.participants.length > 2 && (
+            <Tag>+{record.participants.length - 2}</Tag>
           )}
         </div>
       ),
@@ -404,40 +301,42 @@ const TrainingPage: React.FC = () => {
       title: '状态',
       dataIndex: 'status',
       key: 'status',
-      width: 120,
-      render: (status: string, record: TrainingJob) => {
-        const config = getStatusConfig(status)
+      width: 100,
+      render: (_, record) => {
+        const config = getStatusConfig(record.status)
         return (
-          <div>
-            <Tag icon={config.icon} color={config.color}>
-              {config.text}
-            </Tag>
-            {status === 'running' && (
-              <Progress
-                percent={record.progress}
-                size="small"
-                style={{ marginTop: 4 }}
-              />
-            )}
-          </div>
+          <Tag color={config.color} icon={config.icon}>
+            {config.text}
+          </Tag>
         )
       },
     },
     {
       title: '进度',
+      dataIndex: 'progress',
       key: 'progress',
-      width: 120,
-      render: (record: TrainingJob) => (
+      width: 150,
+      render: (_, record) => (
         <div>
-          <Text style={{ fontSize: 12 }}>
+          <Progress
+            percent={record.progress}
+            size="small"
+            status={record.status === 'failed' ? 'exception' : undefined}
+          />
+          <Text type="secondary" style={{ fontSize: 12 }}>
             {record.currentEpoch}/{record.totalEpochs} epochs
           </Text>
-          {record.status === 'completed' && (
-            <div style={{ fontSize: 12, color: '#52c41a', marginTop: 2 }}>
-              准确率: {(record.accuracy * 100).toFixed(1)}%
-            </div>
-          )}
         </div>
+      ),
+    },
+    {
+      title: '准确率',
+      dataIndex: 'accuracy',
+      key: 'accuracy',
+      width: 100,
+      align: 'right',
+      render: (_, record) => (
+        <Text strong>{(record.accuracy * 100).toFixed(1)}%</Text>
       ),
     },
     {
@@ -445,16 +344,17 @@ const TrainingPage: React.FC = () => {
       dataIndex: 'createdAt',
       key: 'createdAt',
       width: 120,
-      render: (time: string) => dayjs(time).format('MM-DD HH:mm'),
+      render: (_, record) => formatDate(record.createdAt),
     },
     {
       title: '操作',
       key: 'actions',
       width: 200,
-      render: (record: TrainingJob) => (
-        <Space>
+      valueType: 'option',
+      render: (_, record) => (
+        <Space size="small">
           <Button
-            type="text"
+            type="link"
             size="small"
             icon={<EyeOutlined />}
             onClick={() => {
@@ -462,12 +362,11 @@ const TrainingPage: React.FC = () => {
               setDetailVisible(true)
             }}
           >
-            详情
+            查看
           </Button>
-          
           {record.status === 'pending' && (
             <Button
-              type="text"
+              type="link"
               size="small"
               icon={<PlayCircleOutlined />}
               onClick={() => handleStartTraining(record.id)}
@@ -475,11 +374,10 @@ const TrainingPage: React.FC = () => {
               开始
             </Button>
           )}
-          
           {record.status === 'running' && (
             <>
               <Button
-                type="text"
+                type="link"
                 size="small"
                 icon={<PauseCircleOutlined />}
                 onClick={() => handlePauseTraining(record.id)}
@@ -487,7 +385,7 @@ const TrainingPage: React.FC = () => {
                 暂停
               </Button>
               <Button
-                type="text"
+                type="link"
                 size="small"
                 danger
                 icon={<StopOutlined />}
@@ -497,21 +395,19 @@ const TrainingPage: React.FC = () => {
               </Button>
             </>
           )}
-          
           {record.status === 'paused' && (
             <Button
-              type="text"
+              type="link"
               size="small"
               icon={<PlayCircleOutlined />}
               onClick={() => handleStartTraining(record.id)}
             >
-              继续
+              恢复
             </Button>
           )}
-          
           {record.status === 'completed' && (
             <Button
-              type="text"
+              type="link"
               size="small"
               icon={<DownloadOutlined />}
               onClick={() => handleDownloadModel(record)}
@@ -519,9 +415,8 @@ const TrainingPage: React.FC = () => {
               下载
             </Button>
           )}
-          
           <Button
-            type="text"
+            type="link"
             size="small"
             danger
             icon={<DeleteOutlined />}
@@ -534,332 +429,195 @@ const TrainingPage: React.FC = () => {
     },
   ]
 
-  // 计算统计数据
-  const stats = {
-    total: jobs.length,
-    running: jobs.filter(job => job.status === 'running').length,
-    completed: jobs.filter(job => job.status === 'completed').length,
-    pending: jobs.filter(job => job.status === 'pending').length,
-  }
-
-  // 创建任务步骤
-  const steps = [
-    {
-      title: '基本信息',
-      content: (
-        <>
-          <Form.Item
-            name="name"
-            label="任务名称"
-            rules={[{ required: true, message: '请输入任务名称' }]}
-          >
-            <Input placeholder="请输入训练任务名称" />
-          </Form.Item>
-          
-          <Form.Item
-            name="description"
-            label="任务描述"
-            rules={[{ required: true, message: '请输入任务描述' }]}
-          >
-            <TextArea rows={3} placeholder="请描述训练任务的目标和用途" />
-          </Form.Item>
-          
-          <Form.Item
-            name="algorithm"
-            label="联邦算法"
-            rules={[{ required: true, message: '请选择联邦算法' }]}
-          >
-            <Select placeholder="请选择联邦学习算法">
-              <Option value="FedAvg">FedAvg - 联邦平均</Option>
-              <Option value="FedProx">FedProx - 联邦近端</Option>
-              <Option value="FedNova">FedNova - 联邦新星</Option>
-              <Option value="SCAFFOLD">SCAFFOLD - 控制变量</Option>
-            </Select>
-          </Form.Item>
-        </>
-      ),
-    },
-    {
-      title: '参与方配置',
-      content: (
-        <>
-          <Form.Item
-            name="participants"
-            label="参与方"
-            rules={[{ required: true, message: '请选择参与方' }]}
-          >
-            <Select
-              mode="multiple"
-              placeholder="请选择参与训练的机构"
-              options={[
-                { label: '银行A', value: '银行A' },
-                { label: '银行B', value: '银行B' },
-                { label: '金融机构C', value: '金融机构C' },
-                { label: '支付平台A', value: '支付平台A' },
-                { label: '电商平台B', value: '电商平台B' },
-                { label: '电信运营商A', value: '电信运营商A' },
-                { label: '互联网公司B', value: '互联网公司B' },
-              ]}
-            />
-          </Form.Item>
-          
-          <Form.Item
-            name="datasetSize"
-            label="数据集大小"
-            rules={[{ required: true, message: '请输入数据集大小' }]}
-          >
-            <InputNumber
-              style={{ width: '100%' }}
-              placeholder="请输入总数据量"
-              min={1000}
-              max={10000000}
-              formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-              parser={value => parseInt(value!.replace(/\$\s?|(,*)/g, '')) as 1000 | 10000000}
-            />
-          </Form.Item>
-          
-          <Form.Item name="dataUpload" label="数据文件">
-            <Upload
-              accept=".csv,.json,.parquet"
-              beforeUpload={() => false}
-              multiple
-              fileList={[]}
-            >
-              <Button icon={<UploadOutlined />}>选择数据文件</Button>
-            </Upload>
-          </Form.Item>
-        </>
-      ),
-    },
-    {
-      title: '训练参数',
-      content: (
-        <>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="totalEpochs"
-                label="训练轮数"
-                rules={[{ required: true, message: '请输入训练轮数' }]}
-                initialValue={50}
-              >
-                <InputNumber min={1} max={1000} style={{ width: '100%' }} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="batchSize"
-                label="批次大小"
-                rules={[{ required: true, message: '请输入批次大小' }]}
-                initialValue={32}
-              >
-                <Select>
-                  <Option value={16}>16</Option>
-                  <Option value={32}>32</Option>
-                  <Option value={64}>64</Option>
-                  <Option value={128}>128</Option>
-                  <Option value={256}>256</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-          
-          <Form.Item
-            name="learningRate"
-            label="学习率"
-            rules={[{ required: true, message: '请设置学习率' }]}
-            initialValue={0.001}
-          >
-            <Slider
-              min={0.0001}
-              max={0.01}
-              step={0.0001}
-              marks={{
-                0.0001: '0.0001',
-                0.001: '0.001',
-                0.01: '0.01',
-              }}
-            />
-          </Form.Item>
-          
-          <Form.Item
-            name="privacyBudget"
-            label="隐私预算 (ε)"
-            rules={[{ required: true, message: '请设置隐私预算' }]}
-            initialValue={1.0}
-          >
-            <Slider
-              min={0.1}
-              max={5.0}
-              step={0.1}
-              marks={{
-                0.1: '0.1',
-                1.0: '1.0',
-                5.0: '5.0',
-              }}
-            />
-          </Form.Item>
-          
-          <Form.Item
-            name="aggregationMethod"
-            label="聚合方法"
-            rules={[{ required: true, message: '请选择聚合方法' }]}
-            initialValue="weighted_average"
-          >
-            <Select>
-              <Option value="weighted_average">加权平均</Option>
-              <Option value="simple_average">简单平均</Option>
-              <Option value="fedprox">FedProx聚合</Option>
-              <Option value="scaffold">SCAFFOLD聚合</Option>
-            </Select>
-          </Form.Item>
-        </>
-      ),
-    },
-  ]
-
   return (
-    <div style={{ padding: 24 }}>
-      {/* 页面标题 */}
-      <div style={{ marginBottom: 24 }}>
-        <Title level={2} style={{ margin: 0 }}>
-          <ExperimentOutlined style={{ marginRight: 8 }} />
-          联邦训练
-        </Title>
-        <Text type="secondary">联邦学习模型训练与管理</Text>
-      </div>
-
-      {/* 统计概览 */}
-      <Row gutter={16} style={{ marginBottom: 24 }}>
-        <Col span={6}>
-          <Card>
-            <Statistic title="总任务数" value={stats.total} />
-          </Card>
-        </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="训练中"
-              value={stats.running}
-              valueStyle={{ color: '#1890ff' }}
-            />
-          </Card>
-        </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="已完成"
-              value={stats.completed}
-              valueStyle={{ color: '#52c41a' }}
-            />
-          </Card>
-        </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="等待中"
-              value={stats.pending}
-              valueStyle={{ color: '#faad14' }}
-            />
-          </Card>
-        </Col>
-      </Row>
-
-      {/* 任务列表 */}
-      <Card
-        title="训练任务"
-        extra={
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => setCreateModalVisible(true)}
-          >
-            创建任务
-          </Button>
-        }
-      >
-        <Table
-          dataSource={jobs}
-          columns={columns}
-          rowKey="id"
-          pagination={{
-            pageSize: 10,
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total) => `共 ${total} 条记录`,
-          }}
-        />
-      </Card>
-
-      {/* 创建任务弹窗 */}
-      <Modal
-        title="创建联邦训练任务"
-        open={createModalVisible}
-        onCancel={() => {
-          setCreateModalVisible(false)
-          setCurrentStep(0)
-          form.resetFields()
+    <PageContainer
+      title="联邦学习训练"
+      subTitle="管理联邦学习模型训练任务"
+      extra={[
+        <Button
+          key="add"
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => setCreateModalVisible(true)}
+        >
+          创建训练任务
+        </Button>,
+      ]}
+    >
+      <ProTable<TrainingJob>
+        columns={columns}
+        dataSource={jobs}
+        rowKey="id"
+        pagination={{
+          pageSize: 10,
+          showSizeChanger: true,
+          showQuickJumper: true,
         }}
+        search={{
+          labelWidth: 'auto',
+        }}
+        toolBarRender={false}
+      />
+
+      {/* 创建训练任务模态框 */}
+      <Modal
+        title="创建训练任务"
+        open={createModalVisible}
+        onCancel={() => setCreateModalVisible(false)}
         footer={null}
         width={800}
       >
-        <Steps current={currentStep} style={{ marginBottom: 24 }}>
-          {steps.map(item => (
-            <Step key={item.title} title={item.title} />
-          ))}
-        </Steps>
-        
-        <Form
+        <ProForm
           form={form}
           layout="vertical"
           onFinish={handleCreateJob}
+          submitter={{
+            searchConfig: {
+              submitText: '创建任务',
+              resetText: '取消',
+            },
+            resetButtonProps: {
+              onClick: () => setCreateModalVisible(false),
+            },
+            submitButtonProps: {
+              loading: loading,
+            },
+          }}
         >
-          <div style={{ minHeight: 300 }}>
-            {steps[currentStep].content}
-          </div>
+          <Row gutter={16}>
+            <Col span={12}>
+              <ProFormText
+                name="name"
+                label="任务名称"
+                placeholder="请输入训练任务名称"
+                rules={[{ required: true, message: '请输入任务名称' }]}
+              />
+            </Col>
+            <Col span={12}>
+              <ProFormSelect
+                name="algorithm"
+                label="训练算法"
+                placeholder="请选择训练算法"
+                options={[
+                  { label: 'FedAvg', value: 'FedAvg' },
+                  { label: 'FedProx', value: 'FedProx' },
+                  { label: 'FedNova', value: 'FedNova' },
+                  { label: 'SCAFFOLD', value: 'SCAFFOLD' },
+                ]}
+                rules={[{ required: true, message: '请选择训练算法' }]}
+              />
+            </Col>
+          </Row>
           
-          <div style={{ textAlign: 'right', marginTop: 24 }}>
-            <Space>
-              {currentStep > 0 && (
-                <Button onClick={() => setCurrentStep(currentStep - 1)}>
-                  上一步
-                </Button>
-              )}
-              
-              <Button onClick={() => {
-                setCreateModalVisible(false)
-                setCurrentStep(0)
-                form.resetFields()
-              }}>
-                取消
-              </Button>
-              
-              {currentStep < steps.length - 1 ? (
-                <Button
-                  type="primary"
-                  onClick={() => {
-                    form.validateFields().then(() => {
-                      setCurrentStep(currentStep + 1)
-                    })
-                  }}
-                >
-                  下一步
-                </Button>
-              ) : (
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={loading}
-                >
-                  创建任务
-                </Button>
-              )}
-            </Space>
-          </div>
-        </Form>
+          <ProFormTextArea
+            name="description"
+            label="任务描述"
+            placeholder="请输入任务描述"
+            rules={[{ required: true, message: '请输入任务描述' }]}
+          />
+          
+          <Row gutter={16}>
+            <Col span={12}>
+              <ProFormSelect
+                name="participants"
+                label="参与方"
+                placeholder="请选择参与方"
+                mode="multiple"
+                options={[
+                  { label: '银行A', value: '银行A' },
+                  { label: '银行B', value: '银行B' },
+                  { label: '银行C', value: '银行C' },
+                  { label: '保险公司A', value: '保险公司A' },
+                  { label: '证券公司A', value: '证券公司A' },
+                ]}
+                rules={[{ required: true, message: '请选择参与方' }]}
+              />
+            </Col>
+            <Col span={12}>
+              <ProFormDigit
+                name="datasetSize"
+                label="数据集大小"
+                placeholder="请输入数据集大小"
+                min={1}
+                rules={[{ required: true, message: '请输入数据集大小' }]}
+              />
+            </Col>
+          </Row>
+          
+          <Row gutter={16}>
+            <Col span={8}>
+              <ProFormDigit
+                name="totalEpochs"
+                label="训练轮数"
+                placeholder="请输入训练轮数"
+                min={1}
+                max={1000}
+                initialValue={50}
+                rules={[{ required: true, message: '请输入训练轮数' }]}
+              />
+            </Col>
+            <Col span={8}>
+              <ProFormDigit
+                name="learningRate"
+                label="学习率"
+                placeholder="请输入学习率"
+                min={0.0001}
+                max={1}
+                initialValue={0.001}
+                fieldProps={{ step: 0.0001, precision: 4 }}
+                rules={[{ required: true, message: '请输入学习率' }]}
+              />
+            </Col>
+            <Col span={8}>
+              <ProFormDigit
+                name="batchSize"
+                label="批次大小"
+                placeholder="请输入批次大小"
+                min={1}
+                max={1024}
+                initialValue={32}
+                rules={[{ required: true, message: '请输入批次大小' }]}
+              />
+            </Col>
+          </Row>
+          
+          <Row gutter={16}>
+            <Col span={12}>
+              <ProFormSlider
+                name="privacyBudget"
+                label="隐私预算"
+                min={0.1}
+                max={10}
+                step={0.1}
+                initialValue={1.0}
+                marks={{
+                  0.1: '0.1',
+                  1: '1.0',
+                  5: '5.0',
+                  10: '10.0',
+                }}
+                rules={[{ required: true, message: '请设置隐私预算' }]}
+              />
+            </Col>
+            <Col span={12}>
+              <ProFormSelect
+                name="aggregationMethod"
+                label="聚合方法"
+                placeholder="请选择聚合方法"
+                initialValue="FedAvg"
+                options={[
+                  { label: 'FedAvg', value: 'FedAvg' },
+                  { label: 'FedProx', value: 'FedProx' },
+                  { label: 'Weighted Average', value: 'weighted_avg' },
+                ]}
+                rules={[{ required: true, message: '请选择聚合方法' }]}
+              />
+            </Col>
+          </Row>
+        </ProForm>
       </Modal>
 
-      {/* 任务详情弹窗 */}
+      {/* 训练详情模态框 */}
       <Modal
         title="训练任务详情"
         open={detailVisible}
@@ -868,177 +626,112 @@ const TrainingPage: React.FC = () => {
           <Button key="close" onClick={() => setDetailVisible(false)}>
             关闭
           </Button>,
-          selectedJob?.status === 'completed' && (
-            <Button
-              key="download"
-              type="primary"
-              icon={<DownloadOutlined />}
-              onClick={() => {
-                if (selectedJob) {
-                  handleDownloadModel(selectedJob)
-                  setDetailVisible(false)
-                }
-              }}
-            >
-              下载模型
-            </Button>
-          ),
         ]}
         width={900}
       >
         {selectedJob && (
-          <Tabs 
-            defaultActiveKey="info"
-            items={[
-              {
-                key: 'info',
-                label: '基本信息',
-                children: (
-              <Descriptions column={2} bordered>
-                <Descriptions.Item label="任务名称" span={2}>
-                  {selectedJob.name}
-                </Descriptions.Item>
-                <Descriptions.Item label="任务描述" span={2}>
-                  {selectedJob.description}
-                </Descriptions.Item>
-                <Descriptions.Item label="算法">
-                  <Tag color="blue">{selectedJob.algorithm}</Tag>
-                </Descriptions.Item>
-                <Descriptions.Item label="状态">
-                  {(() => {
-                    const config = getStatusConfig(selectedJob.status)
-                    return (
-                      <Tag icon={config.icon} color={config.color}>
-                        {config.text}
-                      </Tag>
-                    )
-                  })()}
-                </Descriptions.Item>
-                <Descriptions.Item label="训练进度">
-                  {selectedJob.currentEpoch}/{selectedJob.totalEpochs} epochs ({selectedJob.progress}%)
-                </Descriptions.Item>
-                <Descriptions.Item label="数据集大小">
-                  {selectedJob.datasetSize.toLocaleString()} 条记录
-                </Descriptions.Item>
-                <Descriptions.Item label="参与方" span={2}>
-                  {selectedJob.participants.map(p => (
-                    <Tag key={p} style={{ marginBottom: 4 }}>{p}</Tag>
-                  ))}
-                </Descriptions.Item>
-                {selectedJob.status === 'completed' && (
-                  <>
-                    <Descriptions.Item label="最终准确率">
-                      <Text strong style={{ color: '#52c41a', fontSize: 16 }}>
-                        {(selectedJob.accuracy * 100).toFixed(2)}%
-                      </Text>
-                    </Descriptions.Item>
-                    <Descriptions.Item label="最终损失">
-                      <Text strong style={{ color: '#1890ff', fontSize: 16 }}>
-                        {selectedJob.loss.toFixed(4)}
-                      </Text>
-                    </Descriptions.Item>
-                  </>
-                )}
-                <Descriptions.Item label="创建者">
-                  {selectedJob.creator}
-                </Descriptions.Item>
-                <Descriptions.Item label="创建时间">
-                  {dayjs(selectedJob.createdAt).format('YYYY-MM-DD HH:mm:ss')}
-                </Descriptions.Item>
-                {selectedJob.startedAt && (
-                  <Descriptions.Item label="开始时间">
-                    {dayjs(selectedJob.startedAt).format('YYYY-MM-DD HH:mm:ss')}
-                  </Descriptions.Item>
-                )}
-                {selectedJob.completedAt && (
-                  <Descriptions.Item label="完成时间">
-                    {dayjs(selectedJob.completedAt).format('YYYY-MM-DD HH:mm:ss')}
-                  </Descriptions.Item>
-                )}
-                {selectedJob.duration && (
-                  <Descriptions.Item label="训练时长" span={2}>
-                    {Math.floor(selectedJob.duration / 3600)}小时{Math.floor((selectedJob.duration % 3600) / 60)}分钟
-                  </Descriptions.Item>
-                )}
-              </Descriptions>
-                )
-              },
-              {
-                key: 'config',
-                label: '训练配置',
-                children: (
-              <Descriptions column={2} bordered>
-                <Descriptions.Item label="学习率">
-                  {selectedJob.config.learningRate}
-                </Descriptions.Item>
-                <Descriptions.Item label="批次大小">
-                  {selectedJob.config.batchSize}
-                </Descriptions.Item>
-                <Descriptions.Item label="隐私预算">
-                  {selectedJob.config.privacyBudget}
-                </Descriptions.Item>
-                <Descriptions.Item label="聚合方法">
-                  {selectedJob.config.aggregationMethod}
-                </Descriptions.Item>
-                <Descriptions.Item label="总轮数">
-                  {selectedJob.totalEpochs}
-                </Descriptions.Item>
-                <Descriptions.Item label="当前轮数">
-                  {selectedJob.currentEpoch}
-                </Descriptions.Item>
-              </Descriptions>
-                )
-              },
-              ...(selectedJob.metrics.length > 0 ? [{
-                key: 'metrics',
-                label: '训练指标',
-                children: (
+          <div>
+            <Row gutter={16} style={{ marginBottom: 24 }}>
+              <Col span={6}>
+                <Statistic
+                  title="当前准确率"
+                  value={selectedJob.accuracy * 100}
+                  precision={2}
+                  suffix="%"
+                />
+              </Col>
+              <Col span={6}>
+                <Statistic
+                  title="当前损失"
+                  value={selectedJob.loss}
+                  precision={3}
+                />
+              </Col>
+              <Col span={6}>
+                <Statistic
+                  title="训练进度"
+                  value={selectedJob.progress}
+                  suffix="%"
+                />
+              </Col>
+              <Col span={6}>
+                <Statistic
+                  title="数据集大小"
+                  value={selectedJob.datasetSize}
+                  formatter={(value) => `${value?.toLocaleString()} 条`}
+                />
+              </Col>
+            </Row>
+            
+            <Descriptions title="基本信息" bordered column={2}>
+              <Descriptions.Item label="任务名称">{selectedJob.name}</Descriptions.Item>
+              <Descriptions.Item label="算法">{selectedJob.algorithm}</Descriptions.Item>
+              <Descriptions.Item label="状态">
+                <Tag color={getStatusConfig(selectedJob.status).color}>
+                  {getStatusConfig(selectedJob.status).text}
+                </Tag>
+              </Descriptions.Item>
+              <Descriptions.Item label="创建者">{selectedJob.creator}</Descriptions.Item>
+              <Descriptions.Item label="参与方" span={2}>
+                {selectedJob.participants.map(p => (
+                  <Tag key={p}>{p}</Tag>
+                ))}
+              </Descriptions.Item>
+              <Descriptions.Item label="任务描述" span={2}>
+                {selectedJob.description}
+              </Descriptions.Item>
+              <Descriptions.Item label="创建时间">
+                {formatDate(selectedJob.createdAt)}
+              </Descriptions.Item>
+              <Descriptions.Item label="开始时间">
+                {selectedJob.startedAt ? formatDate(selectedJob.startedAt) : '-'}
+              </Descriptions.Item>
+              <Descriptions.Item label="完成时间">
+                {selectedJob.completedAt ? formatDate(selectedJob.completedAt) : '-'}
+              </Descriptions.Item>
+              <Descriptions.Item label="训练时长">
+                {selectedJob.duration ? `${Math.round(selectedJob.duration / 3600)} 小时` : '-'}
+              </Descriptions.Item>
+            </Descriptions>
+            
+            <Descriptions title="训练配置" bordered column={2} style={{ marginTop: 16 }}>
+              <Descriptions.Item label="学习率">{selectedJob.config.learningRate}</Descriptions.Item>
+              <Descriptions.Item label="批次大小">{selectedJob.config.batchSize}</Descriptions.Item>
+              <Descriptions.Item label="隐私预算">{selectedJob.config.privacyBudget}</Descriptions.Item>
+              <Descriptions.Item label="聚合方法">{selectedJob.config.aggregationMethod}</Descriptions.Item>
+              <Descriptions.Item label="总轮数">{selectedJob.totalEpochs}</Descriptions.Item>
+              <Descriptions.Item label="当前轮数">{selectedJob.currentEpoch}</Descriptions.Item>
+            </Descriptions>
+            
+            {selectedJob.metrics.length > 0 && (
+              <div style={{ marginTop: 24 }}>
+                <Title level={5}>训练指标</Title>
                 <Row gutter={16}>
                   <Col span={12}>
-                    <Card title="准确率变化" size="small">
-                      <Line
-                        data={selectedJob.metrics}
-                        xField="epoch"
-                        yField="accuracy"
-                        smooth
-                        color="#52c41a"
-                        height={200}
-                        yAxis={{
-                          min: Math.min(...selectedJob.metrics.map(m => m.accuracy)) * 0.95,
-                        }}
-                        tooltip={{
-                          formatter: (datum: any) => {
-                            return { name: '准确率', value: `${(datum.accuracy * 100).toFixed(2)}%` }
-                          },
-                        }}
-                      />
-                    </Card>
+                    <Line
+                      {...getLineConfig()}
+                      data={selectedJob.metrics.map(m => ({ epoch: m.epoch, value: m.accuracy, type: '准确率' }))}
+                      xField="epoch"
+                      yField="value"
+                      height={200}
+                    />
                   </Col>
                   <Col span={12}>
-                    <Card title="损失变化" size="small">
-                      <Line
-                        data={selectedJob.metrics}
-                        xField="epoch"
-                        yField="loss"
-                        smooth
-                        color="#ff4d4f"
-                        height={200}
-                        tooltip={{
-                          formatter: (datum: any) => {
-                            return { name: '损失', value: datum.loss.toFixed(4) }
-                          },
-                        }}
-                      />
-                    </Card>
+                    <Line
+                      {...getLineConfig()}
+                      data={selectedJob.metrics.map(m => ({ epoch: m.epoch, value: m.loss, type: '损失' }))}
+                      xField="epoch"
+                      yField="value"
+                      height={200}
+                    />
                   </Col>
                 </Row>
-                )
-              }] : [])
-            ]}
-          />
+              </div>
+            )}
+          </div>
         )}
       </Modal>
-    </div>
+    </PageContainer>
   )
 }
 

@@ -5,72 +5,103 @@ import { messageService } from '@/utils/messageService'
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 const API_TIMEOUT = 30000
 
-// 创建axios实例
-const axiosInstance: AxiosInstance = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: API_TIMEOUT,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-})
+// 服务端口配置
+const SERVICE_PORTS = {
+  consent: 8000,
+  psi: 8001,
+  train: 8002,
+  explainer: 8003,
+}
 
-// 请求拦截器
-axiosInstance.interceptors.request.use(
-  (config) => {
-    // 添加认证token
-    const token = localStorage.getItem('auth-token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    
-    // 添加请求ID用于追踪
-    config.headers['X-Request-ID'] = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-    
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
+// 创建不同服务的axios实例
+const createServiceInstance = (port: number): AxiosInstance => {
+  return axios.create({
+    baseURL: `http://localhost:${port}`,
+    timeout: API_TIMEOUT,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+}
 
-// 响应拦截器
-axiosInstance.interceptors.response.use(
-  (response: AxiosResponse) => {
-    return response
-  },
-  (error) => {
-    // 统一错误处理
-    if (error.response) {
-      const { status, data } = error.response
-      
-      switch (status) {
-        case 401:
-          // 未授权，清除token并跳转登录
-          localStorage.removeItem('auth-token')
-          window.location.href = '/login'
-          messageService.error('登录已过期，请重新登录')
-          break
-        case 403:
-          messageService.error('权限不足')
-          break
-        case 404:
-          messageService.error('请求的资源不存在')
-          break
-        case 500:
-          messageService.error('服务器内部错误')
-          break
-        default:
-          messageService.error(data?.message || '请求失败')
+// 主axios实例（同意授权服务）
+const axiosInstance: AxiosInstance = createServiceInstance(SERVICE_PORTS.consent)
+
+// PSI服务实例
+const psiInstance: AxiosInstance = createServiceInstance(SERVICE_PORTS.psi)
+
+// 训练服务实例
+const trainInstance: AxiosInstance = createServiceInstance(SERVICE_PORTS.train)
+
+// 解释服务实例
+const explainerInstance: AxiosInstance = createServiceInstance(SERVICE_PORTS.explainer)
+
+// 通用拦截器配置函数
+const setupInterceptors = (instance: AxiosInstance) => {
+  // 请求拦截器
+  instance.interceptors.request.use(
+    (config) => {
+      // 添加认证token
+      const token = localStorage.getItem('auth-token')
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`
       }
-    } else if (error.request) {
-      messageService.error('网络连接失败，请检查网络')
-    } else {
-      messageService.error('请求配置错误')
+      
+      // 添加请求ID用于追踪
+      config.headers['X-Request-ID'] = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      
+      return config
+    },
+    (error) => {
+      return Promise.reject(error)
     }
-    
-    return Promise.reject(error)
-  }
-)
+  )
+
+  // 响应拦截器
+  instance.interceptors.response.use(
+    (response: AxiosResponse) => {
+      return response
+    },
+    (error) => {
+      // 统一错误处理
+      if (error.response) {
+        const { status, data } = error.response
+        
+        switch (status) {
+          case 401:
+            // 未授权，清除token并跳转登录
+            localStorage.removeItem('auth-token')
+            window.location.href = '/login'
+            messageService.error('登录已过期，请重新登录')
+            break
+          case 403:
+            messageService.error('权限不足')
+            break
+          case 404:
+            messageService.error('请求的资源不存在')
+            break
+          case 500:
+            messageService.error('服务器内部错误')
+            break
+          default:
+            messageService.error(data?.message || '请求失败')
+        }
+      } else if (error.request) {
+        messageService.error('网络连接失败，请检查网络')
+      } else {
+        messageService.error('请求配置错误')
+      }
+      
+      return Promise.reject(error)
+    }
+  )
+}
+
+// 为所有实例设置拦截器
+setupInterceptors(axiosInstance)
+setupInterceptors(psiInstance)
+setupInterceptors(trainInstance)
+setupInterceptors(explainerInstance)
 
 // API服务类
 export class ApiService {
@@ -186,45 +217,73 @@ export class ApiService {
   }
 }
 
-// 创建API服务实例
+// 创建不同服务的API服务实例
 const baseApiService = new ApiService(axiosInstance)
+const psiApiService = new ApiService(psiInstance)
+const trainApiService = new ApiService(trainInstance)
+const explainerApiService = new ApiService(explainerInstance)
 
 // 扩展apiService，添加业务模块
 export const apiService = Object.assign(baseApiService, {
   consent: {
     getList: (params?: any) => baseApiService.get('/consent', { params }),
     get: (id: string) => baseApiService.get(`/consent/${id}`),
-    create: (data: any) => baseApiService.post('/consent', data),
+    create: (data: any) => baseApiService.post('/consent/issue', data),
     update: (id: string, data: any) => baseApiService.put(`/consent/${id}`, data),
     delete: (id: string) => baseApiService.delete(`/consent/${id}`),
     approve: (id: string) => baseApiService.post(`/consent/${id}/approve`),
     reject: (id: string, reason: string) => baseApiService.post(`/consent/${id}/reject`, { reason }),
   },
   psi: {
-    getAlignments: (params?: any) => baseApiService.get('/psi/alignments', { params }),
-    getAlignment: (id: string) => baseApiService.get(`/psi/alignments/${id}`),
-    createAlignment: (data: any) => baseApiService.post('/psi/alignments', data),
-    startAlignment: (id: string) => baseApiService.post(`/psi/alignments/${id}/start`),
-    getAlignmentResult: (id: string) => baseApiService.get(`/psi/alignments/${id}/result`),
-    downloadAlignmentResult: (id: string) => baseApiService.download(`/psi/alignments/${id}/download`),
+    getAlignments: (params?: any) => psiApiService.get('/psi/sessions', { params }),
+    getAlignment: (id: string) => psiApiService.get(`/psi/sessions/${id}`),
+    createAlignment: (data: any) => {
+      // 转换前端数据格式为PSI服务期望的格式
+      const psiRequest = {
+        session_id: `psi_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        method: 'ecdh_psi',
+        party_role: 'coordinator',
+        party_id: 'frontend_client',
+        other_parties: data.participants || [],
+        timeout_seconds: 3600,
+        metadata: {
+          name: data.name,
+          description: data.description,
+          datasetSize: parseInt(data.datasetSize) || 0
+        }
+      }
+      return psiApiService.post('/psi/session', psiRequest)
+    },
+    startAlignment: (id: string) => psiApiService.post(`/psi/compute`, { session_id: id, party_id: 'frontend_client', return_intersection: true }),
+    uploadData: (sessionId: string, data: any) => psiApiService.post('/psi/upload', { session_id: sessionId, ...data }),
+    getResults: (sessionId: string) => psiApiService.get(`/psi/results/${sessionId}`),
+    getAlignmentResult: (id: string) => psiApiService.get(`/psi/results/${id}`),
+    downloadAlignmentResult: (id: string) => psiApiService.download(`/psi/results/${id}/download`),
   },
   federated: {
-    getTrainingJobs: (params?: any) => baseApiService.get('/federated/jobs', { params }),
-    getTrainingJob: (id: string) => baseApiService.get(`/federated/jobs/${id}`),
-    createTrainingJob: (data: any) => baseApiService.post('/federated/jobs', data),
-    startTraining: (id: string) => baseApiService.post(`/federated/jobs/${id}/start`),
-    stopTraining: (id: string) => baseApiService.post(`/federated/jobs/${id}/stop`),
-    getTrainingMetrics: (id: string) => baseApiService.get(`/federated/jobs/${id}/metrics`),
-    getTrainingLogs: (id: string) => baseApiService.get(`/federated/jobs/${id}/logs`),
+    getTrainingJobs: (params?: any) => trainApiService.get('/api/train/training/jobs', { params }),
+    getTrainingJob: (id: string) => trainApiService.get(`/api/train/training/jobs/${id}`),
+    createTrainingJob: (data: any) => trainApiService.post('/api/train/training/jobs', data),
+    startTraining: (id: string) => trainApiService.post(`/api/train/training/jobs/${id}/start`),
+    stopTraining: (id: string) => trainApiService.post(`/api/train/training/jobs/${id}/stop`),
+    getTrainingMetrics: (id: string) => trainApiService.get(`/api/train/training/jobs/${id}/metrics`),
+    getTrainingLogs: (id: string) => trainApiService.get(`/api/train/training/jobs/${id}/logs`),
   },
   model: {
-    getModels: (params?: any) => baseApiService.get('/models', { params }),
-    getModel: (id: string) => baseApiService.get(`/models/${id}`),
-    deployModel: (id: string, config: any) => baseApiService.post(`/models/${id}/deploy`, config),
-    undeployModel: (id: string) => baseApiService.post(`/models/${id}/undeploy`),
-    getModelMetrics: (id: string) => baseApiService.get(`/models/${id}/metrics`),
-    testModel: (id: string, data: any) => baseApiService.post(`/models/${id}/test`, data),
-    downloadModel: (id: string) => baseApiService.download(`/models/${id}/download`),
+    getModels: (params?: any) => baseApiService.get('/api/serving/models', { params }),
+    getModel: (id: string) => baseApiService.get(`/api/serving/models/${id}`),
+    deployModel: (id: string, config: any) => baseApiService.post(`/api/serving/models/${id}/deploy`, config),
+    undeployModel: (id: string) => baseApiService.post(`/api/serving/models/${id}/undeploy`),
+    getModelMetrics: (id: string) => baseApiService.get(`/api/serving/models/${id}/metrics`),
+    testModel: (id: string, data: any) => baseApiService.post(`/api/serving/models/${id}/test`, data),
+    downloadModel: (id: string) => baseApiService.download(`/api/serving/models/${id}/download`),
+  },
+  explainer: {
+    getModels: (params?: any) => explainerApiService.get('/api/explainer/models', { params }),
+    getModel: (id: string) => explainerApiService.get(`/api/explainer/models/${id}`),
+    explainModel: (id: string, data: any) => explainerApiService.post(`/api/explainer/models/${id}/explain`, data),
+    getExplanation: (id: string) => explainerApiService.get(`/api/explainer/explanations/${id}`),
+    getFeatureImportance: (modelId: string) => explainerApiService.get(`/api/explainer/models/${modelId}/feature-importance`),
   },
   audit: {
     getAuditLogs: (params?: any) => baseApiService.get('/audit/logs', { params }),
@@ -272,7 +331,7 @@ export const authAPI = {
 export const consentAPI = {
   getConsents: (params?: any) => apiService.get('/consent', { params }),
   getConsent: (id: string) => apiService.get(`/consent/${id}`),
-  createConsent: (data: any) => apiService.post('/consent', data),
+  createConsent: (data: any) => apiService.post('/consent/issue', data),
   updateConsent: (id: string, data: any) => apiService.put(`/consent/${id}`, data),
   deleteConsent: (id: string) => apiService.delete(`/consent/${id}`),
   approveConsent: (id: string) => apiService.post(`/consent/${id}/approve`),
@@ -281,13 +340,13 @@ export const consentAPI = {
 }
 
 export const psiAPI = {
-  getAlignments: (params?: any) => apiService.get('/psi/alignments', { params }),
-  getAlignment: (id: string) => apiService.get(`/psi/alignments/${id}`),
-  createAlignment: (data: any) => apiService.post('/psi/alignments', data),
-  startAlignment: (id: string) => apiService.post(`/psi/alignments/${id}/start`),
-  getAlignmentResult: (id: string) => apiService.get(`/psi/alignments/${id}/result`),
+  getAlignments: (params?: any) => apiService.get('/psi/sessions', { params }),
+  getAlignment: (id: string) => apiService.get(`/psi/sessions/${id}`),
+  createAlignment: (data: any) => apiService.post('/psi/session', data),
+  startAlignment: (id: string) => apiService.post(`/psi/compute`, { session_id: id, party_id: 'frontend' }),
+  getAlignmentResult: (id: string) => apiService.get(`/psi/results/${id}`),
   downloadAlignmentResult: (id: string) =>
-    apiService.download(`/psi/alignments/${id}/download`),
+    apiService.download(`/psi/results/${id}/download`),
 }
 
 export const federatedAPI = {

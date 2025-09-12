@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import {
   Card,
-  Form,
   Input,
   Button,
   Upload,
-  Table,
   Tag,
   Space,
   Progress,
@@ -17,6 +15,8 @@ import {
   Statistic,
   message,
 } from 'antd'
+import { ProTable, PageContainer, ProForm } from '@ant-design/pro-components'
+import type { ProColumns } from '@ant-design/pro-components'
 import {
   UploadOutlined,
   PlayCircleOutlined,
@@ -51,7 +51,7 @@ interface PSIJob {
 }
 
 const PSIPage: React.FC = () => {
-  const [form] = Form.useForm()
+  const [form] = ProForm.useForm()
   const [jobs, setJobs] = useState<PSIJob[]>([])
   const [loading, setLoading] = useState(false)
   const [detailVisible, setDetailVisible] = useState(false)
@@ -224,14 +224,14 @@ const PSIPage: React.FC = () => {
   }
 
   // 表格列配置
-  const columns = [
+  const columns: ProColumns<PSIJob>[] = [
     {
       title: '任务名称',
       dataIndex: 'name',
       key: 'name',
-      render: (text: string, record: PSIJob) => (
+      render: (_, record) => (
         <div>
-          <div style={{ fontWeight: 500 }}>{text}</div>
+          <div style={{ fontWeight: 500 }}>{record.name}</div>
           {record.description && (
             <div style={{ fontSize: 12, color: '#666', marginTop: 4 }}>
               {record.description}
@@ -243,7 +243,7 @@ const PSIPage: React.FC = () => {
     {
       title: '数据集',
       key: 'datasets',
-      render: (record: PSIJob) => (
+      render: (_, record) => (
         <div>
           <div style={{ fontSize: 12 }}>A: {record.datasetA}</div>
           <div style={{ fontSize: 12 }}>B: {record.datasetB}</div>
@@ -255,14 +255,14 @@ const PSIPage: React.FC = () => {
       dataIndex: 'status',
       key: 'status',
       width: 120,
-      render: (status: string, record: PSIJob) => {
-        const config = getStatusConfig(status)
+      render: (_, record) => {
+        const config = getStatusConfig(record.status)
         return (
           <div>
             <Tag icon={config.icon} color={config.color}>
               {config.text}
             </Tag>
-            {status === 'running' && (
+            {record.status === 'running' && (
               <Progress
                 percent={record.progress}
                 size="small"
@@ -278,10 +278,11 @@ const PSIPage: React.FC = () => {
       dataIndex: 'intersectionSize',
       key: 'intersectionSize',
       width: 100,
-      render: (size: number, record: PSIJob) => (
+      align: 'right',
+      render: (_, record) => (
         record.status === 'completed' ? (
           <Text strong style={{ color: '#1890ff' }}>
-            {size.toLocaleString()}
+            {record.intersectionSize.toLocaleString()}
           </Text>
         ) : (
           <Text type="secondary">-</Text>
@@ -293,13 +294,13 @@ const PSIPage: React.FC = () => {
       dataIndex: 'createdAt',
       key: 'createdAt',
       width: 120,
-      render: (time: string) => dayjs(time).format('MM-DD HH:mm'),
+      render: (_, record) => dayjs(record.createdAt).format('MM-DD HH:mm'),
     },
     {
       title: '操作',
       key: 'actions',
       width: 150,
-      render: (record: PSIJob) => (
+      render: (_, record) => (
         <Space>
           <Button
             type="text"
@@ -342,15 +343,15 @@ const PSIPage: React.FC = () => {
   }
 
   return (
-    <div style={{ padding: 24 }}>
-      {/* 页面标题 */}
-      <div style={{ marginBottom: 24 }}>
-        <Title level={2} style={{ margin: 0 }}>
-          <ShareAltOutlined style={{ marginRight: 8 }} />
-          PSI隐私求交
-        </Title>
-        <Text type="secondary">安全多方计算隐私集合求交</Text>
-      </div>
+    <PageContainer
+      title="PSI隐私求交"
+      subTitle="安全多方计算隐私集合求交"
+      extra={[
+        <Button key="refresh" onClick={() => window.location.reload()}>
+          刷新
+        </Button>,
+      ]}
+    >
 
       {/* 统计概览 */}
       <Row gutter={16} style={{ marginBottom: 24 }}>
@@ -390,31 +391,44 @@ const PSIPage: React.FC = () => {
 
       {/* 创建任务表单 */}
       <Card title="创建PSI任务" style={{ marginBottom: 24 }}>
-        <Form
+        <ProForm
           form={form}
           layout="vertical"
           onFinish={handleSubmit}
+          submitter={{
+            render: () => [
+              <Button
+                key="submit"
+                type="primary"
+                htmlType="submit"
+                loading={loading}
+                icon={<PlayCircleOutlined />}
+              >
+                创建任务
+              </Button>
+            ]
+          }}
         >
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item
+              <ProForm.Item
                 name="name"
                 label="任务名称"
                 rules={[{ required: true, message: '请输入任务名称' }]}
               >
                 <Input placeholder="请输入任务名称" />
-              </Form.Item>
+              </ProForm.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="description" label="任务描述">
+              <ProForm.Item name="description" label="任务描述">
                 <Input placeholder="请输入任务描述（可选）" />
-              </Form.Item>
+              </ProForm.Item>
             </Col>
           </Row>
           
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item
+              <ProForm.Item
                 name="datasetA"
                 label="数据集A"
                 rules={[{ required: true, message: '请上传数据集A' }]}
@@ -427,10 +441,10 @@ const PSIPage: React.FC = () => {
                 >
                   <Button icon={<UploadOutlined />}>选择文件</Button>
                 </Upload>
-              </Form.Item>
+              </ProForm.Item>
             </Col>
             <Col span={12}>
-              <Form.Item
+              <ProForm.Item
                 name="datasetB"
                 label="数据集B"
                 rules={[{ required: true, message: '请上传数据集B' }]}
@@ -443,26 +457,15 @@ const PSIPage: React.FC = () => {
                 >
                   <Button icon={<UploadOutlined />}>选择文件</Button>
                 </Upload>
-              </Form.Item>
+              </ProForm.Item>
             </Col>
           </Row>
-          
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={loading}
-              icon={<PlayCircleOutlined />}
-            >
-              创建任务
-            </Button>
-          </Form.Item>
-        </Form>
+        </ProForm>
       </Card>
 
       {/* 任务列表 */}
       <Card title="任务列表">
-        <Table
+        <ProTable<PSIJob>
           dataSource={jobs}
           columns={columns}
           rowKey="id"
@@ -472,6 +475,8 @@ const PSIPage: React.FC = () => {
             showQuickJumper: true,
             showTotal: (total) => `共 ${total} 条记录`,
           }}
+          search={false}
+          toolBarRender={false}
         />
       </Card>
 
@@ -564,7 +569,7 @@ const PSIPage: React.FC = () => {
           </Descriptions>
         )}
       </Modal>
-    </div>
+    </PageContainer>
   )
 }
 

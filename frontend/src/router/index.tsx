@@ -1,9 +1,9 @@
 import React from 'react'
-import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom'
 
 // 页面组件
 import Dashboard from '@/pages/Dashboard'
-import Layout from '@/components/Layout'
+import Layout from '@/components/Layout/index'
 import Consent from '@/pages/Consent'
 import PSI from '@/pages/PSI'
 import Training from '@/pages/Training'
@@ -19,7 +19,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/',
-    element: <Layout />,
+    element: <Layout><Outlet /></Layout>,
     children: [
       {
         path: 'dashboard',

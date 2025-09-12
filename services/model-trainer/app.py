@@ -15,6 +15,7 @@ import json
 import pickle
 import hashlib
 import logging
+import asyncio
 from datetime import datetime
 from typing import Optional, Dict, List, Any, Tuple
 from pathlib import Path
@@ -318,7 +319,7 @@ class SecureBoostTrainer:
         self.models = {}
         self.feature_importance = {}
         
-    async def train(self, task_id: str, participants_data: Dict[str, pd.DataFrame]) -> Tuple[Any, ModelEvaluationResult]:
+    async def train(self, task_id: str, participants_data: Dict[str, pd.DataFrame], target_column: str) -> Tuple[Any, ModelEvaluationResult]:
         """训练SecureBoost模型"""
         start_time = datetime.utcnow()
         communication_cost = 0.0
@@ -328,8 +329,10 @@ class SecureBoostTrainer:
             combined_data = self._combine_vertical_data(participants_data)
             
             # 分割训练和测试集
-            X = combined_data.drop('target', axis=1)
-            y = combined_data['target']
+            # 移除ID列和目标列以外的所有列作为特征
+            feature_cols = [col for col in combined_data.columns if col not in ['id', target_column]]
+            X = combined_data[feature_cols]
+            y = combined_data[target_column]
             X_train, X_test, y_train, y_test = train_test_split(
                 X, y, test_size=0.2, random_state=42, stratify=y
             )
@@ -354,14 +357,22 @@ class SecureBoostTrainer:
                 )
                 communication_cost += len(participants_data) * 10.0  # 模拟通信开销
             else:
+                # 标准XGBoost训练，不使用early_stopping_rounds以避免参数冲突
                 model.fit(
                     X_train, y_train,
                     eval_set=[(X_test, y_test)],
-                    early_stopping_rounds=self.config.early_stopping_rounds,
                     verbose=False
                 )
             
             # 预测和评估
+            logger.info(f"训练特征形状: {X_train.shape}, 测试特征形状: {X_test.shape}")
+            logger.info(f"模型期望特征数: {model.n_features_in_}")
+            
+            # 确保测试数据特征数量与训练数据一致
+            if X_test.shape[1] != X_train.shape[1]:
+                logger.error(f"特征数量不匹配: 训练{X_train.shape[1]} vs 测试{X_test.shape[1]}")
+                raise ValueError(f"特征数量不匹配: 训练{X_train.shape[1]} vs 测试{X_test.shape[1]}")
+            
             y_pred_proba = model.predict_proba(X_test)[:, 1]
             
             # 添加差分隐私噪声
@@ -417,8 +428,11 @@ class SecureBoostTrainer:
             if participant_id != main_participant:
                 # 基于ID合并（实际应该通过PSI对齐）
                 if 'id' in data.columns and 'id' in combined_data.columns:
+                    # 移除目标列（如果存在）
+                    cols_to_drop = ['target', 'is_fraud']
+                    data_to_merge = data.drop(cols_to_drop, axis=1, errors='ignore')
                     combined_data = combined_data.merge(
-                        data.drop('target', axis=1, errors='ignore'),
+                        data_to_merge,
                         on='id',
                         how='inner'
                     )
@@ -452,11 +466,10 @@ class SecureBoostTrainer:
             # 这里简化为模型参数平均
             await asyncio.sleep(0.1)  # 模拟通信延迟
         
-        # 最终训练完整模型
+        # 最终训练完整模型（安全聚合模式下不使用early_stopping_rounds）
         model.fit(
             X_train, y_train,
             eval_set=[(X_test, y_test)],
-            early_stopping_rounds=self.config.early_stopping_rounds,
             verbose=False
         )
         
@@ -589,7 +602,7 @@ async def execute_training(request: TrainingRequest):
         # 根据算法类型选择训练器
         if request.config.algorithm == AlgorithmType.SECURE_BOOST:
             trainer = SecureBoostTrainer(request.config)
-            model, evaluation_result = await trainer.train(request.task_id, participants_data)
+            model, evaluation_result = await trainer.train(request.task_id, participants_data, request.target_column)
         else:
             raise ValueError(f"不支持的算法: {request.config.algorithm}")
         
@@ -599,12 +612,28 @@ async def execute_training(request: TrainingRequest):
             model_data = f.read()
         model_hash = calculate_model_hash(model_data)
         
-        # 生成SHAP解释
-        sample_data = list(participants_data.values())[0]
+        # 生成SHAP解释 - 需要合并所有参与方的特征
+        # 为SHAP解释创建完整的特征数据
+        sample_size = 100  # 用于SHAP解释的样本数量
+        
+        # 生成包含所有特征的样本数据
+        np.random.seed(42)  # 确保可重现性
+        sample_data = pd.DataFrame()
+        
+        # 添加所有特征列
+        for feature in request.feature_columns:
+            sample_data[feature] = np.random.normal(0, 1, sample_size)
+        
+        # 添加ID列（如果需要）
+        sample_data['id'] = range(1, sample_size + 1)
+        
+        logger.info(f"SHAP样本数据形状: {sample_data.shape}")
+        logger.info(f"SHAP样本特征列: {list(sample_data.columns)}")
+        
         explainer = FederatedSHAPExplainer(
             model, request.feature_columns, request.config.privacy_level
         )
-        shap_explanation = await explainer.explain(sample_data)
+        shap_explanation = await explainer.explain(sample_data[request.feature_columns])
         
         # 更新训练任务状态
         async with db_pool.acquire() as conn:
@@ -648,24 +677,33 @@ async def load_participants_data(request: TrainingRequest) -> Dict[str, pd.DataF
     """加载参与方数据（模拟）"""
     participants_data = {}
     
-    for participant_id in request.participants:
+    # 纵向联邦学习：不同参与方拥有不同的特征子集
+    n_samples = 1000  # 统一样本数量
+    total_features = len(request.feature_columns)
+    
+    for i, participant_id in enumerate(request.participants):
         # 模拟生成数据
         np.random.seed(hash(participant_id) % 2**32)
-        n_samples = 10000
-        n_features = len(request.feature_columns) // len(request.participants)
+        
+        # 为每个参与方分配不同的特征子集
+        features_per_party = total_features // len(request.participants)
+        start_idx = i * features_per_party
+        end_idx = start_idx + features_per_party if i < len(request.participants) - 1 else total_features
+        
+        participant_features = request.feature_columns[start_idx:end_idx]
+        n_features = len(participant_features)
         
         # 生成特征数据
         features = np.random.randn(n_samples, n_features)
-        feature_names = request.feature_columns[:n_features]
         
-        data = pd.DataFrame(features, columns=feature_names)
-        data['id'] = range(n_samples)
+        data = pd.DataFrame(features, columns=participant_features)
+        data['id'] = range(n_samples)  # 统一的ID用于对齐
         
         # 第一个参与方有标签
         if participant_id == request.participants[0]:
-            # 生成目标变量
+            # 生成目标变量（基于所有特征的简化版本）
             target = (features.sum(axis=1) + np.random.randn(n_samples) * 0.1) > 0
-            data['target'] = target.astype(int)
+            data[request.target_column] = target.astype(int)
         
         participants_data[participant_id] = data
     

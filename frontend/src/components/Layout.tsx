@@ -159,7 +159,7 @@ const Layout: React.FC = () => {
           zIndex: 100,
         }}
       >
-        <div className="h-16 flex items-center justify-center border-b border-gray-100 bg-gradient-to-r from-blue-600 to-blue-700">
+        <div className="h-16 flex items-center justify-center border-b border-gray-100" style={{ backgroundColor: '#1677ff' }}>
           <div className="text-lg font-bold text-white">
             {collapsed ? 'FRP' : '联邦风控平台'}
           </div>

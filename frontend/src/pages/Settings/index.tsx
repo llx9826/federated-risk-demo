@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import {
   Card,
-  Form,
-  Input,
   Switch,
   Button,
-  Select,
-  InputNumber,
-
   Space,
   Typography,
   Row,
@@ -15,37 +10,41 @@ import {
   Alert,
   Modal,
   Tabs,
-  Upload,
-
   Tag,
   Tooltip,
-  Slider,
-  Radio,
-  Collapse,
-  Table,
   Popconfirm,
+  message,
 } from 'antd'
+import {
+  PageContainer,
+  ProForm,
+  ProFormText,
+  ProFormTextArea,
+  ProFormSelect,
+  ProFormDigit,
+  ProFormSwitch,
+  ProFormSlider,
+  ProFormRadio,
+  ProFormList,
+  ProTable,
+} from '@ant-design/pro-components'
+import type { ProColumns } from '@ant-design/pro-components'
 import {
   SettingOutlined,
   SaveOutlined,
   ReloadOutlined,
   ExportOutlined,
   ImportOutlined,
-
   EyeOutlined,
   EyeInvisibleOutlined,
   QuestionCircleOutlined,
   DeleteOutlined,
   PlusOutlined,
 } from '@ant-design/icons'
-import { useAppStore } from '@store/app'
-import type { UploadProps } from 'antd'
+import { formatDate } from '@/utils'
+import dayjs from 'dayjs'
 
 const { Title, Text } = Typography
-const { Option } = Select
-// const { TabPane } = Tabs // 已弃用，使用items属性替代
-const { Panel } = Collapse
-const { TextArea } = Input
 
 interface SystemSettings {
   // 基础设置
@@ -90,12 +89,6 @@ interface SystemSettings {
   webhookUrl: string
   notificationTypes: string[]
   
-  // 存储设置
-  storageType: 'local' | 's3' | 'hdfs'
-  storageConfig: Record<string, any>
-  backupEnabled: boolean
-  backupSchedule: string
-  
   // 监控设置
   metricsEnabled: boolean
   loggingLevel: 'debug' | 'info' | 'warning' | 'error'
@@ -120,15 +113,14 @@ interface ApiKey {
 }
 
 const SettingsPage: React.FC = () => {
-  const [form] = Form.useForm()
+  const [form] = ProForm.useForm()
+  const [apiKeyForm] = ProForm.useForm()
   const [loading, setLoading] = useState(false)
   const [settings, setSettings] = useState<SystemSettings | null>(null)
   const [activeTab, setActiveTab] = useState('basic')
   const [showApiKey, setShowApiKey] = useState<Record<string, boolean>>({})
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([])
   const [createApiKeyVisible, setCreateApiKeyVisible] = useState(false)
-  const [newApiKeyForm] = Form.useForm()
-  const { addNotification, setTheme } = useAppStore()
 
   // 默认设置
   const defaultSettings: SystemSettings = {
@@ -169,11 +161,6 @@ const SettingsPage: React.FC = () => {
     webhookUrl: '',
     notificationTypes: ['training_complete', 'error_alert', 'security_event'],
     
-    storageType: 'local',
-    storageConfig: {},
-    backupEnabled: true,
-    backupSchedule: '0 2 * * *',
-    
     metricsEnabled: true,
     loggingLevel: 'info',
     healthCheckInterval: 60,
@@ -192,9 +179,9 @@ const SettingsPage: React.FC = () => {
       name: '生产环境API',
       key: 'sk-prod-abc123...xyz789',
       permissions: ['read', 'write', 'admin'],
-      createdAt: '2024-01-15T10:30:00Z',
-      lastUsed: '2024-01-20T14:25:00Z',
-      expiresAt: '2024-12-31T23:59:59Z',
+      createdAt: dayjs().subtract(5, 'day').toISOString(),
+      lastUsed: dayjs().subtract(1, 'hour').toISOString(),
+      expiresAt: dayjs().add(11, 'month').toISOString(),
       status: 'active',
     },
     {
@@ -202,8 +189,8 @@ const SettingsPage: React.FC = () => {
       name: '测试环境API',
       key: 'sk-test-def456...uvw012',
       permissions: ['read', 'write'],
-      createdAt: '2024-01-10T09:15:00Z',
-      lastUsed: '2024-01-19T16:45:00Z',
+      createdAt: dayjs().subtract(10, 'day').toISOString(),
+      lastUsed: dayjs().subtract(2, 'day').toISOString(),
       status: 'active',
     },
     {
@@ -211,7 +198,7 @@ const SettingsPage: React.FC = () => {
       name: '只读API',
       key: 'sk-readonly-ghi789...rst345',
       permissions: ['read'],
-      createdAt: '2024-01-05T11:20:00Z',
+      createdAt: dayjs().subtract(15, 'day').toISOString(),
       status: 'inactive',
     },
   ]
@@ -225,16 +212,11 @@ const SettingsPage: React.FC = () => {
   const loadSettings = async () => {
     setLoading(true)
     try {
-      // 模拟API调用
       await new Promise(resolve => setTimeout(resolve, 1000))
       setSettings(defaultSettings)
       form.setFieldsValue(defaultSettings)
     } catch (error) {
-      addNotification({
-        type: 'error',
-        title: '加载失败',
-        message: '系统设置加载失败，请重试',
-      })
+      message.error('系统设置加载失败，请重试')
     } finally {
       setLoading(false)
     }
@@ -254,26 +236,11 @@ const SettingsPage: React.FC = () => {
   const saveSettings = async (values: SystemSettings) => {
     setLoading(true)
     try {
-      // 模拟API调用
       await new Promise(resolve => setTimeout(resolve, 1500))
       setSettings(values)
-      
-      // 如果主题发生变化，更新全局主题
-      if (values.theme !== settings?.theme) {
-        setTheme(values.theme === 'dark' ? 'dark' : 'light')
-      }
-      
-      addNotification({
-        type: 'success',
-        title: '保存成功',
-        message: '系统设置已保存',
-      })
+      message.success('系统设置已保存')
     } catch (error) {
-      addNotification({
-        type: 'error',
-        title: '保存失败',
-        message: '系统设置保存失败，请重试',
-      })
+      message.error('系统设置保存失败，请重试')
     } finally {
       setLoading(false)
     }
@@ -287,11 +254,7 @@ const SettingsPage: React.FC = () => {
       onOk: () => {
         form.setFieldsValue(defaultSettings)
         setSettings(defaultSettings)
-        addNotification({
-          type: 'success',
-          title: '重置成功',
-          message: '所有设置已重置到默认值',
-        })
+        message.success('所有设置已重置到默认值')
       },
     })
   }
@@ -300,99 +263,58 @@ const SettingsPage: React.FC = () => {
   const exportSettings = () => {
     if (!settings) return
     
-    const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' })
+    const dataStr = JSON.stringify(settings, null, 2)
+    const blob = new Blob([dataStr], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `system_settings_${new Date().toISOString().split('T')[0]}.json`
+    a.download = `settings_${dayjs().format('YYYY-MM-DD_HH-mm-ss')}.json`
     a.click()
     URL.revokeObjectURL(url)
     
-    addNotification({
-      type: 'success',
-      title: '导出成功',
-      message: '系统设置已导出到本地',
-    })
-  }
-
-  // 导入设置
-  const importSettings: UploadProps['customRequest'] = ({ file, onSuccess, onError }) => {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      try {
-        const importedSettings = JSON.parse(e.target?.result as string)
-        form.setFieldsValue(importedSettings)
-        setSettings(importedSettings)
-        onSuccess?.({})
-        addNotification({
-          type: 'success',
-          title: '导入成功',
-          message: '系统设置已导入，请检查并保存',
-        })
-      } catch (error) {
-        onError?.(error as Error)
-        addNotification({
-          type: 'error',
-          title: '导入失败',
-          message: '设置文件格式错误',
-        })
-      }
-    }
-    reader.readAsText(file as File)
+    message.success('设置已导出到本地文件')
   }
 
   // 创建API密钥
-  const createApiKey = async (values: { name: string; permissions: string[]; expiresAt?: string }) => {
+  const createApiKey = async (values: any) => {
     try {
       const newKey: ApiKey = {
         id: Date.now().toString(),
         name: values.name,
-        key: `sk-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        key: `sk-${values.name.toLowerCase().replace(/\s+/g, '-')}-${Math.random().toString(36).substr(2, 9)}...${Math.random().toString(36).substr(2, 6)}`,
         permissions: values.permissions,
-        createdAt: new Date().toISOString(),
-        expiresAt: values.expiresAt,
+        createdAt: dayjs().toISOString(),
         status: 'active',
       }
       
-      setApiKeys(prev => [...prev, newKey])
+      setApiKeys(prev => [newKey, ...prev])
       setCreateApiKeyVisible(false)
-      newApiKeyForm.resetFields()
+      apiKeyForm.resetFields()
       
-      addNotification({
-        type: 'success',
-        title: 'API密钥创建成功',
-        message: '请妥善保存密钥，创建后将无法再次查看完整密钥',
-      })
+      message.success('API密钥创建成功')
     } catch (error) {
-      addNotification({
-        type: 'error',
-        title: '创建失败',
-        message: 'API密钥创建失败，请重试',
-      })
+      message.error('API密钥创建失败')
     }
   }
 
   // 删除API密钥
-  const deleteApiKey = (id: string) => {
-    setApiKeys(prev => prev.filter(key => key.id !== id))
-    addNotification({
-      type: 'success',
-      title: '删除成功',
-      message: 'API密钥已删除',
-    })
+  const deleteApiKey = (keyId: string) => {
+    setApiKeys(prev => prev.filter(key => key.id !== keyId))
+    message.success('API密钥已删除')
   }
 
   // 切换API密钥状态
-  const toggleApiKeyStatus = (id: string) => {
-    setApiKeys(prev => prev.map(key => 
-      key.id === id 
-        ? { ...key, status: key.status === 'active' ? 'inactive' : 'active' }
-        : key
-    ))
+  const toggleApiKeyStatus = (keyId: string) => {
+    setApiKeys(prev => prev.map(key => {
+      if (key.id === keyId) {
+        return { ...key, status: key.status === 'active' ? 'inactive' : 'active' }
+      }
+      return key
+    }))
   }
 
   // API密钥表格列
-  const apiKeyColumns = [
+  const apiKeyColumns: ProColumns<ApiKey>[] = [
     {
       title: '名称',
       dataIndex: 'name',
@@ -402,13 +324,13 @@ const SettingsPage: React.FC = () => {
       title: 'API密钥',
       dataIndex: 'key',
       key: 'key',
-      render: (key: string, record: ApiKey) => (
+      render: (_, record) => (
         <Space>
-          <Text code>
-            {showApiKey[record.id] ? key : key.replace(/(?<=sk-[^-]+-).+(?=.{6})/g, '***')}
+          <Text code style={{ fontFamily: 'monospace' }}>
+            {showApiKey[record.id] ? record.key : record.key.replace(/(?<=.{8}).+(?=.{6}$)/, '***')}
           </Text>
           <Button
-            type="text"
+            type="link"
             size="small"
             icon={showApiKey[record.id] ? <EyeInvisibleOutlined /> : <EyeOutlined />}
             onClick={() => setShowApiKey(prev => ({ ...prev, [record.id]: !prev[record.id] }))}
@@ -420,10 +342,12 @@ const SettingsPage: React.FC = () => {
       title: '权限',
       dataIndex: 'permissions',
       key: 'permissions',
-      render: (permissions: string[]) => (
+      render: (_, record) => (
         <Space>
-          {permissions.map(permission => (
-            <Tag key={permission} color="blue">{permission}</Tag>
+          {record.permissions.map(permission => (
+            <Tag key={permission} color={permission === 'admin' ? 'red' : permission === 'write' ? 'orange' : 'blue'}>
+              {permission}
+            </Tag>
           ))}
         </Space>
       ),
@@ -432,501 +356,734 @@ const SettingsPage: React.FC = () => {
       title: '状态',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string, record: ApiKey) => (
-        <Switch
-          checked={status === 'active'}
-          onChange={() => toggleApiKeyStatus(record.id)}
-          checkedChildren="启用"
-          unCheckedChildren="禁用"
-        />
+      render: (_, record) => (
+        <Tag color={record.status === 'active' ? 'green' : 'default'}>
+          {record.status === 'active' ? '活跃' : '禁用'}
+        </Tag>
       ),
+    },
+    {
+      title: '最后使用',
+      dataIndex: 'lastUsed',
+      key: 'lastUsed',
+      render: (_, record) => record.lastUsed ? formatDate(record.lastUsed) : '-',
     },
     {
       title: '创建时间',
       dataIndex: 'createdAt',
       key: 'createdAt',
-      render: (date: string) => new Date(date).toLocaleString(),
+      render: (_, record) => formatDate(record.createdAt),
     },
     {
       title: '操作',
       key: 'actions',
-      render: (record: ApiKey) => (
-        <Popconfirm
-          title="确定要删除这个API密钥吗？"
-          onConfirm={() => deleteApiKey(record.id)}
-        >
-          <Button type="text" danger icon={<DeleteOutlined />} size="small">
-            删除
+      valueType: 'option',
+      render: (_, record) => (
+        <Space>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => toggleApiKeyStatus(record.id)}
+          >
+            {record.status === 'active' ? '禁用' : '启用'}
           </Button>
-        </Popconfirm>
+          <Popconfirm
+            title="确定要删除这个API密钥吗？"
+            onConfirm={() => deleteApiKey(record.id)}
+          >
+            <Button type="link" size="small" danger>
+              删除
+            </Button>
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ]
+
+  const tabItems = [
+    {
+      key: 'basic',
+      label: '基础设置',
+      children: (
+        <ProForm
+          form={form}
+          layout="vertical"
+          onFinish={saveSettings}
+          submitter={{
+            searchConfig: {
+              submitText: '保存设置',
+              resetText: '重置',
+            },
+            resetButtonProps: {
+              onClick: resetSettings,
+            },
+            submitButtonProps: {
+              loading: loading,
+              icon: <SaveOutlined />,
+            },
+          }}
+        >
+          <Row gutter={16}>
+            <Col span={12}>
+              <ProFormText
+                name="systemName"
+                label="系统名称"
+                placeholder="请输入系统名称"
+                rules={[{ required: true, message: '请输入系统名称' }]}
+              />
+            </Col>
+            <Col span={12}>
+              <ProFormSelect
+                name="language"
+                label="系统语言"
+                options={[
+                  { label: '中文', value: 'zh-CN' },
+                  { label: 'English', value: 'en-US' },
+                ]}
+                rules={[{ required: true, message: '请选择系统语言' }]}
+              />
+            </Col>
+          </Row>
+          
+          <ProFormTextArea
+            name="systemDescription"
+            label="系统描述"
+            placeholder="请输入系统描述"
+            rules={[{ required: true, message: '请输入系统描述' }]}
+          />
+          
+          <Row gutter={16}>
+            <Col span={12}>
+              <ProFormSelect
+                name="timezone"
+                label="时区"
+                options={[
+                  { label: '北京时间 (UTC+8)', value: 'Asia/Shanghai' },
+                  { label: '东京时间 (UTC+9)', value: 'Asia/Tokyo' },
+                  { label: 'UTC时间 (UTC+0)', value: 'UTC' },
+                ]}
+                rules={[{ required: true, message: '请选择时区' }]}
+              />
+            </Col>
+            <Col span={12}>
+              <ProFormRadio.Group
+                name="theme"
+                label="主题模式"
+                options={[
+                  { label: '浅色', value: 'light' },
+                  { label: '深色', value: 'dark' },
+                  { label: '自动', value: 'auto' },
+                ]}
+                rules={[{ required: true, message: '请选择主题模式' }]}
+              />
+            </Col>
+          </Row>
+        </ProForm>
+      ),
+    },
+    {
+      key: 'security',
+      label: '安全设置',
+      children: (
+        <ProForm
+          form={form}
+          layout="vertical"
+          onFinish={saveSettings}
+          submitter={{
+            searchConfig: {
+              submitText: '保存设置',
+              resetText: '重置',
+            },
+            resetButtonProps: {
+              onClick: resetSettings,
+            },
+            submitButtonProps: {
+              loading: loading,
+              icon: <SaveOutlined />,
+            },
+          }}
+        >
+          <Row gutter={16}>
+            <Col span={12}>
+              <ProFormDigit
+                name="sessionTimeout"
+                label="会话超时时间（分钟）"
+                min={5}
+                max={480}
+                rules={[{ required: true, message: '请设置会话超时时间' }]}
+              />
+            </Col>
+            <Col span={12}>
+              <ProFormDigit
+                name="maxLoginAttempts"
+                label="最大登录尝试次数"
+                min={3}
+                max={10}
+                rules={[{ required: true, message: '请设置最大登录尝试次数' }]}
+              />
+            </Col>
+          </Row>
+          
+          <ProFormSwitch
+            name="twoFactorAuth"
+            label="双因素认证"
+            tooltip="启用后用户登录需要额外的验证步骤"
+          />
+          
+          <ProFormList
+            name="ipWhitelist"
+            label="IP白名单"
+            tooltip="只允许白名单中的IP地址访问系统"
+            creatorButtonProps={{
+              creatorButtonText: '添加IP地址',
+            }}
+          >
+            <ProFormText
+              name="ip"
+              placeholder="请输入IP地址，如：192.168.1.1"
+              rules={[
+                { required: true, message: '请输入IP地址' },
+                { pattern: /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/, message: '请输入有效的IP地址' },
+              ]}
+            />
+          </ProFormList>
+          
+          <Card title="密码策略" size="small" style={{ marginTop: 16 }}>
+            <Row gutter={16}>
+              <Col span={12}>
+                <ProFormDigit
+                  name={['passwordPolicy', 'minLength']}
+                  label="最小长度"
+                  min={6}
+                  max={32}
+                  rules={[{ required: true, message: '请设置密码最小长度' }]}
+                />
+              </Col>
+              <Col span={12}>
+                <ProFormDigit
+                  name={['passwordPolicy', 'expirationDays']}
+                  label="密码有效期（天）"
+                  min={30}
+                  max={365}
+                  rules={[{ required: true, message: '请设置密码有效期' }]}
+                />
+              </Col>
+            </Row>
+            
+            <Row gutter={16}>
+              <Col span={6}>
+                <ProFormSwitch
+                  name={['passwordPolicy', 'requireUppercase']}
+                  label="需要大写字母"
+                />
+              </Col>
+              <Col span={6}>
+                <ProFormSwitch
+                  name={['passwordPolicy', 'requireLowercase']}
+                  label="需要小写字母"
+                />
+              </Col>
+              <Col span={6}>
+                <ProFormSwitch
+                  name={['passwordPolicy', 'requireNumbers']}
+                  label="需要数字"
+                />
+              </Col>
+              <Col span={6}>
+                <ProFormSwitch
+                  name={['passwordPolicy', 'requireSpecialChars']}
+                  label="需要特殊字符"
+                />
+              </Col>
+            </Row>
+          </Card>
+        </ProForm>
+      ),
+    },
+    {
+      key: 'privacy',
+      label: '隐私设置',
+      children: (
+        <ProForm
+          form={form}
+          layout="vertical"
+          onFinish={saveSettings}
+          submitter={{
+            searchConfig: {
+              submitText: '保存设置',
+              resetText: '重置',
+            },
+            resetButtonProps: {
+              onClick: resetSettings,
+            },
+            submitButtonProps: {
+              loading: loading,
+              icon: <SaveOutlined />,
+            },
+          }}
+        >
+          <Alert
+            message="隐私保护设置"
+            description="这些设置影响联邦学习中的隐私保护强度，请根据实际需求谨慎调整。"
+            type="info"
+            showIcon
+            style={{ marginBottom: 24 }}
+          />
+          
+          <Row gutter={16}>
+            <Col span={12}>
+              <ProFormSlider
+                name="privacyBudget"
+                label="隐私预算 (ε)"
+                min={0.1}
+                max={10}
+                step={0.1}
+                marks={{
+                  0.1: '0.1',
+                  1: '1.0',
+                  5: '5.0',
+                  10: '10.0',
+                }}
+                tooltip="较小的值提供更强的隐私保护，但可能影响模型性能"
+              />
+            </Col>
+            <Col span={12}>
+              <ProFormSlider
+                name="noiseMultiplier"
+                label="噪声倍数"
+                min={0.1}
+                max={5}
+                step={0.1}
+                marks={{
+                  0.1: '0.1',
+                  1: '1.0',
+                  3: '3.0',
+                  5: '5.0',
+                }}
+                tooltip="控制添加到梯度中的噪声量"
+              />
+            </Col>
+          </Row>
+          
+          <Row gutter={16}>
+            <Col span={12}>
+              <ProFormSlider
+                name="maxGradNorm"
+                label="最大梯度范数"
+                min={0.1}
+                max={10}
+                step={0.1}
+                marks={{
+                  0.1: '0.1',
+                  1: '1.0',
+                  5: '5.0',
+                  10: '10.0',
+                }}
+                tooltip="梯度裁剪的阈值"
+              />
+            </Col>
+            <Col span={12}>
+              <ProFormSelect
+                name="anonymizationLevel"
+                label="匿名化级别"
+                options={[
+                  { label: '低', value: 'low' },
+                  { label: '中', value: 'medium' },
+                  { label: '高', value: 'high' },
+                ]}
+                tooltip="数据匿名化的强度级别"
+              />
+            </Col>
+          </Row>
+          
+          <Row gutter={16}>
+            <Col span={12}>
+              <ProFormDigit
+                name="dataRetentionDays"
+                label="数据保留天数"
+                min={30}
+                max={3650}
+                rules={[{ required: true, message: '请设置数据保留天数' }]}
+                tooltip="系统中数据的最长保留时间"
+              />
+            </Col>
+            <Col span={12}>
+              <ProFormSwitch
+                name="enableAuditLog"
+                label="启用审计日志"
+                tooltip="记录所有系统操作的详细日志"
+              />
+            </Col>
+          </Row>
+        </ProForm>
+      ),
+    },
+    {
+      key: 'federation',
+      label: '联邦学习',
+      children: (
+        <ProForm
+          form={form}
+          layout="vertical"
+          onFinish={saveSettings}
+          submitter={{
+            searchConfig: {
+              submitText: '保存设置',
+              resetText: '重置',
+            },
+            resetButtonProps: {
+              onClick: resetSettings,
+            },
+            submitButtonProps: {
+              loading: loading,
+              icon: <SaveOutlined />,
+            },
+          }}
+        >
+          <Row gutter={16}>
+            <Col span={12}>
+              <ProFormDigit
+                name="maxParticipants"
+                label="最大参与方数量"
+                min={2}
+                max={100}
+                rules={[{ required: true, message: '请设置最大参与方数量' }]}
+              />
+            </Col>
+            <Col span={12}>
+              <ProFormDigit
+                name="minParticipants"
+                label="最小参与方数量"
+                min={2}
+                max={10}
+                rules={[{ required: true, message: '请设置最小参与方数量' }]}
+              />
+            </Col>
+          </Row>
+          
+          <Row gutter={16}>
+            <Col span={12}>
+              <ProFormDigit
+                name="roundTimeout"
+                label="训练轮超时时间（秒）"
+                min={60}
+                max={3600}
+                rules={[{ required: true, message: '请设置训练轮超时时间' }]}
+              />
+            </Col>
+            <Col span={12}>
+              <ProFormSelect
+                name="aggregationMethod"
+                label="聚合算法"
+                options={[
+                  { label: 'FedAvg', value: 'fedavg' },
+                  { label: 'FedProx', value: 'fedprox' },
+                  { label: 'SCAFFOLD', value: 'scaffold' },
+                ]}
+                rules={[{ required: true, message: '请选择聚合算法' }]}
+              />
+            </Col>
+          </Row>
+          
+          <ProFormSlider
+            name="clientSamplingRate"
+            label="客户端采样率"
+            min={0.1}
+            max={1}
+            step={0.1}
+            marks={{
+              0.1: '10%',
+              0.5: '50%',
+              1: '100%',
+            }}
+            tooltip="每轮训练中参与的客户端比例"
+          />
+        </ProForm>
+      ),
+    },
+    {
+      key: 'notifications',
+      label: '通知设置',
+      children: (
+        <ProForm
+          form={form}
+          layout="vertical"
+          onFinish={saveSettings}
+          submitter={{
+            searchConfig: {
+              submitText: '保存设置',
+              resetText: '重置',
+            },
+            resetButtonProps: {
+              onClick: resetSettings,
+            },
+            submitButtonProps: {
+              loading: loading,
+              icon: <SaveOutlined />,
+            },
+          }}
+        >
+          <Row gutter={16}>
+            <Col span={12}>
+              <ProFormSwitch
+                name="emailNotifications"
+                label="邮件通知"
+                tooltip="通过邮件接收系统通知"
+              />
+            </Col>
+            <Col span={12}>
+              <ProFormSwitch
+                name="smsNotifications"
+                label="短信通知"
+                tooltip="通过短信接收重要通知"
+              />
+            </Col>
+          </Row>
+          
+          <ProFormText
+            name="webhookUrl"
+            label="Webhook URL"
+            placeholder="https://your-webhook-url.com/notify"
+            tooltip="系统事件将发送到此URL"
+          />
+          
+          <ProFormSelect
+            name="notificationTypes"
+            label="通知类型"
+            mode="multiple"
+            options={[
+              { label: '训练完成', value: 'training_complete' },
+              { label: '错误警报', value: 'error_alert' },
+              { label: '安全事件', value: 'security_event' },
+              { label: '系统维护', value: 'system_maintenance' },
+              { label: '性能警告', value: 'performance_warning' },
+            ]}
+            tooltip="选择需要接收的通知类型"
+          />
+        </ProForm>
+      ),
+    },
+    {
+      key: 'monitoring',
+      label: '监控设置',
+      children: (
+        <ProForm
+          form={form}
+          layout="vertical"
+          onFinish={saveSettings}
+          submitter={{
+            searchConfig: {
+              submitText: '保存设置',
+              resetText: '重置',
+            },
+            resetButtonProps: {
+              onClick: resetSettings,
+            },
+            submitButtonProps: {
+              loading: loading,
+              icon: <SaveOutlined />,
+            },
+          }}
+        >
+          <Row gutter={16}>
+            <Col span={12}>
+              <ProFormSwitch
+                name="metricsEnabled"
+                label="启用指标收集"
+                tooltip="收集系统性能和使用指标"
+              />
+            </Col>
+            <Col span={12}>
+              <ProFormSelect
+                name="loggingLevel"
+                label="日志级别"
+                options={[
+                  { label: 'Debug', value: 'debug' },
+                  { label: 'Info', value: 'info' },
+                  { label: 'Warning', value: 'warning' },
+                  { label: 'Error', value: 'error' },
+                ]}
+                rules={[{ required: true, message: '请选择日志级别' }]}
+              />
+            </Col>
+          </Row>
+          
+          <ProFormDigit
+            name="healthCheckInterval"
+            label="健康检查间隔（秒）"
+            min={30}
+            max={300}
+            rules={[{ required: true, message: '请设置健康检查间隔' }]}
+          />
+          
+          <Card title="告警阈值" size="small" style={{ marginTop: 16 }}>
+            <Row gutter={16}>
+              <Col span={12}>
+                <ProFormSlider
+                  name={['alertThresholds', 'cpuUsage']}
+                  label="CPU使用率 (%)"
+                  min={50}
+                  max={100}
+                  marks={{
+                    50: '50%',
+                    70: '70%',
+                    90: '90%',
+                    100: '100%',
+                  }}
+                />
+              </Col>
+              <Col span={12}>
+                <ProFormSlider
+                  name={['alertThresholds', 'memoryUsage']}
+                  label="内存使用率 (%)"
+                  min={50}
+                  max={100}
+                  marks={{
+                    50: '50%',
+                    70: '70%',
+                    90: '90%',
+                    100: '100%',
+                  }}
+                />
+              </Col>
+            </Row>
+            
+            <Row gutter={16}>
+              <Col span={12}>
+                <ProFormSlider
+                  name={['alertThresholds', 'diskUsage']}
+                  label="磁盘使用率 (%)"
+                  min={50}
+                  max={100}
+                  marks={{
+                    50: '50%',
+                    70: '70%',
+                    90: '90%',
+                    100: '100%',
+                  }}
+                />
+              </Col>
+              <Col span={12}>
+                <ProFormSlider
+                  name={['alertThresholds', 'errorRate']}
+                  label="错误率 (%)"
+                  min={1}
+                  max={20}
+                  marks={{
+                    1: '1%',
+                    5: '5%',
+                    10: '10%',
+                    20: '20%',
+                  }}
+                />
+              </Col>
+            </Row>
+          </Card>
+        </ProForm>
+      ),
+    },
+    {
+      key: 'api',
+      label: 'API管理',
+      children: (
+        <div>
+          <ProTable<ApiKey>
+            columns={apiKeyColumns}
+            dataSource={apiKeys}
+            rowKey="id"
+            search={false}
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: true,
+            }}
+            toolBarRender={() => [
+              <Button
+                key="add"
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() => setCreateApiKeyVisible(true)}
+              >
+                创建API密钥
+              </Button>,
+            ]}
+          />
+          
+          <Modal
+            title="创建API密钥"
+            open={createApiKeyVisible}
+            onCancel={() => setCreateApiKeyVisible(false)}
+            footer={null}
+            width={600}
+          >
+            <ProForm
+              form={apiKeyForm}
+              layout="vertical"
+              onFinish={createApiKey}
+              submitter={{
+                searchConfig: {
+                  submitText: '创建密钥',
+                  resetText: '取消',
+                },
+                resetButtonProps: {
+                  onClick: () => setCreateApiKeyVisible(false),
+                },
+              }}
+            >
+              <ProFormText
+                name="name"
+                label="密钥名称"
+                placeholder="请输入API密钥名称"
+                rules={[{ required: true, message: '请输入密钥名称' }]}
+              />
+              
+              <ProFormSelect
+                name="permissions"
+                label="权限"
+                mode="multiple"
+                options={[
+                  { label: '读取', value: 'read' },
+                  { label: '写入', value: 'write' },
+                  { label: '管理员', value: 'admin' },
+                ]}
+                rules={[{ required: true, message: '请选择权限' }]}
+                tooltip="管理员权限包含所有操作权限"
+              />
+            </ProForm>
+          </Modal>
+        </div>
       ),
     },
   ]
 
   return (
-    <div style={{ padding: 24 }}>
-      {/* 页面标题 */}
-      <div style={{ marginBottom: 24 }}>
-        <Title level={2} style={{ margin: 0 }}>
-          <SettingOutlined style={{ marginRight: 8 }} />
-          系统设置
-        </Title>
-        <Text type="secondary">配置系统参数和安全策略</Text>
-      </div>
-
-      {/* 操作按钮 */}
-      <Card style={{ marginBottom: 16 }}>
-        <Space>
-          <Button
-            type="primary"
-            icon={<SaveOutlined />}
-            onClick={() => form.submit()}
-            loading={loading}
-          >
-            保存设置
-          </Button>
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={resetSettings}
-          >
-            重置默认
-          </Button>
-          <Button
-            icon={<ExportOutlined />}
-            onClick={exportSettings}
-          >
-            导出设置
-          </Button>
-          <Upload
-            accept=".json"
-            showUploadList={false}
-            customRequest={importSettings}
-          >
-            <Button icon={<ImportOutlined />}>
-              导入设置
-            </Button>
-          </Upload>
-        </Space>
-      </Card>
-
-      {/* 设置表单 */}
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={saveSettings}
-        initialValues={defaultSettings}
-      >
-        <Tabs 
-          activeKey={activeTab} 
-          onChange={setActiveTab}
-          items={[
-            {
-              key: 'basic',
-              label: '基础设置',
-              children: (
-            <Card>
-              <Row gutter={16}>
-                <Col span={12}>
-                  <Form.Item
-                    label="系统名称"
-                    name="systemName"
-                    rules={[{ required: true, message: '请输入系统名称' }]}
-                  >
-                    <Input placeholder="请输入系统名称" />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    label="时区"
-                    name="timezone"
-                    rules={[{ required: true, message: '请选择时区' }]}
-                  >
-                    <Select placeholder="请选择时区">
-                      <Option value="Asia/Shanghai">Asia/Shanghai (UTC+8)</Option>
-                      <Option value="UTC">UTC (UTC+0)</Option>
-                      <Option value="America/New_York">America/New_York (UTC-5)</Option>
-                      <Option value="Europe/London">Europe/London (UTC+0)</Option>
-                    </Select>
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    label="语言"
-                    name="language"
-                    rules={[{ required: true, message: '请选择语言' }]}
-                  >
-                    <Select placeholder="请选择语言">
-                      <Option value="zh-CN">简体中文</Option>
-                      <Option value="en-US">English</Option>
-                      <Option value="ja-JP">日本語</Option>
-                    </Select>
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    label="主题"
-                    name="theme"
-                    rules={[{ required: true, message: '请选择主题' }]}
-                  >
-                    <Radio.Group>
-                      <Radio value="light">浅色</Radio>
-                      <Radio value="dark">深色</Radio>
-                      <Radio value="auto">自动</Radio>
-                    </Radio.Group>
-                  </Form.Item>
-                </Col>
-                <Col span={24}>
-                  <Form.Item
-                    label="系统描述"
-                    name="systemDescription"
-                  >
-                    <TextArea rows={3} placeholder="请输入系统描述" />
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Card>
-              )
-            },
-            {
-              key: 'security',
-              label: '安全设置',
-              children: (
-            <Card>
-              <Collapse defaultActiveKey={['session', 'password']}>
-                <Panel header="会话管理" key="session">
-                  <Row gutter={16}>
-                    <Col span={12}>
-                      <Form.Item
-                        label="会话超时时间（分钟）"
-                        name="sessionTimeout"
-                        rules={[{ required: true, message: '请输入会话超时时间' }]}
-                      >
-                        <InputNumber min={5} max={480} style={{ width: '100%' }} />
-                      </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                      <Form.Item
-                        label="最大登录尝试次数"
-                        name="maxLoginAttempts"
-                        rules={[{ required: true, message: '请输入最大登录尝试次数' }]}
-                      >
-                        <InputNumber min={3} max={10} style={{ width: '100%' }} />
-                      </Form.Item>
-                    </Col>
-                    <Col span={24}>
-                      <Form.Item
-                        label="启用双因子认证"
-                        name="twoFactorAuth"
-                        valuePropName="checked"
-                      >
-                        <Switch checkedChildren="启用" unCheckedChildren="禁用" />
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                </Panel>
-                
-                <Panel header="密码策略" key="password">
-                  <Row gutter={16}>
-                    <Col span={12}>
-                      <Form.Item
-                        label="最小长度"
-                        name={['passwordPolicy', 'minLength']}
-                        rules={[{ required: true, message: '请输入最小长度' }]}
-                      >
-                        <InputNumber min={6} max={32} style={{ width: '100%' }} />
-                      </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                      <Form.Item
-                        label="密码有效期（天）"
-                        name={['passwordPolicy', 'expirationDays']}
-                        rules={[{ required: true, message: '请输入密码有效期' }]}
-                      >
-                        <InputNumber min={30} max={365} style={{ width: '100%' }} />
-                      </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                      <Form.Item
-                        label="要求大写字母"
-                        name={['passwordPolicy', 'requireUppercase']}
-                        valuePropName="checked"
-                      >
-                        <Switch checkedChildren="是" unCheckedChildren="否" />
-                      </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                      <Form.Item
-                        label="要求小写字母"
-                        name={['passwordPolicy', 'requireLowercase']}
-                        valuePropName="checked"
-                      >
-                        <Switch checkedChildren="是" unCheckedChildren="否" />
-                      </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                      <Form.Item
-                        label="要求数字"
-                        name={['passwordPolicy', 'requireNumbers']}
-                        valuePropName="checked"
-                      >
-                        <Switch checkedChildren="是" unCheckedChildren="否" />
-                      </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                      <Form.Item
-                        label="要求特殊字符"
-                        name={['passwordPolicy', 'requireSpecialChars']}
-                        valuePropName="checked"
-                      >
-                        <Switch checkedChildren="是" unCheckedChildren="否" />
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                </Panel>
-              </Collapse>
-            </Card>
-              )
-            },
-            {
-              key: 'privacy',
-              label: '隐私设置',
-              children: (
-            <Card>
-              <Alert
-                message="隐私保护配置"
-                description="这些设置影响差分隐私和数据保护的强度，请谨慎调整。"
-                type="info"
-                showIcon
-                style={{ marginBottom: 16 }}
-              />
-              
-              <Row gutter={16}>
-                <Col span={12}>
-                  <Form.Item
-                    label={
-                      <Space>
-                        隐私预算 (ε)
-                        <Tooltip title="较小的值提供更强的隐私保护，但可能影响模型性能">
-                          <QuestionCircleOutlined />
-                        </Tooltip>
-                      </Space>
-                    }
-                    name="privacyBudget"
-                    rules={[{ required: true, message: '请输入隐私预算' }]}
-                  >
-                    <Slider
-                      min={0.1}
-                      max={10.0}
-                      step={0.1}
-                      marks={{
-                        0.1: '0.1',
-                        1.0: '1.0',
-                        5.0: '5.0',
-                        10.0: '10.0',
-                      }}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    label={
-                      <Space>
-                        噪声倍数
-                        <Tooltip title="控制添加到梯度的噪声量">
-                          <QuestionCircleOutlined />
-                        </Tooltip>
-                      </Space>
-                    }
-                    name="noiseMultiplier"
-                    rules={[{ required: true, message: '请输入噪声倍数' }]}
-                  >
-                    <InputNumber min={0.1} max={5.0} step={0.1} style={{ width: '100%' }} />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    label="最大梯度范数"
-                    name="maxGradNorm"
-                    rules={[{ required: true, message: '请输入最大梯度范数' }]}
-                  >
-                    <InputNumber min={0.1} max={10.0} step={0.1} style={{ width: '100%' }} />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    label="匿名化级别"
-                    name="anonymizationLevel"
-                    rules={[{ required: true, message: '请选择匿名化级别' }]}
-                  >
-                    <Select placeholder="请选择匿名化级别">
-                      <Option value="low">低</Option>
-                      <Option value="medium">中</Option>
-                      <Option value="high">高</Option>
-                    </Select>
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    label="数据保留天数"
-                    name="dataRetentionDays"
-                    rules={[{ required: true, message: '请输入数据保留天数' }]}
-                  >
-                    <InputNumber min={30} max={3650} style={{ width: '100%' }} />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    label="启用审计日志"
-                    name="enableAuditLog"
-                    valuePropName="checked"
-                  >
-                    <Switch checkedChildren="启用" unCheckedChildren="禁用" />
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Card>
-              )
-            },
-            {
-              key: 'federated',
-              label: '联邦学习',
-              children: (
-            <Card>
-              <Row gutter={16}>
-                <Col span={12}>
-                  <Form.Item
-                    label="最大参与方数量"
-                    name="maxParticipants"
-                    rules={[{ required: true, message: '请输入最大参与方数量' }]}
-                  >
-                    <InputNumber min={2} max={100} style={{ width: '100%' }} />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    label="最小参与方数量"
-                    name="minParticipants"
-                    rules={[{ required: true, message: '请输入最小参与方数量' }]}
-                  >
-                    <InputNumber min={2} max={10} style={{ width: '100%' }} />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    label="轮次超时时间（秒）"
-                    name="roundTimeout"
-                    rules={[{ required: true, message: '请输入轮次超时时间' }]}
-                  >
-                    <InputNumber min={60} max={3600} style={{ width: '100%' }} />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    label="聚合方法"
-                    name="aggregationMethod"
-                    rules={[{ required: true, message: '请选择聚合方法' }]}
-                  >
-                    <Select placeholder="请选择聚合方法">
-                      <Option value="fedavg">FedAvg</Option>
-                      <Option value="fedprox">FedProx</Option>
-                      <Option value="scaffold">SCAFFOLD</Option>
-                    </Select>
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    label="客户端采样率"
-                    name="clientSamplingRate"
-                    rules={[{ required: true, message: '请输入客户端采样率' }]}
-                  >
-                    <Slider
-                      min={0.1}
-                      max={1.0}
-                      step={0.1}
-                      marks={{
-                        0.1: '10%',
-                        0.5: '50%',
-                        1.0: '100%',
-                      }}
-                    />
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Card>
-              )
-            },
-            {
-              key: 'apikeys',
-              label: 'API密钥',
-              children: (
-            <Card
-              title="API密钥管理"
-              extra={
-                <Button
-                  type="primary"
-                  icon={<PlusOutlined />}
-                  onClick={() => setCreateApiKeyVisible(true)}
-                >
-                  创建密钥
-                </Button>
-              }
-            >
-              <Table
-                dataSource={apiKeys}
-                columns={apiKeyColumns}
-                rowKey="id"
-                pagination={false}
-                size="small"
-              />
-            </Card>
-              )
-            }
-          ]}
-        />
-      </Form>
-
-      {/* 创建API密钥弹窗 */}
-      <Modal
-        title="创建API密钥"
-        open={createApiKeyVisible}
-        onCancel={() => setCreateApiKeyVisible(false)}
-        onOk={() => newApiKeyForm.submit()}
-        width={600}
-      >
-        <Form
-          form={newApiKeyForm}
-          layout="vertical"
-          onFinish={createApiKey}
+    <PageContainer
+      title="系统设置"
+      subTitle="配置系统参数和安全策略"
+      extra={[
+        <Button
+          key="export"
+          icon={<ExportOutlined />}
+          onClick={exportSettings}
         >
-          <Form.Item
-            label="密钥名称"
-            name="name"
-            rules={[{ required: true, message: '请输入密钥名称' }]}
-          >
-            <Input placeholder="请输入密钥名称" />
-          </Form.Item>
-          
-          <Form.Item
-            label="权限"
-            name="permissions"
-            rules={[{ required: true, message: '请选择权限' }]}
-          >
-            <Select mode="multiple" placeholder="请选择权限">
-              <Option value="read">读取</Option>
-              <Option value="write">写入</Option>
-              <Option value="admin">管理</Option>
-            </Select>
-          </Form.Item>
-          
-          <Form.Item
-            label="过期时间（可选）"
-            name="expiresAt"
-          >
-            <Input type="datetime-local" />
-          </Form.Item>
-        </Form>
-      </Modal>
-    </div>
+          导出设置
+        </Button>,
+        <Button
+          key="reset"
+          icon={<ReloadOutlined />}
+          onClick={resetSettings}
+        >
+          重置设置
+        </Button>,
+      ]}
+    >
+      <Tabs
+        activeKey={activeTab}
+        onChange={setActiveTab}
+        items={tabItems}
+        tabPosition="left"
+        style={{ minHeight: 600 }}
+      />
+    </PageContainer>
   )
 }
 

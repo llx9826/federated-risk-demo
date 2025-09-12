@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
-import { Card, Table, Button, Space, Tag, Modal, Form, Input, Select, App } from 'antd'
+import { Button, Space, Tag, Modal, Input, Select, App } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
+import { ProTable, PageContainer, ProForm } from '@ant-design/pro-components'
+import type { ProColumns } from '@ant-design/pro-components'
 
 interface ConsentRecord {
   id: string
@@ -16,9 +18,9 @@ const ConsentPage: React.FC = () => {
   const [consents] = useState<ConsentRecord[]>([])
   const [loading] = useState(false)
   const [modalVisible, setModalVisible] = useState(false)
-  const [form] = Form.useForm()
+  const [form] = ProForm.useForm()
 
-  const columns = [
+  const columns: ProColumns<ConsentRecord>[] = [
     {
       title: '参与方ID',
       dataIndex: 'partyId',
@@ -38,9 +40,9 @@ const ConsentPage: React.FC = () => {
       title: '状态',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => {
-        const color = status === 'active' ? 'green' : status === 'revoked' ? 'red' : 'orange'
-        return <Tag color={color}>{status}</Tag>
+      render: (_, record) => {
+        const color = record.status === 'active' ? 'green' : record.status === 'revoked' ? 'red' : 'orange'
+        return <Tag color={color}>{record.status}</Tag>
       },
     },
     {
@@ -86,27 +88,27 @@ const ConsentPage: React.FC = () => {
   }
 
   return (
-    <div style={{ padding: 24 }}>
-      <Card 
-        title="数据使用同意管理" 
-        extra={
-          <Button type="primary" icon={<PlusOutlined />} onClick={handleAddConsent}>
-            新增同意
-          </Button>
-        }
-      >
-        <Table
-          columns={columns}
-          dataSource={consents}
-          loading={loading}
-          rowKey="id"
-          pagination={{
-            pageSize: 10,
-            showSizeChanger: true,
-            showQuickJumper: true,
-          }}
-        />
-      </Card>
+    <PageContainer
+      title="数据使用同意管理"
+      extra={[
+        <Button key="add" type="primary" icon={<PlusOutlined />} onClick={handleAddConsent}>
+          新增同意
+        </Button>,
+      ]}
+    >
+      <ProTable<ConsentRecord>
+        columns={columns}
+        dataSource={consents}
+        loading={loading}
+        rowKey="id"
+        pagination={{
+          pageSize: 10,
+          showSizeChanger: true,
+          showQuickJumper: true,
+        }}
+        search={false}
+        toolBarRender={false}
+      />
 
       <Modal
         title="新增数据使用同意"
@@ -115,20 +117,21 @@ const ConsentPage: React.FC = () => {
         onOk={() => form.submit()}
         width={600}
       >
-        <Form
+        <ProForm
           form={form}
           layout="vertical"
           onFinish={handleSubmit}
+          submitter={false}
         >
-          <Form.Item
+          <ProForm.Item
             name="partyId"
             label="参与方ID"
             rules={[{ required: true, message: '请输入参与方ID' }]}
           >
             <Input placeholder="请输入参与方ID" />
-          </Form.Item>
+          </ProForm.Item>
           
-          <Form.Item
+          <ProForm.Item
             name="dataType"
             label="数据类型"
             rules={[{ required: true, message: '请选择数据类型' }]}
@@ -138,18 +141,18 @@ const ConsentPage: React.FC = () => {
               <Select.Option value="transaction">交易数据</Select.Option>
               <Select.Option value="behavior">行为数据</Select.Option>
             </Select>
-          </Form.Item>
+          </ProForm.Item>
           
-          <Form.Item
+          <ProForm.Item
             name="purpose"
             label="使用目的"
             rules={[{ required: true, message: '请输入使用目的' }]}
           >
             <Input.TextArea placeholder="请输入使用目的" rows={3} />
-          </Form.Item>
-        </Form>
+          </ProForm.Item>
+        </ProForm>
       </Modal>
-    </div>
+    </PageContainer>
   )
 }
 

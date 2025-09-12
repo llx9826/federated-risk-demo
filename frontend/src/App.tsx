@@ -4,6 +4,8 @@ import { Spin, App as AntdApp } from 'antd'
 import { useAppStore } from '@store/app'
 import { messageService } from '@/utils/messageService'
 import { router } from '@/router'
+import AppThemeProvider from '@/components/AppThemeProvider'
+import '@/styles/global.less'
 
 function AppContent() {
   const [loading, setLoading] = useState(true)
@@ -74,9 +76,11 @@ function AppContent() {
 
 function App() {
   return (
-    <AntdApp>
-      <AppContent />
-    </AntdApp>
+    <AppThemeProvider>
+      <AntdApp>
+        <AppContent />
+      </AntdApp>
+    </AppThemeProvider>
   )
 }
 

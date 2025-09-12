@@ -1,0 +1,120 @@
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  text-align: center;
+  background: transparent;
+  
+  &.empty-state-small {
+    min-height: 120px;
+    
+    .ant-empty {
+      margin: 0;
+      
+      .ant-empty-image {
+        height: 40px;
+        margin-bottom: 8px;
+      }
+    }
+  }
+  
+  &.empty-state-large {
+    min-height: 300px;
+    
+    .ant-empty {
+      margin: 0;
+      
+      .ant-empty-image {
+        height: 80px;
+        margin-bottom: 24px;
+      }
+    }
+  }
+  
+  .ant-empty {
+    margin: 0;
+    
+    .ant-empty-image {
+      height: 60px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      svg {
+        transition: all 0.3s ease;
+      }
+    }
+    
+    .ant-empty-description {
+      margin-bottom: 16px;
+      
+      .ant-space {
+        width: 100%;
+      }
+    }
+    
+    .ant-btn {
+      transition: all 0.3s ease;
+      
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+  
+  // 主题适配
+  .ant-empty-normal {
+    color: var(--ant-color-text-tertiary);
+  }
+  
+  // 响应式设计
+  @media (max-width: 768px) {
+    padding: 24px 16px !important;
+    
+    &.empty-state-large {
+      min-height: 200px;
+      
+      .ant-empty-image {
+        height: 60px !important;
+      }
+    }
+    
+    .ant-space {
+      .ant-btn {
+        width: 100%;
+        margin-bottom: 8px;
+      }
+    }
+  }
+  
+  // 动画效果
+  .ant-empty-image svg {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+  
+  // 加载状态
+  .ant-btn-loading {
+    pointer-events: none;
+  }
+}
+
+// 暗色主题适配
+[data-theme='dark'] {
+  .empty-state {
+    .ant-empty-normal {
+      color: rgba(255, 255, 255, 0.45);
+    }
+  }
+}

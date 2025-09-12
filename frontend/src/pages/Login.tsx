@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { Form, Input, Button, Card, Typography, Space, Alert } from 'antd'
+import { Input, Button, Card, Typography, Space, Alert } from 'antd'
+import { ProForm } from '@ant-design/pro-components'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/auth'
@@ -14,7 +15,7 @@ interface LoginForm {
 }
 
 const Login: React.FC = () => {
-  const [form] = Form.useForm<LoginForm>()
+  const [form] = ProForm.useForm<LoginForm>()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string>('')
   
@@ -47,7 +48,7 @@ const Login: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f5f5f5' }}>
       <div className="w-full max-w-md">
         <Card className="shadow-lg border-0">
           <div className="text-center mb-8">
@@ -70,14 +71,26 @@ const Login: React.FC = () => {
             />
           )}
           
-          <Form
+          <ProForm
             form={form}
             name="login"
             onFinish={handleSubmit}
             layout="vertical"
             size="large"
+            submitter={{
+              render: () => (
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={loading}
+                  className="w-full h-12 text-lg"
+                >
+                  {loading ? '登录中...' : '登录'}
+                </Button>
+              ),
+            }}
           >
-            <Form.Item
+            <ProForm.Item
               name="username"
               label="用户名"
               rules={[
@@ -90,9 +103,9 @@ const Login: React.FC = () => {
                 placeholder="请输入用户名"
                 autoComplete="username"
               />
-            </Form.Item>
+            </ProForm.Item>
             
-            <Form.Item
+            <ProForm.Item
               name="password"
               label="密码"
               rules={[
@@ -105,19 +118,8 @@ const Login: React.FC = () => {
                 placeholder="请输入密码"
                 autoComplete="current-password"
               />
-            </Form.Item>
-            
-            <Form.Item className="mb-6">
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={loading}
-                className="w-full h-12 text-lg"
-              >
-                {loading ? '登录中...' : '登录'}
-              </Button>
-            </Form.Item>
-          </Form>
+            </ProForm.Item>
+          </ProForm>
           
           <div className="text-center">
             <Space direction="vertical" size="small">

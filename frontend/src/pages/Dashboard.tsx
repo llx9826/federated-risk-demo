@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Row, Col, Card, Statistic, Progress, Table, Tag, Space, Button } from 'antd'
+import { Row, Col, Card, Statistic, Progress, Tag, Space, Button } from 'antd'
 import {
   UserOutlined,
   DatabaseOutlined,
@@ -9,6 +9,8 @@ import {
   ArrowDownOutlined,
   ReloadOutlined,
 } from '@ant-design/icons'
+import { ProTable } from '@ant-design/pro-components'
+import type { ProColumns } from '@ant-design/pro-components'
 import { useQuery } from '@tanstack/react-query'
 import { systemAPI, federatedAPI, consentAPI, auditAPI } from '@/services/api'
 import { dateUtils, numberUtils } from '@/utils'
@@ -86,14 +88,14 @@ const Dashboard: React.FC = () => {
     }
   }
 
-  const activityColumns = [
+  const activityColumns: ProColumns<RecentActivity>[] = [
     {
       title: '类型',
       dataIndex: 'type',
       key: 'type',
       width: 120,
-      render: (type: string) => (
-        <Tag color="blue">{type}</Tag>
+      render: (_, record: RecentActivity) => (
+        <Tag color="blue">{record.type}</Tag>
       ),
     },
     {
@@ -107,9 +109,9 @@ const Dashboard: React.FC = () => {
       dataIndex: 'status',
       key: 'status',
       width: 80,
-      render: (status: string) => (
-        <Tag color={getStatusColor(status)}>
-          {status === 'success' ? '成功' : status === 'warning' ? '警告' : '错误'}
+      render: (_, record: RecentActivity) => (
+        <Tag color={getStatusColor(record.status)}>
+          {record.status === 'success' ? '成功' : record.status === 'warning' ? '警告' : '错误'}
         </Tag>
       ),
     },
@@ -124,7 +126,7 @@ const Dashboard: React.FC = () => {
       dataIndex: 'timestamp',
       key: 'timestamp',
       width: 120,
-      render: (timestamp: string) => dateUtils.formatRelativeTime(timestamp),
+      render: (_, record: RecentActivity) => dateUtils.formatRelativeTime(record.timestamp),
     },
   ]
 
@@ -273,7 +275,7 @@ const Dashboard: React.FC = () => {
       <Row className="mt-6">
         <Col span={24}>
           <Card title="最近活动" className="h-full">
-            <Table
+            <ProTable<RecentActivity>
               columns={activityColumns}
               dataSource={activities}
               loading={activitiesLoading}
@@ -284,6 +286,8 @@ const Dashboard: React.FC = () => {
               }}
               rowKey="id"
               size="small"
+              search={false}
+              toolBarRender={false}
             />
           </Card>
         </Col>

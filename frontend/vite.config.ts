@@ -29,19 +29,19 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api\/psi/, '')
       },
       '/api/consent': {
-        target: 'http://127.0.0.1:8002',
+        target: 'http://127.0.0.1:8000',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api\/consent/, '')
       },
       '/api/train': {
-        target: 'http://127.0.0.1:8003',
+        target: 'http://127.0.0.1:8002',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api\/train/, '')
       },
       '/api/serving': {
-        target: 'http://127.0.0.1:8004',
+        target: 'http://127.0.0.1:8003',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api\/serving/, '')
@@ -61,10 +61,5 @@ export default defineConfig({
         }
       }
     }
-  },
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./src/setupTests.ts']
   }
 })

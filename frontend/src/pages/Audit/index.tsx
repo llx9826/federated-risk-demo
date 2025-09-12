@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import {
   Card,
-  Table,
   Tag,
   Space,
   Button,
@@ -14,11 +13,9 @@ import {
   Typography,
   Modal,
   Descriptions,
-
   Alert,
   Badge,
   Divider,
-  Form,
 } from 'antd'
 import {
   AuditOutlined,
@@ -35,7 +32,8 @@ import {
   FileTextOutlined,
   WarningOutlined,
 } from '@ant-design/icons'
-
+import { ProTable, PageContainer, ProCard, ProForm } from '@ant-design/pro-components'
+import type { ProColumns } from '@ant-design/pro-components'
 import { useAppStore } from '@store/app'
 import dayjs from 'dayjs'
 
@@ -447,17 +445,17 @@ const AuditPage: React.FC = () => {
   const getStatusText = (status: string) => getStatusConfig(status).text
 
   // 表格列配置
-  const columns = [
+  const columns: ProColumns<AuditLog>[] = [
     {
       title: '时间',
       dataIndex: 'timestamp',
       key: 'timestamp',
       width: 150,
-      render: (timestamp: string) => (
+      render: (_, record) => (
         <div>
-          <div>{dayjs(timestamp).format('MM-DD HH:mm')}</div>
+          <div>{dayjs(record.timestamp).format('MM-DD HH:mm')}</div>
           <div style={{ fontSize: 11, color: '#999' }}>
-            {dayjs(timestamp).format('YYYY')}
+            {dayjs(record.timestamp).format('YYYY')}
           </div>
         </div>
       ),
@@ -469,9 +467,9 @@ const AuditPage: React.FC = () => {
       dataIndex: 'action',
       key: 'action',
       width: 150,
-      render: (action: string, record: AuditLog) => (
+      render: (_, record) => (
         <div>
-          <div style={{ fontWeight: 500 }}>{action}</div>
+          <div style={{ fontWeight: 500 }}>{record.action}</div>
           <Tag color="blue">{getCategoryText(record.category)}</Tag>
         </div>
       ),
@@ -480,7 +478,7 @@ const AuditPage: React.FC = () => {
       title: '用户',
       key: 'user',
       width: 120,
-      render: (record: AuditLog) => (
+      render: (_, record) => (
         <div>
           <div style={{ fontWeight: 500 }}>{record.user}</div>
           <div style={{ fontSize: 11, color: '#666' }}>{record.userRole}</div>
@@ -491,7 +489,7 @@ const AuditPage: React.FC = () => {
       title: '资源',
       key: 'resource',
       width: 150,
-      render: (record: AuditLog) => (
+      render: (_, record) => (
         <div>
           <div style={{ fontWeight: 500 }}>{record.resource}</div>
           <Tag>{record.resourceType}</Tag>
@@ -503,8 +501,8 @@ const AuditPage: React.FC = () => {
       dataIndex: 'status',
       key: 'status',
       width: 80,
-      render: (status: string) => {
-        const config = getStatusConfig(status)
+      render: (_, record) => {
+        const config = getStatusConfig(record.status)
         return (
           <Tag icon={config.icon} color={config.color}>
             {config.text}
@@ -517,8 +515,8 @@ const AuditPage: React.FC = () => {
       dataIndex: 'severity',
       key: 'severity',
       width: 100,
-      render: (severity: string) => {
-        const config = getSeverityConfig(severity)
+      render: (_, record) => {
+        const config = getSeverityConfig(record.severity)
         return (
           <Tag color={config.color}>{config.text}</Tag>
         )
@@ -534,7 +532,7 @@ const AuditPage: React.FC = () => {
       title: '操作',
       key: 'actions',
       width: 80,
-      render: (record: AuditLog) => (
+      render: (_, record) => (
         <Button
           type="text"
           size="small"
@@ -551,40 +549,43 @@ const AuditPage: React.FC = () => {
   ]
 
   return (
-    <div style={{ padding: 24 }}>
-      {/* 页面标题 */}
-      <div style={{ marginBottom: 24 }}>
-        <Title level={2} style={{ margin: 0 }}>
-          <AuditOutlined style={{ marginRight: 8 }} />
-          审计日志
-        </Title>
-        <Text type="secondary">系统操作审计与安全监控</Text>
-      </div>
+    <PageContainer
+      title="审计日志"
+      subTitle="系统操作审计与安全监控"
+      extra={[
+        <Button key="refresh" icon={<ReloadOutlined />} onClick={() => window.location.reload()}>
+          刷新
+        </Button>,
+        <Button key="export" icon={<DownloadOutlined />} onClick={exportLogs}>
+          导出
+        </Button>,
+      ]}
+    >
 
       {/* 统计概览 */}
       {stats && (
         <Row gutter={16} style={{ marginBottom: 24 }}>
           <Col span={6}>
-            <Card>
+            <ProCard>
               <Statistic
                 title="总日志数"
                 value={stats.totalLogs}
                 prefix={<FileTextOutlined />}
               />
-            </Card>
+            </ProCard>
           </Col>
           <Col span={6}>
-            <Card>
+            <ProCard>
               <Statistic
                 title="今日日志"
                 value={stats.todayLogs}
                 prefix={<ClockCircleOutlined />}
                 valueStyle={{ color: '#1890ff' }}
               />
-            </Card>
+            </ProCard>
           </Col>
           <Col span={6}>
-            <Card>
+            <ProCard>
               <Statistic
                 title="成功率"
                 value={stats.successRate * 100}
@@ -593,25 +594,25 @@ const AuditPage: React.FC = () => {
                 prefix={<CheckCircleOutlined />}
                 valueStyle={{ color: '#52c41a' }}
               />
-            </Card>
+            </ProCard>
           </Col>
           <Col span={6}>
-            <Card>
+            <ProCard>
               <Statistic
                 title="严重事件"
                 value={stats.criticalEvents}
                 prefix={<ExclamationCircleOutlined />}
                 valueStyle={{ color: '#ff4d4f' }}
               />
-            </Card>
+            </ProCard>
           </Col>
         </Row>
       )}
 
       {/* 过滤器 */}
       <Card style={{ marginBottom: 16 }}>
-        <Form layout="inline">
-          <Form.Item label="关键词">
+        <ProForm layout="inline" submitter={false}>
+          <ProForm.Item label="关键词">
             <Input
               placeholder="搜索操作、详情或资源"
               value={filters.keyword}
@@ -619,9 +620,9 @@ const AuditPage: React.FC = () => {
               style={{ width: 200 }}
               prefix={<SearchOutlined />}
             />
-          </Form.Item>
+          </ProForm.Item>
           
-          <Form.Item label="类别">
+          <ProForm.Item label="类别">
             <Select
               placeholder="选择类别"
               value={filters.category}
@@ -637,9 +638,9 @@ const AuditPage: React.FC = () => {
               <Option value="system_config">系统配置</Option>
               <Option value="user_management">用户管理</Option>
             </Select>
-          </Form.Item>
+          </ProForm.Item>
           
-          <Form.Item label="严重程度">
+          <ProForm.Item label="严重程度">
             <Select
               placeholder="选择严重程度"
               value={filters.severity}
@@ -652,9 +653,9 @@ const AuditPage: React.FC = () => {
               <Option value="high">高</Option>
               <Option value="critical">严重</Option>
             </Select>
-          </Form.Item>
+          </ProForm.Item>
           
-          <Form.Item label="状态">
+          <ProForm.Item label="状态">
             <Select
               placeholder="选择状态"
               value={filters.status}
@@ -666,18 +667,18 @@ const AuditPage: React.FC = () => {
               <Option value="failure">失败</Option>
               <Option value="warning">警告</Option>
             </Select>
-          </Form.Item>
+          </ProForm.Item>
           
-          <Form.Item label="时间范围">
+          <ProForm.Item label="时间范围">
             <RangePicker
               value={filters.dateRange}
               onChange={(dates) => setFilters(prev => ({ ...prev, dateRange: dates as [dayjs.Dayjs, dayjs.Dayjs] | null }))}
               showTime
               format="YYYY-MM-DD HH:mm"
             />
-          </Form.Item>
+          </ProForm.Item>
           
-          <Form.Item>
+          <ProForm.Item>
             <Space>
               <Button
                 icon={<FilterOutlined />}
@@ -700,8 +701,8 @@ const AuditPage: React.FC = () => {
                 导出
               </Button>
             </Space>
-          </Form.Item>
-        </Form>
+          </ProForm.Item>
+        </ProForm>
       </Card>
 
       {/* 审计日志表格 */}
@@ -717,7 +718,7 @@ const AuditPage: React.FC = () => {
           </Space>
         }
       >
-        <Table
+        <ProTable<AuditLog>
           dataSource={filteredLogs}
           columns={columns}
           rowKey="id"
@@ -726,10 +727,12 @@ const AuditPage: React.FC = () => {
             pageSize: 20,
             showSizeChanger: true,
             showQuickJumper: true,
-            showTotal: (total) => `共 ${total} 条记录`,
+            showTotal: (total: number) => `共 ${total} 条记录`,
           }}
           scroll={{ x: 1200 }}
           size="small"
+          search={false}
+          toolBarRender={false}
         />
       </Card>
 
@@ -832,7 +835,7 @@ const AuditPage: React.FC = () => {
           </div>
         )}
       </Modal>
-    </div>
+    </PageContainer>
   )
 }
 
